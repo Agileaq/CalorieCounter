@@ -1,0 +1,317 @@
+[
+  {
+    "id": "pre-white-rice",
+    "name": "White Rice (cooked)",
+    "icon": "🍚",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-white-rice-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 130,
+      "fat": { "total": 0.3, "mono": 0.1, "poly": 0.1, "saturated": 0.1, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 1,
+      "carbs": { "total": 28, "fiber": 0.4, "sugar": 0.1 },
+      "protein": 2.7,
+      "vitamins": { "a": 0, "c": 0, "b1": 0.02, "b2": 0.01, "b3": 0.4, "b9": 3, "b6": 0.05, "b12": 0 },
+      "minerals": { "calcium": 10, "iron": 0.2, "magnesium": 12, "phosphorus": 43, "potassium": 35, "zinc": 0.5 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-chicken-breast",
+    "name": "Chicken Breast (cooked)",
+    "icon": "🍗",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-chicken-breast-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 165,
+      "fat": { "total": 3.6, "mono": 1.2, "poly": 0.8, "saturated": 1, "trans": 0 },
+      "cholesterol": 85,
+      "sodium": 74,
+      "carbs": { "total": 0, "fiber": 0, "sugar": 0 },
+      "protein": 31,
+      "vitamins": { "a": 9, "c": 0, "b1": 0.07, "b2": 0.11, "b3": 13.7, "b9": 4, "b6": 0.6, "b12": 0.3 },
+      "minerals": { "calcium": 15, "iron": 1, "magnesium": 29, "phosphorus": 228, "potassium": 256, "zinc": 1 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-egg",
+    "name": "Egg (whole)",
+    "icon": "🥚",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-egg-s1", "kind": "amount", "label": "1 Egg", "amount": 1, "unit": "egg", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 78,
+      "fat": { "total": 5.3, "mono": 2, "poly": 1, "saturated": 1.6, "trans": 0 },
+      "cholesterol": 186,
+      "sodium": 62,
+      "carbs": { "total": 0.6, "fiber": 0, "sugar": 0.6 },
+      "protein": 6.3,
+      "vitamins": { "a": 80, "c": 0, "b1": 0.03, "b2": 0.23, "b3": 0.04, "b9": 24, "b6": 0.09, "b12": 0.6 },
+      "minerals": { "calcium": 28, "iron": 0.9, "magnesium": 6, "phosphorus": 99, "potassium": 69, "zinc": 0.6 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-banana",
+    "name": "Banana",
+    "icon": "🍌",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-banana-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 89,
+      "fat": { "total": 0.3, "mono": 0.03, "poly": 0.07, "saturated": 0.1, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 1,
+      "carbs": { "total": 23, "fiber": 2.6, "sugar": 12 },
+      "protein": 1.1,
+      "vitamins": { "a": 3, "c": 8.7, "b1": 0.03, "b2": 0.07, "b3": 0.7, "b9": 20, "b6": 0.4, "b12": 0 },
+      "minerals": { "calcium": 5, "iron": 0.3, "magnesium": 27, "phosphorus": 22, "potassium": 358, "zinc": 0.2 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-apple",
+    "name": "Apple",
+    "icon": "🍎",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-apple-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 52,
+      "fat": { "total": 0.2, "mono": 0.01, "poly": 0.05, "saturated": 0.03, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 1,
+      "carbs": { "total": 14, "fiber": 2.4, "sugar": 10 },
+      "protein": 0.3,
+      "vitamins": { "a": 3, "c": 4.6, "b1": 0.02, "b2": 0.03, "b3": 0.09, "b9": 3, "b6": 0.04, "b12": 0 },
+      "minerals": { "calcium": 6, "iron": 0.1, "magnesium": 5, "phosphorus": 11, "potassium": 107, "zinc": 0.04 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-bread-white",
+    "name": "Bread (white)",
+    "icon": "🍞",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-bread-white-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 265,
+      "fat": { "total": 3.2, "mono": 0.6, "poly": 1.4, "saturated": 0.7, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 491,
+      "carbs": { "total": 49, "fiber": 2.7, "sugar": 5 },
+      "protein": 9,
+      "vitamins": { "a": 0, "c": 0, "b1": 0.5, "b2": 0.28, "b3": 4.8, "b9": 129, "b6": 0.09, "b12": 0 },
+      "minerals": { "calcium": 151, "iron": 3.6, "magnesium": 25, "phosphorus": 99, "potassium": 115, "zinc": 0.9 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-milk-whole",
+    "name": "Milk (whole)",
+    "icon": "🥛",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-milk-whole-s1", "kind": "volume", "label": "mL", "amount": 250, "unit": "mL", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 150,
+      "fat": { "total": 8, "mono": 2, "poly": 0.5, "saturated": 4.6, "trans": 0.2 },
+      "cholesterol": 24,
+      "sodium": 105,
+      "carbs": { "total": 12, "fiber": 0, "sugar": 12 },
+      "protein": 8,
+      "vitamins": { "a": 112, "c": 0, "b1": 0.1, "b2": 0.4, "b3": 0.2, "b9": 12, "b6": 0.09, "b12": 1.1 },
+      "minerals": { "calcium": 276, "iron": 0.07, "magnesium": 24, "phosphorus": 205, "potassium": 322, "zinc": 0.9 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-broccoli",
+    "name": "Broccoli (cooked)",
+    "icon": "🥦",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-broccoli-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 35,
+      "fat": { "total": 0.4, "mono": 0.03, "poly": 0.2, "saturated": 0.1, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 41,
+      "carbs": { "total": 7, "fiber": 3.3, "sugar": 1.4 },
+      "protein": 2.4,
+      "vitamins": { "a": 77, "c": 65, "b1": 0.06, "b2": 0.12, "b3": 0.5, "b9": 108, "b6": 0.2, "b12": 0 },
+      "minerals": { "calcium": 40, "iron": 0.7, "magnesium": 21, "phosphorus": 67, "potassium": 293, "zinc": 0.5 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-salmon",
+    "name": "Salmon (cooked)",
+    "icon": "🐟",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-salmon-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 208,
+      "fat": { "total": 13, "mono": 3.8, "poly": 3.9, "saturated": 3.1, "trans": 0 },
+      "cholesterol": 55,
+      "sodium": 59,
+      "carbs": { "total": 0, "fiber": 0, "sugar": 0 },
+      "protein": 20,
+      "vitamins": { "a": 12, "c": 0, "b1": 0.2, "b2": 0.4, "b3": 8.5, "b9": 26, "b6": 0.6, "b12": 3.2 },
+      "minerals": { "calcium": 12, "iron": 0.5, "magnesium": 29, "phosphorus": 240, "potassium": 363, "zinc": 0.4 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-beef-ground",
+    "name": "Beef (ground, cooked)",
+    "icon": "🥩",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-beef-ground-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 250,
+      "fat": { "total": 15, "mono": 6.5, "poly": 0.5, "saturated": 5.9, "trans": 0.8 },
+      "cholesterol": 78,
+      "sodium": 72,
+      "carbs": { "total": 0, "fiber": 0, "sugar": 0 },
+      "protein": 26,
+      "vitamins": { "a": 0, "c": 0, "b1": 0.04, "b2": 0.18, "b3": 5.4, "b9": 9, "b6": 0.4, "b12": 2.5 },
+      "minerals": { "calcium": 18, "iron": 2.6, "magnesium": 21, "phosphorus": 198, "potassium": 318, "zinc": 6.3 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-pasta",
+    "name": "Pasta (cooked)",
+    "icon": "🍝",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-pasta-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 158,
+      "fat": { "total": 0.9, "mono": 0.1, "poly": 0.3, "saturated": 0.2, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 1,
+      "carbs": { "total": 31, "fiber": 1.8, "sugar": 0.6 },
+      "protein": 5.8,
+      "vitamins": { "a": 0, "c": 0, "b1": 0.02, "b2": 0.02, "b3": 0.4, "b9": 7, "b6": 0.05, "b12": 0 },
+      "minerals": { "calcium": 7, "iron": 0.5, "magnesium": 18, "phosphorus": 58, "potassium": 44, "zinc": 0.5 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-oatmeal",
+    "name": "Oatmeal (cooked)",
+    "icon": "🥣",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-oatmeal-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 71,
+      "fat": { "total": 1.5, "mono": 0.5, "poly": 0.6, "saturated": 0.3, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 4,
+      "carbs": { "total": 12, "fiber": 1.7, "sugar": 0.3 },
+      "protein": 2.5,
+      "vitamins": { "a": 0, "c": 0, "b1": 0.1, "b2": 0.02, "b3": 0.1, "b9": 6, "b6": 0.005, "b12": 0 },
+      "minerals": { "calcium": 9, "iron": 0.9, "magnesium": 26, "phosphorus": 77, "potassium": 70, "zinc": 0.9 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-greek-yogurt",
+    "name": "Greek Yogurt",
+    "icon": "🥣",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-greek-yogurt-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 59,
+      "fat": { "total": 0.4, "mono": 0.1, "poly": 0.01, "saturated": 0.1, "trans": 0 },
+      "cholesterol": 5,
+      "sodium": 36,
+      "carbs": { "total": 3.6, "fiber": 0, "sugar": 3.2 },
+      "protein": 10,
+      "vitamins": { "a": 27, "c": 0, "b1": 0.02, "b2": 0.28, "b3": 0.2, "b9": 7, "b6": 0.06, "b12": 0.75 },
+      "minerals": { "calcium": 110, "iron": 0.07, "magnesium": 11, "phosphorus": 135, "potassium": 141, "zinc": 0.5 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-almonds",
+    "name": "Almonds",
+    "icon": "🥜",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-almonds-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 579,
+      "fat": { "total": 50, "mono": 31, "poly": 12, "saturated": 3.8, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 1,
+      "carbs": { "total": 22, "fiber": 12.5, "sugar": 4.4 },
+      "protein": 21,
+      "vitamins": { "a": 0, "c": 0, "b1": 0.2, "b2": 1.1, "b3": 3.6, "b9": 44, "b6": 0.1, "b12": 0 },
+      "minerals": { "calcium": 269, "iron": 3.7, "magnesium": 270, "phosphorus": 481, "potassium": 733, "zinc": 3.1 },
+      "caffeine": 0
+    }
+  },
+  {
+    "id": "pre-orange",
+    "name": "Orange",
+    "icon": "🍊",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-orange-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 47,
+      "fat": { "total": 0.1, "mono": 0.02, "poly": 0.03, "saturated": 0.02, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 0,
+      "carbs": { "total": 12, "fiber": 2.4, "sugar": 9.4 },
+      "protein": 0.9,
+      "vitamins": { "a": 11, "c": 53, "b1": 0.09, "b2": 0.04, "b3": 0.3, "b9": 30, "b6": 0.06, "b12": 0 },
+      "minerals": { "calcium": 40, "iron": 0.1, "magnesium": 10, "phosphorus": 14, "potassium": 181, "zinc": 0.07 },
+      "caffeine": 0
+    }
+  }
+]
