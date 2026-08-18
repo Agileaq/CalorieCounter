@@ -1,0 +1,36 @@
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import '../i18n'
+import { FoodForm } from './FoodForm'
+
+describe('FoodForm', () => {
+  it('requires a name and calories before saving', () => {
+    const onSave = vi.fn()
+    render(<FoodForm onSave={onSave} onClose={() => {}} />)
+    fireEvent.click(screen.getByTestId('food-save'))
+    expect(onSave).not.toHaveBeenCalled() // name empty
+  })
+  it('saves a new custom food', () => {
+    const onSave = vi.fn()
+    render(<FoodForm onSave={onSave} onClose={() => {}} />)
+    fireEvent.change(screen.getByTestId('food-name'), { target: { value: 'Salad' } })
+    fireEvent.change(screen.getByTestId('nutri-calories'), { target: { value: '150' } })
+    fireEvent.click(screen.getByTestId('food-save'))
+    expect(onSave).toHaveBeenCalled()
+    const saved = onSave.mock.calls[0][0]
+    expect(saved.name).toBe('Salad')
+    expect(saved.nutrition.calories).toBe(150)
+    expect(saved.source).toBe('custom')
+  })
+  it('cloning a predefined food yields a new custom id', () => {
+    const onSave = vi.fn()
+    const pre = { id: 'pre-x', name: 'Rice', icon: '🍚', source: 'predefined' as const, createdAt: '',
+      servings: [{ id: 's', kind: 'weight' as const, label: 'Grams', amount: 100, unit: 'g', isPrimary: true }],
+      nutrition: { calories: 130, fat:{total:0,mono:0,poly:0,saturated:0,trans:0}, cholesterol: 0, sodium: 0, carbs:{total:0,fiber:0,sugar:0}, protein: 0, vitamins:{a:0,c:0,b1:0,b2:0,b3:0,b9:0,b6:0,b12:0}, minerals:{calcium:0,iron:0,magnesium:0,phosphorus:0,potassium:0,zinc:0}, caffeine: 0 } }
+    render(<FoodForm initial={pre} onSave={onSave} onClose={() => {}} />)
+    fireEvent.click(screen.getByTestId('food-save'))
+    const saved = onSave.mock.calls[0][0]
+    expect(saved.id).not.toBe('pre-x')
+    expect(saved.source).toBe('custom')
+  })
+})
