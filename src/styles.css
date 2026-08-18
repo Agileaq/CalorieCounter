@@ -33,3 +33,7 @@ input, select { font: inherit; }
 .bottom-nav .icon { font-size: 20px; }
 
 [dir="rtl"] body { text-align: start; }
+
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
+.modal { background: var(--card); width: 100%; max-width: 480px; border-radius: 18px 18px 0 0; padding: 16px; max-height: 85vh; overflow-y: auto; }
+@media (min-width: 520px) { .modal-backdrop { align-items: center; } .modal { border-radius: 18px; } }
