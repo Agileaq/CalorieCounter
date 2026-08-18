@@ -39,5 +39,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Node >=22 ships an experimental global Web Storage that shadows jsdom's
+    // localStorage with a non-functional stub (localStorage.clear is undefined)
+    // unless --localstorage-file is given. Disable it so jsdom's Storage is used.
+    execArgv: ['--no-experimental-webstorage'],
   },
 })
