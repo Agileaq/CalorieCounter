@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
+import { UpdateBanner } from './components/UpdateBanner'
 import Dashboard from './routes/Dashboard'
 import Log from './routes/Log'
 import Goals from './routes/Goals'
@@ -13,6 +14,7 @@ export default function App() {
           <Route path="/log" element={<Log />} />
           <Route path="/goals" element={<Goals />} />
         </Routes>
+        <UpdateBanner />
         <BottomNav />
       </div>
     </HashRouter>
