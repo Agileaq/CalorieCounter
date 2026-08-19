@@ -36,7 +36,7 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
         <div className="row spread">
           <button className="btn-ghost" onClick={onClose}>✕</button>
           <strong>{initial ? t('foodForm.editFood') : t('foodForm.newFood')}</strong>
-          <button className="btn-accent" data-testid="food-save" onClick={save}>✓</button>
+          <button className="btn-accent" data-testid="food-save" onClick={save}>{t('common.save')}</button>
         </div>
         {error && <div style={{ color: 'var(--red)', fontSize: 13 }}>{error}</div>}
         <div className="card">

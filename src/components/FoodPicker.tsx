@@ -39,7 +39,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="row spread">
           <input placeholder={t('foodPicker.search')} value={q} onChange={e => setQ(e.target.value)} style={{ flex: 1, padding: 8, margin: '0 8px' }} />
-          <button className="btn-accent" onClick={onClose}>✓</button>
+          <button className="btn-ghost" aria-label={t('common.close')} onClick={onClose}>✕</button>
         </div>
         <div className="row" style={{ gap: 8, margin: '10px 0' }}>
           <button className={tab === 'all' ? 'btn-accent' : 'btn-ghost'} onClick={() => setTab('all')}>{t('foodPicker.all')}</button>

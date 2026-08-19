@@ -50,7 +50,7 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
         <div className="row spread">
           <button className="btn-ghost" data-testid="food-detail-close" onClick={onClose}>✕</button>
           <strong style={{ flex: 1, textAlign: 'center' }}>{food.icon} {food.name}</strong>
-          <button className="btn-accent" data-testid="food-detail-add" onClick={() => setPicking(true)}>✓</button>
+          <button className="btn-accent" data-testid="food-detail-add" onClick={() => setPicking(true)}>{t('common.add')}</button>
         </div>
         {food.brand && <div className="muted" style={{ textAlign: 'center' }}>{food.brand}</div>}
 
