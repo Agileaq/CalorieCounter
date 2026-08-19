@@ -50,7 +50,7 @@ export default function Goals() {
         ))}
         <div className="row" style={{ gap: 8, marginTop: 8 }}>
           <input data-testid="exercise-name" placeholder="Run" value={exName} onChange={e => setExName(e.target.value)} style={{ flex: 1 }} />
-          <input data-testid="exercise-cals" type="number" value={exCals} onChange={e => setExCals(parseInt(e.target.value) || 0)} style={{ width: 80 }} />
+          <NumberInput testId="exercise-cals" integer value={exCals} onChange={setExCals} style={{ width: 80 }} />
           <button className="btn-accent" data-testid="exercise-add"
             onClick={() => { if (exName.trim()) { addExercise({ id: newId(), name: exName.trim(), caloriesBurned: exCals }); setExName(''); setExCals(0) } }}>{t('common.add')}</button>
         </div>

@@ -31,6 +31,17 @@ describe('Goals', () => {
     expect(input).toHaveValue(0)
     expect(JSON.parse(localStorage.getItem('cc.settings')!).dailyBudget).toBe(0)
   })
+  it('clearing the exercise calories stays empty, then typing yields "1" not "01"', () => {
+    render(<AppProvider><Goals /></AppProvider>)
+    const input = screen.getByTestId('exercise-cals')
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: '' } })
+    expect(input).toHaveValue(null)
+    fireEvent.change(input, { target: { value: '1' } })
+    expect(input).toHaveValue(1)
+    fireEvent.blur(input)
+    expect(input).toHaveValue(1)
+  })
   it('adds an exercise entry', () => {
     render(<AppProvider><Goals /></AppProvider>)
     fireEvent.change(screen.getByTestId('exercise-name'), { target: { value: 'Run' } })
