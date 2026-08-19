@@ -2,14 +2,16 @@ import { describe, it, expect } from 'vitest'
 import { derivedTargets } from './macros'
 
 describe('derivedTargets', () => {
-  it('splits a 2000 cal budget into 50/20/30 by grams', () => {
-    // carbs 50% ÷4, protein 20% ÷4, fat 30% ÷9
-    expect(derivedTargets(2000)).toEqual({ carbs: 250, protein: 100, fat: 67 })
+  it('derives protein and fat from the 80kg reference weight (1.8/0.8 g per kg)', () => {
+    // protein 80×1.8=144g, fat 80×0.8=64g; for 2000 cal the remainder is carbs:
+    // (2000 − 144×4 − 64×9) ÷ 4 = 848 ÷ 4 = 212g
+    expect(derivedTargets(2000)).toEqual({ carbs: 212, protein: 144, fat: 64 })
   })
-  it('rounds to whole grams', () => {
-    expect(derivedTargets(1800)).toEqual({ carbs: 225, protein: 90, fat: 60 })
+  it('gives carbs whatever calories the budget leaves after protein+fat', () => {
+    // (1800 − 576 − 576) ÷ 4 = 162g
+    expect(derivedTargets(1800)).toEqual({ carbs: 162, protein: 144, fat: 64 })
   })
-  it('is zero for a zero budget', () => {
-    expect(derivedTargets(0)).toEqual({ carbs: 0, protein: 0, fat: 0 })
+  it('clamps carbs at 0 when the budget cannot cover protein+fat', () => {
+    expect(derivedTargets(0)).toEqual({ carbs: 0, protein: 144, fat: 64 })
   })
 })

@@ -36,7 +36,8 @@ describe('storage', () => {
     // legacy blob: only protein + fiber, budget 1800
     localStorage.setItem('cc.settings', JSON.stringify({ dailyBudget: 1800, macroTargets: { protein: 128, fiber: 30 }, language: 'en' }))
     const s = loadSettings()
-    expect(s.macroTargets).toEqual({ carbs: 225, fat: 60, protein: 128, fiber: 30 })
+    // (1800 − 144×4 − 64×9) ÷ 4 = 162g carbs; fat 64g; stored protein/fiber preserved
+    expect(s.macroTargets).toEqual({ carbs: 162, fat: 64, protein: 128, fiber: 30 })
   })
   it('ensureSchema sets the current version', () => {
     ensureSchema()
