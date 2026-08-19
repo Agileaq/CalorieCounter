@@ -16,7 +16,7 @@ const bars = [
 describe('StatCard', () => {
   it('renders title, gauge value/label, bottom texts and 7 bars', () => {
     render(
-      <StatCard title="Protein" gaugeValue={0} gaugeLabel="Under" pct={0} color="var(--accent)" target={128}
+      <StatCard title="Protein" gaugeValue={0} gaugeLabel="Under" ratio={0} color="var(--accent)" target={128}
         bottomLeft="0 of 128g" bottomRight="37g avg prior to today" bars={bars} />,
     )
     expect(screen.getByText('Protein')).toBeInTheDocument()
@@ -28,35 +28,45 @@ describe('StatCard', () => {
   })
   it('draws a grey track and target divider for every day, even empty ones', () => {
     render(
-      <StatCard title="Fiber" gaugeValue={0} gaugeLabel="Under" pct={0} color="var(--accent)" target={28}
+      <StatCard title="Fiber" gaugeValue={0} gaugeLabel="Under" ratio={0} color="var(--accent)" target={28}
         bottomLeft="0 of 28g" bottomRight="2g avg prior to today" bars={bars} />,
     )
-    // all 7 days show a full-height capsule and a divider at the target level
     expect(screen.getAllByTestId('stat-bar')).toHaveLength(7)
     expect(screen.getAllByTestId('stat-bar-divider')).toHaveLength(7)
-    // only days with data get a fill (3 of 7)
     expect(screen.getAllByTestId('stat-bar-fill')).toHaveLength(3)
   })
   it('fill reaches the divider exactly at target and enters the over-zone beyond it', () => {
     render(
-      <StatCard title="Carbs" gaugeValue={0} gaugeLabel="Under" pct={0} color="var(--accent)" target={100}
+      <StatCard title="Carbs" gaugeValue={0} gaugeLabel="Under" ratio={0} color="var(--accent)" target={100}
         bottomLeft="" bottomRight="" bars={bars} />,
     )
     const fills = screen.getAllByTestId('stat-bar-fill')
-    // value 100 = 100% of target → fill stops at the divider (82px of the 96px capsule)
     expect(fills[0].style.height).toBe('82px')
-    // value 300 = 300% → fill runs to the top of the capsule (96px)
     expect(fills[1].style.height).toBe('96px')
-    // value 50 = 50% → half the under-zone (41px)
     expect(fills[2].style.height).toBe('41px')
+  })
+  it('the ring shows a target notch at 80% of the sweep', () => {
+    render(
+      <StatCard title="Protein" gaugeValue={50} gaugeLabel="Under" ratio={0.5} color="var(--accent)" target={100}
+        bottomLeft="" bottomRight="" bars={bars} />,
+    )
+    expect(screen.getByTestId('stat-ring-notch')).toBeInTheDocument()
+    expect(screen.queryByTestId('stat-ring-over')).not.toBeInTheDocument()
+  })
+  it('the ring draws a red over-segment past the notch when over target', () => {
+    render(
+      <StatCard title="Protein" gaugeValue={150} gaugeLabel="Over" ratio={1.5} color="var(--accent)" target={100}
+        bottomLeft="" bottomRight="" bars={bars} />,
+    )
+    const over = screen.getByTestId('stat-ring-over')
+    expect(over.getAttribute('stroke')).toBe('var(--red)')
   })
   it('still draws the divider on every bar when the target is 0', () => {
     render(
-      <StatCard title="Protein" gaugeValue={0} gaugeLabel="Under" pct={0} color="var(--accent)" target={0}
+      <StatCard title="Protein" gaugeValue={0} gaugeLabel="Under" ratio={0} color="var(--accent)" target={0}
         bottomLeft="0 of 0g" bottomRight="0g avg prior to today" bars={bars} />,
     )
     expect(screen.getAllByTestId('stat-bar-divider')).toHaveLength(7)
-    // with no target, fills scale to the week's max up to the divider (UNDER px)
     const fills = screen.getAllByTestId('stat-bar-fill')
     expect(fills[1].style.height).toBe('82px') // 300 = week max → reaches divider
   })
