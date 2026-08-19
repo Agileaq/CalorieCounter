@@ -30,11 +30,14 @@ export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, 
   // with no target set, the ring falls back to scaling against the week's max
   const ringRatio = target > 0 ? ratio : gaugeValue / max
 
-  function fillHeight(value: number): number {
-    if (value <= 0) return 0
-    if (target <= 0) return (value / max) * UNDER // no target: scale to the week's max, up to the divider
+  function fillParts(value: number): { under: number; over: number } {
+    if (value <= 0) return { under: 0, over: 0 }
+    if (target <= 0) return { under: (value / max) * UNDER, over: 0 } // no target: scale to week max
     const ratio = value / target
-    return Math.min(ratio, 1) * UNDER + Math.min(Math.max(ratio - 1, 0), 1) * OVER
+    return {
+      under: Math.min(ratio, 1) * UNDER,
+      over: Math.min(Math.max(ratio - 1, 0), 1) * OVER,
+    }
   }
 
   return (
@@ -60,8 +63,15 @@ export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, 
                 {b.value > 0 && (
                   <div data-testid="stat-bar-fill" style={{
                     position: 'absolute', left: 0, right: 0, bottom: 0,
-                    height: fillHeight(b.value),
+                    height: fillParts(b.value).under,
                     background: b.isToday ? color : '#c7c9d1',
+                  }} />
+                )}
+                {fillParts(b.value).over > 0 && (
+                  <div data-testid="stat-bar-over" style={{
+                    position: 'absolute', left: 0, right: 0, bottom: UNDER + 1,
+                    height: fillParts(b.value).over,
+                    background: 'var(--red)',
                   }} />
                 )}
                 <div data-testid="stat-bar-divider" style={{

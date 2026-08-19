@@ -41,9 +41,14 @@ describe('StatCard', () => {
         bottomLeft="" bottomRight="" bars={bars} />,
     )
     const fills = screen.getAllByTestId('stat-bar-fill')
-    expect(fills[0].style.height).toBe('82px')
-    expect(fills[1].style.height).toBe('96px')
-    expect(fills[2].style.height).toBe('41px')
+    expect(fills[0].style.height).toBe('82px') // 100 = target → stops at divider
+    expect(fills[1].style.height).toBe('82px') // 300 = 3x target → under part capped at divider
+    expect(fills[2].style.height).toBe('41px') // 50 = half target
+    // the over-target part renders red above the divider
+    const overs = screen.getAllByTestId('stat-bar-over')
+    expect(overs).toHaveLength(1)
+    expect(overs[0].style.height).toBe('14px')
+    expect(overs[0].style.background).toBe('var(--red)')
   })
   it('the ring shows a target notch at 80% of the sweep', () => {
     render(
