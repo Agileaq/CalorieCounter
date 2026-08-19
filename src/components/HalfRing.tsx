@@ -43,7 +43,7 @@ export function HalfRing({ ratio, size = 120, color = 'var(--accent)', children 
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <path d={arc(start, start + sweep)} fill="none" stroke="#e5e5ea" strokeWidth={stroke} strokeLinecap="round" />
       {frac > 0 && (
-        <path d={arc(start, underEnd)} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" />
+        <path data-testid="stat-ring-fill" d={arc(start, underEnd)} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" />
       )}
       {frac > NOTCH && (
         <path data-testid="stat-ring-over" d={arc(notchDeg, overEnd)} fill="none" stroke="var(--red)" strokeWidth={stroke} />

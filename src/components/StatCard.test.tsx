@@ -70,4 +70,13 @@ describe('StatCard', () => {
     const fills = screen.getAllByTestId('stat-bar-fill')
     expect(fills[1].style.height).toBe('82px') // 300 = week max → reaches divider
   })
+  it('with a 0 target the ring still fills, scaled to the week max', () => {
+    render(
+      <StatCard title="Protein" gaugeValue={300} gaugeLabel="Under" ratio={0} color="var(--accent)" target={0}
+        bottomLeft="300 of 0g" bottomRight="" bars={bars} />,
+    )
+    // gaugeValue 300 = week max → ratio 1 → fill stops at the notch (80%)
+    expect(screen.getByTestId('stat-ring-fill')).toBeInTheDocument()
+    expect(screen.queryByTestId('stat-ring-over')).not.toBeInTheDocument()
+  })
 })

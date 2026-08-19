@@ -27,6 +27,8 @@ export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, 
   const { t } = useTranslation()
   const max = Math.max(1, ...bars.map(b => b.value))
   const nf = (n: number) => Math.round(n).toLocaleString('en-US')
+  // with no target set, the ring falls back to scaling against the week's max
+  const ringRatio = target > 0 ? ratio : gaugeValue / max
 
   function fillHeight(value: number): number {
     if (value <= 0) return 0
@@ -42,7 +44,7 @@ export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, 
         <span className="muted" aria-hidden style={{ fontSize: 18 }}>⋯</span>
       </div>
       <div className="row spread" style={{ gap: 12, marginTop: 8, alignItems: 'center' }}>
-        <HalfRing ratio={ratio} size={120} color={color}>
+        <HalfRing ratio={ringRatio} size={120} color={color}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
             <div data-testid="stat-gauge-value" style={{ fontSize: 30, fontWeight: 800, color, lineHeight: 1 }}>{nf(gaugeValue)}</div>
             <div className="muted" style={{ marginTop: 2 }}>{gaugeLabel}</div>
