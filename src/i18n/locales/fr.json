@@ -33,6 +33,13 @@
     "avgPrior": "{{n}}g en moyenne avant aujourd’hui",
     "ofCals": "{{cur}} sur {{target}} kcal"
   },
+  "exercise": {
+    "strength": "Musculation",
+    "walking": "Marche",
+    "running": "Course",
+    "swimming": "Natation",
+    "custom": "Saisis le tien…"
+  },
   "meal": {
     "breakfast": "Petit-déjeuner",
     "lunch": "Déjeuner",

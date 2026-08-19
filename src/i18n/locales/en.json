@@ -33,6 +33,13 @@
     "avgPrior": "{{n}}g avg prior to today",
     "ofCals": "{{cur}} of {{target}} cals"
   },
+  "exercise": {
+    "strength": "Strength training",
+    "walking": "Walking",
+    "running": "Running",
+    "swimming": "Swimming",
+    "custom": "Type your own…"
+  },
   "meal": {
     "breakfast": "Breakfast",
     "lunch": "Lunch",

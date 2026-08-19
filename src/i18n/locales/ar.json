@@ -33,6 +33,13 @@
     "avgPrior": "{{n}}غ متوسط قبل اليوم",
     "ofCals": "{{cur}} من {{target}} سعرة"
   },
+  "exercise": {
+    "strength": "تمارين القوة",
+    "walking": "المشي",
+    "running": "الجري",
+    "swimming": "السباحة",
+    "custom": "اكتب خاصتك…"
+  },
   "meal": {
     "breakfast": "الفطور",
     "lunch": "الغداء",

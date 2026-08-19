@@ -33,6 +33,13 @@
     "avgPrior": "此前日均 {{n}}g",
     "ofCals": "{{cur}} / {{target}} 千卡"
   },
+  "exercise": {
+    "strength": "力量训练",
+    "walking": "走路",
+    "running": "跑步",
+    "swimming": "游泳",
+    "custom": "自定义…"
+  },
   "meal": {
     "breakfast": "早餐",
     "lunch": "午餐",

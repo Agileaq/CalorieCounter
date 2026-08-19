@@ -33,6 +33,13 @@
     "avgPrior": "{{n}}г в среднем до сегодня",
     "ofCals": "{{cur}} из {{target}} ккал"
   },
+  "exercise": {
+    "strength": "Силовая тренировка",
+    "walking": "Ходьба",
+    "running": "Бег",
+    "swimming": "Плавание",
+    "custom": "Свой вариант…"
+  },
   "meal": {
     "breakfast": "Завтрак",
     "lunch": "Обед",
