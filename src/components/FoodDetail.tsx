@@ -1,0 +1,135 @@
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useApp } from '../state/useApp'
+import type { Food, LogEntry } from '../types'
+import { primaryServing, computedCalories } from '../lib/nutrition'
+import { QuantitySheet } from './QuantitySheet'
+import { FoodForm } from './FoodForm'
+
+const fmt = (v: number, unit: string) => `${Math.round(v * 10) / 10}${unit}`
+
+function Row({ label, value, indent }: { label: string; value: string; indent?: boolean }) {
+  const style = indent ? { color: 'var(--muted)' } : undefined
+  return (
+    <div className="row spread" style={{ padding: '3px 0', paddingInlineStart: indent ? 16 : 0 }}>
+      <span style={style}>{label}</span>
+      <span style={style}>{value}</span>
+    </div>
+  )
+}
+
+/**
+ * Read/edit view for a food's metadata: big derived-calories number, macro
+ * rows, expandable full nutrition label, servings, and Edit / Delete / Reset.
+ * Editing a predefined food writes an override (in place); custom foods edit
+ * directly. Add (✓) logs the food to the day like the picker's ＋ does.
+ */
+export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: LogEntry) => void; onClose: () => void }) {
+  const { t } = useTranslation()
+  const { updateMyFood, deleteMyFood, overrideFood, resetOverride, foodOverrides } = useApp()
+  const [showFull, setShowFull] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [picking, setPicking] = useState(false)
+
+  const ps = primaryServing(food)
+  const n = food.nutrition
+
+  function save(f: Food) {
+    if (f.source === 'custom') updateMyFood(f)
+    else overrideFood(f)
+  }
+  function del() {
+    if (!window.confirm(t('foodDetail.confirmDelete'))) return
+    deleteMyFood(food.id)
+    onClose()
+  }
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="row spread">
+          <button className="btn-ghost" data-testid="food-detail-close" onClick={onClose}>✕</button>
+          <strong style={{ flex: 1, textAlign: 'center' }}>{food.icon} {food.name}</strong>
+          <button className="btn-accent" data-testid="food-detail-add" onClick={() => setPicking(true)}>✓</button>
+        </div>
+        {food.brand && <div className="muted" style={{ textAlign: 'center' }}>{food.brand}</div>}
+
+        <div className="row spread" style={{ marginTop: 10 }}>
+          <span className="muted">{t('foodDetail.nutritionFacts')}</span>
+          <button className="btn-ghost" data-testid="food-detail-edit" onClick={() => setEditing(true)}>{t('foodDetail.editNutrition')}</button>
+        </div>
+
+        <div className="card">
+          <div className="row spread" style={{ borderBottom: '2px solid var(--text)', paddingBottom: 8 }}>
+            <span>{t('foodDetail.amount')}</span>
+            <span>{ps.amount} {ps.label}</span>
+          </div>
+          <div className="row" style={{ gap: 16, padding: '12px 0' }}>
+            <div style={{ textAlign: 'center', minWidth: 90 }}>
+              <div data-testid="food-detail-cals" style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.1 }}>{computedCalories(n)}</div>
+              <div className="muted">{t('foodForm.calories')}</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <Row label={t('foodDetail.totalFat')} value={fmt(n.fat.total, 'g')} />
+              <Row indent label={t('foodDetail.satFat')} value={fmt(n.fat.saturated, 'g')} />
+              <Row label={t('foodDetail.cholesterol')} value={fmt(n.cholesterol, 'mg')} />
+              <Row label={t('foodDetail.sodium')} value={fmt(n.sodium, 'mg')} />
+              <Row label={t('foodDetail.totalCarbs')} value={fmt(n.carbs.total, 'g')} />
+              <Row indent label={t('foodDetail.fiber')} value={fmt(n.carbs.fiber, 'g')} />
+              <Row indent label={t('foodDetail.sugars')} value={fmt(n.carbs.sugar, 'g')} />
+              <Row label={t('foodDetail.protein')} value={fmt(n.protein, 'g')} />
+            </div>
+          </div>
+          <button className="btn-ghost" data-testid="food-detail-full" onClick={() => setShowFull(s => !s)} style={{ padding: 0 }}>
+            {showFull ? `${t('foodDetail.hideFull')} ▴` : `${t('foodDetail.viewFull')} ›`}
+          </button>
+          {showFull && (
+            <div style={{ marginTop: 8 }}>
+              <Row indent label={t('foodForm.mono')} value={fmt(n.fat.mono, 'g')} />
+              <Row indent label={t('foodForm.poly')} value={fmt(n.fat.poly, 'g')} />
+              <Row indent label={t('foodForm.trans')} value={fmt(n.fat.trans, 'g')} />
+              <div className="muted" style={{ margin: '6px 0' }}>{t('foodForm.vitamins')}</div>
+              <Row indent label={t('foodForm.vitA')} value={fmt(n.vitamins.a, 'mcg')} />
+              <Row indent label={t('foodForm.vitC')} value={fmt(n.vitamins.c, 'mg')} />
+              <Row indent label={t('foodForm.b1')} value={fmt(n.vitamins.b1, 'mg')} />
+              <Row indent label={t('foodForm.b2')} value={fmt(n.vitamins.b2, 'mg')} />
+              <Row indent label={t('foodForm.b3')} value={fmt(n.vitamins.b3, 'mg')} />
+              <Row indent label={t('foodForm.b9')} value={fmt(n.vitamins.b9, 'mcg')} />
+              <Row indent label={t('foodForm.b6')} value={fmt(n.vitamins.b6, 'mg')} />
+              <Row indent label={t('foodForm.b12')} value={fmt(n.vitamins.b12, 'mcg')} />
+              <div className="muted" style={{ margin: '6px 0' }}>{t('foodForm.minerals')}</div>
+              <Row indent label={t('foodForm.calcium')} value={fmt(n.minerals.calcium, 'mg')} />
+              <Row indent label={t('foodForm.iron')} value={fmt(n.minerals.iron, 'mg')} />
+              <Row indent label={t('foodForm.magnesium')} value={fmt(n.minerals.magnesium, 'mg')} />
+              <Row indent label={t('foodForm.phosphorus')} value={fmt(n.minerals.phosphorus, 'mg')} />
+              <Row indent label={t('foodForm.potassium')} value={fmt(n.minerals.potassium, 'mg')} />
+              <Row indent label={t('foodForm.zinc')} value={fmt(n.minerals.zinc, 'mg')} />
+              <Row label={t('foodForm.caffeine')} value={fmt(n.caffeine, 'mg')} />
+            </div>
+          )}
+        </div>
+
+        <div className="card">
+          <div className="muted">{t('foodDetail.servings')}</div>
+          {food.servings.map(s => (
+            <div key={s.id} className="row spread" style={{ padding: '4px 0' }}>
+              <span>{s.label} ({s.amount}{s.unit})</span>
+              {s.isPrimary && <span style={{ color: 'var(--accent)' }}>★</span>}
+            </div>
+          ))}
+        </div>
+
+        <div className="row" style={{ gap: 8 }}>
+          {food.source === 'custom' && (
+            <button className="btn-ghost" data-testid="food-detail-delete" style={{ color: 'var(--red)' }} onClick={del}>{t('common.delete')}</button>
+          )}
+          {food.source === 'predefined' && foodOverrides[food.id] && (
+            <button className="btn-ghost" data-testid="food-detail-reset" onClick={() => resetOverride(food.id)}>{t('foodDetail.resetOverride')}</button>
+          )}
+        </div>
+      </div>
+      {editing && <FoodForm initial={food} onSave={save} onClose={() => setEditing(false)} />}
+      {picking && <QuantitySheet food={food} onConfirm={onAdd} onClose={() => setPicking(false)} />}
+    </div>
+  )
+}

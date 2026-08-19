@@ -104,6 +104,24 @@
     "quantity": "الكمية",
     "serving": "حصة"
   },
+  "foodDetail": {
+    "nutritionFacts": "القيم الغذائية",
+    "editNutrition": "تعديل القيم",
+    "amount": "الكمية",
+    "totalFat": "إجمالي الدهون",
+    "satFat": "دهون مشبعة",
+    "cholesterol": "الكوليسترول",
+    "sodium": "الصوديوم",
+    "totalCarbs": "إجمالي الكربوهيدرات",
+    "fiber": "الألياف",
+    "sugars": "السكريات",
+    "protein": "البروتين",
+    "viewFull": "عرض الملصق الغذائي الكامل",
+    "hideFull": "إخفاء الملصق الغذائي الكامل",
+    "servings": "الحصص",
+    "confirmDelete": "حذف هذا الطعام؟",
+    "resetOverride": "استعادة الأصل"
+  },
   "calendar": {
     "monthTitle": "{{month}} {{year}}",
     "mon": "إث",

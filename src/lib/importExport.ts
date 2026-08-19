@@ -19,7 +19,8 @@ export function parseFoodsImport(text: string): Food[] {
   if (isFoodArray(parsed)) foods = parsed
   else if (parsed && typeof parsed === 'object' && 'foods' in parsed) foods = (parsed as { foods: unknown }).foods
   if (!isFoodArray(foods)) throw new Error('Invalid foods file')
-  return foods.map(food => ({ ...food, id: newId(), source: 'custom' as const }))
+  // keep each food's own source: predefined entries land as overrides, custom as My Foods
+  return foods.map(food => ({ ...food, id: newId() }))
 }
 
 function normKey(f: Food): string {
@@ -33,15 +34,22 @@ export function mergeFoods(existing: Food[], incoming: Food[]): Food[] {
   return [...map.values()]
 }
 
-export function exportBackup(data: { days: Record<string, DayLog>; myFoods: Food[]; settings: Settings }): string {
+export type BackupData = {
+  days: Record<string, DayLog>
+  myFoods: Food[]
+  settings: Settings
+  foodOverrides?: Record<string, Food>
+}
+
+export function exportBackup(data: BackupData): string {
   return JSON.stringify({ kind: 'backup', version: BACKUP_VERSION, ...data }, null, 2)
 }
 
-export function parseBackup(text: string): { days: Record<string, DayLog>; myFoods: Food[]; settings: Settings } {
+export function parseBackup(text: string): BackupData {
   let parsed: any
   try { parsed = JSON.parse(text) } catch { throw new Error('Invalid backup file') }
   if (!parsed || typeof parsed !== 'object' || !('days' in parsed) || !('myFoods' in parsed) || !('settings' in parsed)) {
     throw new Error('Invalid backup file')
   }
-  return { days: parsed.days, myFoods: parsed.myFoods, settings: parsed.settings }
+  return { days: parsed.days, myFoods: parsed.myFoods, settings: parsed.settings, foodOverrides: parsed.foodOverrides }
 }

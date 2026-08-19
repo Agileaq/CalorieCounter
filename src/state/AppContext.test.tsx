@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import { AppProvider } from './AppContext'
 import { useApp } from './useApp'
@@ -36,5 +36,30 @@ describe('AppContext', () => {
     act(() => { screen.getByText('addFood').click() })
     expect(Number(screen.getByTestId('foodCount').textContent)).toBe(before + 1)
     expect(JSON.parse(localStorage.getItem('cc.myFoods')!)).toHaveLength(1)
+  })
+})
+
+function OverrideProbe() {
+  const app = useApp()
+  const rice = app.allFoods.find(f => f.id === 'pre-white-rice')!
+  return (
+    <div>
+      <span data-testid="riceCals">{Math.round(rice.nutrition.calories)}</span>
+      <button onClick={() => app.overrideFood({ ...rice, nutrition: { ...rice.nutrition, calories: 999 } })}>override</button>
+    </div>
+  )
+}
+
+describe('AppContext overrides', () => {
+  beforeEach(() => localStorage.clear())
+  it('overrideFood persists and allFoods reflects it on next load', () => {
+    const first = render(<AppProvider><OverrideProbe /></AppProvider>)
+    act(() => { screen.getByText('override').click() })
+    expect(screen.getByTestId('riceCals').textContent).toBe('999')
+    expect(JSON.parse(localStorage.getItem('cc.foodOverrides')!)['pre-white-rice'].nutrition.calories).toBe(999)
+    first.unmount()
+    // a fresh provider must apply the stored override on startup
+    render(<AppProvider><OverrideProbe /></AppProvider>)
+    expect(screen.getByTestId('riceCals').textContent).toBe('999')
   })
 })

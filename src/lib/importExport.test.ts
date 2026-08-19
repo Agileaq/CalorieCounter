@@ -13,9 +13,10 @@ describe('importExport', () => {
     const out = parseFoodsImport(exportFoods([f('Rice'), f('Bread')]))
     expect(out.map(x => x.name)).toEqual(['Rice', 'Bread'])
   })
-  it('imported foods become custom with new ids', () => {
-    const out = parseFoodsImport(exportFoods([f('Rice')]))
-    expect(out[0].source).toBe('custom')
+  it('imported foods keep their source and get new ids', () => {
+    const out = parseFoodsImport(exportFoods([f('Rice'), { ...f('Mine'), source: 'custom' }]))
+    expect(out[0].source).toBe('predefined') // built-ins land as overrides
+    expect(out[1].source).toBe('custom')     // customs land as My Foods
     expect(out[0].id).not.toBe('Rice')
   })
   it('accepts a bare array too', () => {
@@ -34,6 +35,14 @@ describe('importExport', () => {
     const parsed = parseBackup(exportBackup(data))
     expect(parsed.settings.dailyBudget).toBe(2012)
     expect(parsed.myFoods).toHaveLength(1)
+  })
+  it('backup round-trips food overrides', () => {
+    const data = {
+      days: {}, myFoods: [], foodOverrides: { 'pre-x': f('Edited Rice') },
+      settings: { dailyBudget: 2000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const },
+    }
+    const parsed = parseBackup(exportBackup(data))
+    expect(parsed.foodOverrides?.['pre-x'].name).toBe('Edited Rice')
   })
   it('throws on malformed backup', () => {
     expect(() => parseBackup('nope')).toThrow('Invalid backup file')

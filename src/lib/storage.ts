@@ -6,6 +6,7 @@ const K = {
   myFoods: 'cc.myFoods',
   settings: 'cc.settings',
   schemaVersion: 'cc.schemaVersion',
+  foodOverrides: 'cc.foodOverrides',
 } as const
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -37,6 +38,11 @@ export function saveSettings(s: Settings): void { write(K.settings, s) }
 
 export function loadMyFoods(): Food[] { return read<Food[]>(K.myFoods, []) }
 export function saveMyFoods(f: Food[]): void { write(K.myFoods, f) }
+
+// Edited copies of built-in (predefined) foods, keyed by predefined id.
+// Absent in older installs → empty map, no schema migration needed.
+export function loadFoodOverrides(): Record<string, Food> { return read<Record<string, Food>>(K.foodOverrides, {}) }
+export function saveFoodOverrides(o: Record<string, Food>): void { write(K.foodOverrides, o) }
 
 export function loadDays(): Record<string, DayLog> { return read<Record<string, DayLog>>(K.days, {}) }
 export function saveDays(d: Record<string, DayLog>): void { write(K.days, d) }

@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { DayLog, ExerciseEntry, Food, Language, LogEntry, MealKey, Settings } from '../types'
+import type { BackupData } from '../lib/importExport'
 
 export interface AppContextValue {
   selectedDate: string
@@ -11,9 +12,12 @@ export interface AppContextValue {
   allFoods: Food[]
   myFoods: Food[]
   predefined: Food[]
+  foodOverrides: Record<string, Food>
   addMyFood: (f: Food) => void
   updateMyFood: (f: Food) => void
   deleteMyFood: (id: string) => void
+  overrideFood: (f: Food) => void
+  resetOverride: (id: string) => void
   addEntry: (meal: MealKey, entry: LogEntry) => void
   updateEntry: (meal: MealKey, entry: LogEntry) => void
   deleteEntry: (meal: MealKey, id: string) => void
@@ -21,8 +25,8 @@ export interface AppContextValue {
   addExercise: (e: ExerciseEntry) => void
   deleteExercise: (id: string) => void
   setLanguage: (lang: Language) => void
-  importMyFoods: (foods: Food[]) => number
-  replaceAll: (data: { days: Record<string, DayLog>; myFoods: Food[]; settings: Settings }) => void
+  importFoods: (foods: Food[]) => number
+  replaceAll: (data: BackupData) => void
 }
 
 export const AppContext = createContext<AppContextValue | null>(null)

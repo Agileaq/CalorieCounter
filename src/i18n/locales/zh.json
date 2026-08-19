@@ -104,6 +104,24 @@
     "quantity": "数量",
     "serving": "份量"
   },
+  "foodDetail": {
+    "nutritionFacts": "营养成分",
+    "editNutrition": "编辑营养",
+    "amount": "份量",
+    "totalFat": "总脂肪",
+    "satFat": "饱和脂肪",
+    "cholesterol": "胆固醇",
+    "sodium": "钠",
+    "totalCarbs": "总碳水",
+    "fiber": "纤维",
+    "sugars": "糖",
+    "protein": "蛋白质",
+    "viewFull": "查看完整营养标签",
+    "hideFull": "收起完整营养标签",
+    "servings": "份量列表",
+    "confirmDelete": "删除该食物？",
+    "resetOverride": "恢复默认值"
+  },
   "calendar": {
     "monthTitle": "{{month}} {{year}}",
     "mon": "一",

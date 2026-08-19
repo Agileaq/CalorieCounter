@@ -5,6 +5,7 @@ import type { Food, LogEntry } from '../types'
 import { primaryServing } from '../lib/nutrition'
 import { QuantitySheet } from './QuantitySheet'
 import { FoodForm } from './FoodForm'
+import { FoodDetail } from './FoodDetail'
 
 function groupByLetter(foods: Food[]): [string, Food[]][] {
   const map = new Map<string, Food[]>()
@@ -22,6 +23,9 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
   const [q, setQ] = useState('')
   const [picking, setPicking] = useState<Food | null>(null)
   const [creating, setCreating] = useState(false)
+  const [detailId, setDetailId] = useState<string | null>(null)
+  // look the food up live so edits/overrides refresh an open detail view
+  const detail = detailId ? allFoods.find(f => f.id === detailId) ?? null : null
 
   const source = tab === 'all' ? allFoods : myFoods
   const filtered = useMemo(() => {
@@ -50,13 +54,15 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
                 const ps = primaryServing(f)
                 return (
                   <div key={f.id} className="row spread card" style={{ padding: 10 }}>
-                    <div className="row" style={{ gap: 10 }}>
+                    <button type="button" data-testid="food-row" className="row"
+                      onClick={() => setDetailId(f.id)}
+                      style={{ gap: 10, flex: 1, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'start', font: 'inherit', color: 'inherit' }}>
                       <span style={{ fontSize: 24 }}>{f.icon}</span>
                       <div>
                         <div>{f.name}</div>
                         <div className="muted">{t('foodPicker.perServing', { cal: Math.round(f.nutrition.calories), amount: ps.amount, label: ps.label })}</div>
                       </div>
-                    </div>
+                    </button>
                     <button className="btn-ghost" data-testid="food-add" aria-label={`add ${f.name}`} style={{ fontSize: 22 }} onClick={() => setPicking(f)}>＋</button>
                   </div>
                 )
@@ -67,6 +73,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
       </div>
       {picking && <QuantitySheet food={picking} onConfirm={onPick} onClose={() => setPicking(null)} />}
       {creating && <FoodForm onSave={f => { addMyFood(f); setTab('my') }} onClose={() => setCreating(false)} />}
+      {detail && <FoodDetail food={detail} onAdd={onPick} onClose={() => setDetailId(null)} />}
     </div>
   )
 }

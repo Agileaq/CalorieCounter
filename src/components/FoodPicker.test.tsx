@@ -32,6 +32,13 @@ describe('FoodPicker', () => {
     const header = container.querySelector('.modal .row.spread')!
     expect(header.textContent).not.toMatch(/^0/)
   })
+  it('tapping a food row opens the detail view', () => {
+    render(<AppProvider><FoodPicker onPick={() => {}} onClose={() => {}} /></AppProvider>)
+    fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
+    fireEvent.click(screen.getAllByTestId('food-row')[0])
+    expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
+    expect(screen.getByTestId('food-detail-edit')).toBeInTheDocument()
+  })
   it('adding a food opens the quantity sheet and confirms an entry', () => {
     const onPick = vi.fn()
     render(<AppProvider><FoodPicker onPick={onPick} onClose={() => {}} /></AppProvider>)

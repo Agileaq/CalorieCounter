@@ -104,6 +104,24 @@
     "quantity": "Quantité",
     "serving": "Portion"
   },
+  "foodDetail": {
+    "nutritionFacts": "Valeurs nutritionnelles",
+    "editNutrition": "Modifier la nutrition",
+    "amount": "Quantité",
+    "totalFat": "Lipides totaux",
+    "satFat": "Lipides sat.",
+    "cholesterol": "Cholestérol",
+    "sodium": "Sodium",
+    "totalCarbs": "Glucides totaux",
+    "fiber": "Fibres",
+    "sugars": "Sucres",
+    "protein": "Protéines",
+    "viewFull": "Voir l'étiquette complète",
+    "hideFull": "Masquer l'étiquette complète",
+    "servings": "Portions",
+    "confirmDelete": "Supprimer cet aliment ?",
+    "resetOverride": "Rétablir l'original"
+  },
   "calendar": {
     "monthTitle": "{{month}} {{year}}",
     "mon": "Lun",

@@ -31,7 +31,7 @@ describe('FoodForm', () => {
     // the calories display is a read-only span, not an input
     expect(screen.getByTestId('nutri-calories').tagName).not.toBe('INPUT')
   })
-  it('cloning a predefined food yields a new custom id', () => {
+  it('editing a predefined food keeps its id and source — the caller routes it', () => {
     const onSave = vi.fn()
     const pre = { id: 'pre-x', name: 'Rice', icon: '🍚', source: 'predefined' as const, createdAt: '',
       servings: [{ id: 's', kind: 'weight' as const, label: 'Grams', amount: 100, unit: 'g', isPrimary: true }],
@@ -39,7 +39,7 @@ describe('FoodForm', () => {
     render(<FoodForm initial={pre} onSave={onSave} onClose={() => {}} />)
     fireEvent.click(screen.getByTestId('food-save'))
     const saved = onSave.mock.calls[0][0]
-    expect(saved.id).not.toBe('pre-x')
-    expect(saved.source).toBe('custom')
+    expect(saved.id).toBe('pre-x')
+    expect(saved.source).toBe('predefined')
   })
 })

@@ -7,14 +7,14 @@ import { NumberInput } from '../components/NumberInput'
 
 export default function Goals() {
   const { t } = useTranslation()
-  const { settings, updateSettings, myFoods, days, importMyFoods, replaceAll } = useApp()
+  const { settings, updateSettings, myFoods, allFoods, foodOverrides, days, importFoods, replaceAll } = useApp()
   const [msg, setMsg] = useState('')
   const mt = settings.macroTargets
   const setMacro = (patch: Partial<typeof mt>) => updateSettings({ macroTargets: { ...mt, ...patch } })
 
   async function onImportFoods(file?: File) {
     if (!file) return
-    try { const n = importMyFoods(parseFoodsImport(await readFileText(file))); setMsg(t('goals.importFoodsDone', { n })) }
+    try { const n = importFoods(parseFoodsImport(await readFileText(file))); setMsg(t('goals.importFoodsDone', { n })) }
     catch (e) { setMsg(t('goals.importError', { msg: (e as Error).message })) }
   }
   async function onImportBackup(file?: File) {
@@ -48,10 +48,10 @@ export default function Goals() {
         <strong>{t('goals.data')}</strong>
         <div className="muted">{t('goals.backupNote')}</div>
         <div className="row" style={{ gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-          <button className="btn-ghost" onClick={() => download('foods.json', exportFoods(myFoods))}>{t('goals.exportFoods')}</button>
+          <button className="btn-ghost" onClick={() => download('foods.json', exportFoods(allFoods))}>{t('goals.exportFoods')}</button>
           <label className="btn-ghost">{t('goals.importFoods')}
             <input type="file" accept="application/json" hidden onChange={e => onImportFoods(e.target.files?.[0] ?? undefined)} /></label>
-          <button className="btn-ghost" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings }))}>{t('goals.exportBackup')}</button>
+          <button className="btn-ghost" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings, foodOverrides }))}>{t('goals.exportBackup')}</button>
           <label className="btn-ghost">{t('goals.importBackup')}
             <input type="file" accept="application/json" hidden onChange={e => onImportBackup(e.target.files?.[0] ?? undefined)} /></label>
         </div>

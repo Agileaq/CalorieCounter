@@ -104,6 +104,24 @@
     "quantity": "Количество",
     "serving": "Порция"
   },
+  "foodDetail": {
+    "nutritionFacts": "Пищевая ценность",
+    "editNutrition": "Изменить состав",
+    "amount": "Количество",
+    "totalFat": "Всего жиров",
+    "satFat": "Насыщ. жиры",
+    "cholesterol": "Холестерин",
+    "sodium": "Натрий",
+    "totalCarbs": "Всего углеводов",
+    "fiber": "Клетчатка",
+    "sugars": "Сахара",
+    "protein": "Белки",
+    "viewFull": "Полная этикетка",
+    "hideFull": "Скрыть полную этикетку",
+    "servings": "Порции",
+    "confirmDelete": "Удалить этот продукт?",
+    "resetOverride": "Сбросить к исходному"
+  },
   "calendar": {
     "monthTitle": "{{month}} {{year}}",
     "mon": "Пн",
