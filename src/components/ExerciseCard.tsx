@@ -43,11 +43,18 @@ export function ExerciseCard() {
       ))}
       <div className="row" style={{ gap: 8, marginTop: 8 }}>
         <div style={{ flex: 1, position: 'relative' }}>
-          <div className="row" style={{ gap: 0 }}>
+          <div className="row" data-testid="exercise-combobox"
+            style={{ gap: 0, border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden', background: 'var(--card)' }}>
             <input data-testid="exercise-name" placeholder={t('exercise.custom')}
-              value={exName} onChange={e => setExName(e.target.value)} style={{ flex: 1, padding: 8 }} />
-            <button type="button" className="btn-ghost" data-testid="exercise-name-toggle"
-              onClick={() => setOpen(o => !o)} style={{ padding: '0 10px' }}>▾</button>
+              value={exName} onChange={e => setExName(e.target.value)}
+              style={{ flex: 1, padding: '10px 12px', border: 'none', background: 'transparent' }} />
+            <button type="button" data-testid="exercise-name-toggle" aria-label={t('dashboard.exercise')}
+              onClick={() => setOpen(o => !o)}
+              style={{
+                padding: '0 14px', alignSelf: 'stretch', cursor: 'pointer',
+                background: 'var(--line)', border: 'none', borderInlineStart: '1px solid var(--line)',
+                color: 'var(--accent)', fontSize: 18, fontWeight: 700, lineHeight: 1,
+              }}>{open ? '▴' : '▾'}</button>
           </div>
           {open && (
             <>
