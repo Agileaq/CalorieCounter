@@ -50,4 +50,14 @@ describe('StatCard', () => {
     // value 50 = 50% → half the under-zone (41px)
     expect(fills[2].style.height).toBe('41px')
   })
+  it('still draws the divider on every bar when the target is 0', () => {
+    render(
+      <StatCard title="Protein" gaugeValue={0} gaugeLabel="Under" pct={0} color="var(--accent)" target={0}
+        bottomLeft="0 of 0g" bottomRight="0g avg prior to today" bars={bars} />,
+    )
+    expect(screen.getAllByTestId('stat-bar-divider')).toHaveLength(7)
+    // with no target, fills scale to the week's max up to the divider (UNDER px)
+    const fills = screen.getAllByTestId('stat-bar-fill')
+    expect(fills[1].style.height).toBe('82px') // 300 = week max → reaches divider
+  })
 })

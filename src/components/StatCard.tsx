@@ -30,7 +30,7 @@ export function StatCard({ title, gaugeValue, gaugeLabel, pct, color, target, bo
 
   function fillHeight(value: number): number {
     if (value <= 0) return 0
-    if (target <= 0) return (value / max) * CAP // no target: scale to the week's max
+    if (target <= 0) return (value / max) * UNDER // no target: scale to the week's max, up to the divider
     const ratio = value / target
     return Math.min(ratio, 1) * UNDER + Math.min(Math.max(ratio - 1, 0), 1) * OVER
   }
@@ -62,13 +62,10 @@ export function StatCard({ title, gaugeValue, gaugeLabel, pct, color, target, bo
                     background: b.isToday ? color : '#c7c9d1',
                   }} />
                 )}
-                {target > 0 && (
-                  <div data-testid="stat-bar-divider" style={{
-                    position: 'absolute', left: 0, right: 0, top: CAP - UNDER - 1, height: 2,
-                    background: 'var(--card)',
-                  }} />
-                )}
-              </div>
+                <div data-testid="stat-bar-divider" style={{
+                  position: 'absolute', left: 0, right: 0, top: CAP - UNDER - 1, height: 2,
+                  background: 'var(--card)',
+                }} />              </div>
               <span className="muted" style={{ fontSize: 11, fontWeight: b.isToday ? 700 : 400, color: b.isToday ? 'inherit' : 'var(--muted)' }}>
                 {t(`calendar.${DOW[i]}`).slice(0, 2)}
               </span>
