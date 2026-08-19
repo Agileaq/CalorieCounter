@@ -32,12 +32,12 @@ describe('storage', () => {
     saveDays(days)
     expect(loadDays()['2026-08-18'].exercise[0].caloriesBurned).toBe(50)
   })
-  it('backfills carbs/fat from the stored budget for legacy settings', () => {
-    // legacy blob: only protein + fiber, budget 1800
+  it('backfills carbs/fat from the defaults for legacy settings', () => {
+    // legacy blob: only protein + fiber
     localStorage.setItem('cc.settings', JSON.stringify({ dailyBudget: 1800, macroTargets: { protein: 128, fiber: 30 }, language: 'en' }))
     const s = loadSettings()
-    // (1800 − 144×4 − 64×9) ÷ 4 = 162g carbs; fat 64g; stored protein/fiber preserved
-    expect(s.macroTargets).toEqual({ carbs: 162, fat: 64, protein: 128, fiber: 30 })
+    // stored protein/fiber preserved; carbs/fat filled from defaults
+    expect(s.macroTargets).toEqual({ carbs: 212, fat: 64, protein: 128, fiber: 30 })
   })
   it('ensureSchema sets the current version', () => {
     ensureSchema()

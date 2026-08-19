@@ -1,6 +1,5 @@
 import type { DayLog, Food, Settings, MealMap } from '../types'
 import { migrate, CURRENT_SCHEMA_VERSION } from './migrations'
-import { derivedTargets } from './macros'
 
 const K = {
   days: 'cc.days',
@@ -11,7 +10,7 @@ const K = {
 
 export const DEFAULT_SETTINGS: Settings = {
   dailyBudget: 2000,
-  macroTargets: { ...derivedTargets(2000), fiber: 28 },
+  macroTargets: { carbs: 212, protein: 160, fat: 64, fiber: 28 },
   language: 'en',
 }
 
@@ -27,12 +26,11 @@ function write(key: string, value: unknown): void {
 
 export function loadSettings(): Settings {
   const stored = read<Partial<Settings>>(K.settings, {})
-  const budget = stored.dailyBudget ?? DEFAULT_SETTINGS.dailyBudget
-  // Deep-merge macroTargets so older blobs missing carbs/fat get budget-derived defaults.
+  // Deep-merge macroTargets so older blobs missing carbs/fat get the defaults.
   return {
     ...DEFAULT_SETTINGS,
     ...stored,
-    macroTargets: { ...derivedTargets(budget), fiber: DEFAULT_SETTINGS.macroTargets.fiber, ...stored.macroTargets },
+    macroTargets: { ...DEFAULT_SETTINGS.macroTargets, ...stored.macroTargets },
   }
 }
 export function saveSettings(s: Settings): void { write(K.settings, s) }
