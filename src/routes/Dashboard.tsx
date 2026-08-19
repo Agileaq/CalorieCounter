@@ -25,7 +25,7 @@ export default function Dashboard() {
     return (
       <StatCard key={title} title={title}
         gaugeValue={current} gaugeLabel={under >= 0 ? t('dashboard.under') : t('dashboard.over')}
-        pct={target > 0 ? current / target : 0} color={color}
+        pct={target > 0 ? current / target : 0} color={color} target={target}
         bottomLeft={t('dashboard.of', { cur: nf(current), target: nf(target) })}
         bottomRight={t('dashboard.avgPrior', { n: nf(s.avgPrior) })}
         bars={s.bars} />
@@ -48,6 +48,7 @@ export default function Dashboard() {
         gaugeValue={Math.abs(remaining)} gaugeLabel={remaining >= 0 ? t('dashboard.under') : t('dashboard.over')}
         pct={settings.dailyBudget > 0 ? food / settings.dailyBudget : 0}
         color={remaining >= 0 ? 'var(--green)' : 'var(--red)'}
+        target={settings.dailyBudget}
         bottomLeft={t('dashboard.ofCals', { cur: nf(food), target: nf(settings.dailyBudget) })}
         bottomRight={t('dashboard.avgPrior', { n: nf(calSeries.avgPrior) })}
         bars={calSeries.bars} />
