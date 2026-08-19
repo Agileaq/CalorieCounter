@@ -46,7 +46,7 @@ export default function Dashboard() {
       <StatCard title={t('dashboard.calories')}
         gaugeValue={Math.abs(remaining)} gaugeLabel={remaining >= 0 ? t('dashboard.under') : t('dashboard.over')}
         ratio={settings.dailyBudget > 0 ? food / settings.dailyBudget : 0}
-        color={remaining >= 0 ? 'var(--green)' : 'var(--red)'}
+        color="var(--green)"
         target={settings.dailyBudget}
         bottomLeft={t('dashboard.ofCals', { cur: nf(food), target: nf(settings.dailyBudget) })}
         bottomRight={t('dashboard.avgPrior', { n: nf(calSeries.avgPrior) })}
