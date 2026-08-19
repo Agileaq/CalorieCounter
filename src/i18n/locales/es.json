@@ -48,7 +48,8 @@
     "all": "Todo",
     "myFoods": "Mis comidas",
     "newFood": "Nueva comida",
-    "perServing": "{{cal}} cal por {{amount}} {{label}}"
+    "perServing": "{{cal}} cal por {{amount}} {{label}}",
+    "newMyFood": "Nueva comida mía"
   },
   "foodForm": {
     "newFood": "Nueva comida",

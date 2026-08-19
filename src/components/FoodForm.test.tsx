@@ -10,17 +10,26 @@ describe('FoodForm', () => {
     fireEvent.click(screen.getByTestId('food-save'))
     expect(onSave).not.toHaveBeenCalled() // name empty
   })
-  it('saves a new custom food', () => {
+  it('saves a new custom food with calories derived from macros', () => {
     const onSave = vi.fn()
     render(<FoodForm onSave={onSave} onClose={() => {}} />)
     fireEvent.change(screen.getByTestId('food-name'), { target: { value: 'Salad' } })
-    fireEvent.change(screen.getByTestId('nutri-calories'), { target: { value: '150' } })
+    fireEvent.change(screen.getByTestId('nutri-fat'), { target: { value: '10' } })
+    fireEvent.change(screen.getByTestId('nutri-carbs'), { target: { value: '20' } })
+    fireEvent.change(screen.getByTestId('nutri-protein'), { target: { value: '5' } })
     fireEvent.click(screen.getByTestId('food-save'))
     expect(onSave).toHaveBeenCalled()
     const saved = onSave.mock.calls[0][0]
     expect(saved.name).toBe('Salad')
-    expect(saved.nutrition.calories).toBe(150)
+    expect(saved.nutrition.calories).toBe(190) // 10×9 + 20×4 + 5×4
     expect(saved.source).toBe('custom')
+  })
+  it('shows the derived calories live and they are not editable', () => {
+    render(<FoodForm onSave={() => {}} onClose={() => {}} />)
+    fireEvent.change(screen.getByTestId('nutri-protein'), { target: { value: '10' } })
+    expect(screen.getByTestId('nutri-calories')).toHaveTextContent('40') // 10×4
+    // the calories display is a read-only span, not an input
+    expect(screen.getByTestId('nutri-calories').tagName).not.toBe('INPUT')
   })
   it('cloning a predefined food yields a new custom id', () => {
     const onSave = vi.fn()

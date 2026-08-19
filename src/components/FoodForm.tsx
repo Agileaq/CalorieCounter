@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Food, Serving } from '../types'
 import { newFood, newServing, cloneAsCustom } from '../lib/food'
+import { computedCalories } from '../lib/nutrition'
 import { newId } from '../lib/ids'
 import { IconPicker } from './IconPicker'
 import { NutritionFields } from './NutritionFields'
@@ -24,9 +25,11 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
   function save() {
     if (!food.name.trim()) { setError(t('foodForm.foodName')); return }
     if (food.servings.length < 1) { setError(t('foodForm.oneServingRequired')); return }
-    let out = food
-    if (initial?.source === 'predefined') out = { ...cloneAsCustom(initial), ...food, id: newId(), source: 'custom' }
-    else out = { ...food, source: 'custom' }
+    // calories are always derived from macros (fat×9 + carbs×4 + protein×4)
+    const withCals = { ...food, nutrition: { ...food.nutrition, calories: computedCalories(food.nutrition) } }
+    const out = initial?.source === 'predefined'
+      ? { ...cloneAsCustom(initial), ...withCals, id: newId(), source: 'custom' as const }
+      : { ...withCals, source: 'custom' as const }
     onSave(out)
     onClose()
   }

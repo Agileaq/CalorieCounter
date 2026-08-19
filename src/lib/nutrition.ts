@@ -87,6 +87,11 @@ export function exerciseTotal(day: DayLog): number {
   return day.exercise.reduce((s, e) => s + e.caloriesBurned, 0)
 }
 
+/** Calories derived from macros: fat 9 cal/g, carbs 4 cal/g, protein 4 cal/g. */
+export function computedCalories(n: Nutrition): number {
+  return Math.round(n.fat.total * 9 + n.carbs.total * 4 + n.protein * 4)
+}
+
 export function remaining(budget: number, day: DayLog): number {
   return budget - (dayFoodNutrition(day).calories - exerciseTotal(day))
 }

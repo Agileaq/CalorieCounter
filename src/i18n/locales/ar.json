@@ -48,7 +48,8 @@
     "all": "الكل",
     "myFoods": "أطعمتي",
     "newFood": "طعام جديد",
-    "perServing": "{{cal}} سعرة لكل {{amount}} {{label}}"
+    "perServing": "{{cal}} سعرة لكل {{amount}} {{label}}",
+    "newMyFood": "طعامي الجديد"
   },
   "foodForm": {
     "newFood": "طعام جديد",

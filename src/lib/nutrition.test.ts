@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   emptyNutrition, scaleNutrition, entryNutrition, dayFoodNutrition,
-  remaining, underOver, primaryServing,
+  remaining, underOver, primaryServing, computedCalories,
 } from './nutrition'
 import type { Food, DayLog, LogEntry } from '../types'
 
@@ -53,6 +53,10 @@ describe('nutrition', () => {
   it('remaining subtracts food and adds back exercise', () => {
     // budget 2000, food 500, exercise 100 -> 2000 - (500 - 100) = 1600
     expect(remaining(2000, day([entry(food(500), 100)], 100))).toBe(1600)
+  })
+  it('computedCalories uses fat×9 + carbs×4 + protein×4', () => {
+    const n = { ...emptyNutrition(), fat: { ...emptyNutrition().fat, total: 10 }, carbs: { ...emptyNutrition().carbs, total: 20 }, protein: 5 }
+    expect(computedCalories(n)).toBe(10 * 9 + 20 * 4 + 5 * 4) // 190
   })
   it('underOver: positive is under, negative is over', () => {
     expect(underOver(2000, day([entry(food(400), 100)]))).toEqual({ kind: 'under', amount: 1600 })

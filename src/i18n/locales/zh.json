@@ -48,7 +48,8 @@
     "all": "全部",
     "myFoods": "我的食物",
     "newFood": "新食物",
-    "perServing": "每 {{amount}} {{label}} {{cal}} 千卡"
+    "perServing": "每 {{amount}} {{label}} {{cal}} 千卡",
+    "newMyFood": "新建我的食物"
   },
   "foodForm": {
     "newFood": "新食物",

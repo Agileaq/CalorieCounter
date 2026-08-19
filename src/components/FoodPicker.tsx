@@ -17,34 +17,30 @@ function groupByLetter(foods: Food[]): [string, Food[]][] {
 
 export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void; onClose: () => void }) {
   const { t } = useTranslation()
-  const { predefined, myFoods, addMyFood } = useApp()
+  const { allFoods, myFoods, addMyFood } = useApp()
   const [tab, setTab] = useState<'all' | 'my'>('all')
   const [q, setQ] = useState('')
   const [picking, setPicking] = useState<Food | null>(null)
   const [creating, setCreating] = useState(false)
-  const [count, setCount] = useState(0)
 
-  const source = tab === 'all' ? predefined : myFoods
+  const source = tab === 'all' ? allFoods : myFoods
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase()
     return term ? source.filter(f => f.name.toLowerCase().includes(term) || (f.brand ?? '').toLowerCase().includes(term)) : source
   }, [source, q])
   const groups = useMemo(() => groupByLetter(filtered), [filtered])
 
-  function confirm(entry: LogEntry) { setCount(c => c + 1); onPick(entry) }
-
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="row spread">
-          <span className="muted">{count}</span>
           <input placeholder={t('foodPicker.search')} value={q} onChange={e => setQ(e.target.value)} style={{ flex: 1, padding: 8, margin: '0 8px' }} />
           <button className="btn-accent" onClick={onClose}>✓</button>
         </div>
         <div className="row" style={{ gap: 8, margin: '10px 0' }}>
           <button className={tab === 'all' ? 'btn-accent' : 'btn-ghost'} onClick={() => setTab('all')}>{t('foodPicker.all')}</button>
           <button className={tab === 'my' ? 'btn-accent' : 'btn-ghost'} onClick={() => setTab('my')}>{t('foodPicker.myFoods')}</button>
-          {tab === 'my' && <button className="btn-ghost" data-testid="new-food" onClick={() => setCreating(true)}>+ {t('foodPicker.newFood')}</button>}
+          <button className="btn-ghost" data-testid="new-food" onClick={() => setCreating(true)}>+ {t('foodPicker.newMyFood')}</button>
         </div>
         <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
           {groups.map(([letter, foods]) => (
@@ -69,7 +65,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
           ))}
         </div>
       </div>
-      {picking && <QuantitySheet food={picking} onConfirm={confirm} onClose={() => setPicking(null)} />}
+      {picking && <QuantitySheet food={picking} onConfirm={onPick} onClose={() => setPicking(null)} />}
       {creating && <FoodForm onSave={f => { addMyFood(f); setTab('my') }} onClose={() => setCreating(false)} />}
     </div>
   )

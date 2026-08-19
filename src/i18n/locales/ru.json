@@ -48,7 +48,8 @@
     "all": "Все",
     "myFoods": "Мои продукты",
     "newFood": "Новый продукт",
-    "perServing": "{{cal}} ккал на {{amount}} {{label}}"
+    "perServing": "{{cal}} ккал на {{amount}} {{label}}",
+    "newMyFood": "Моя новая еда"
   },
   "foodForm": {
     "newFood": "Новый продукт",
