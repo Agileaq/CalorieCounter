@@ -3,15 +3,14 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import { exportFoods, parseFoodsImport, exportBackup, parseBackup } from '../lib/importExport'
 import { download, readFileText } from '../lib/download'
-import { newId } from '../lib/ids'
 import { NumberInput } from '../components/NumberInput'
 
 export default function Goals() {
   const { t } = useTranslation()
-  const { settings, updateSettings, day, addExercise, deleteExercise, myFoods, days, importMyFoods, replaceAll } = useApp()
-  const [exName, setExName] = useState('')
-  const [exCals, setExCals] = useState(0)
+  const { settings, updateSettings, myFoods, days, importMyFoods, replaceAll } = useApp()
   const [msg, setMsg] = useState('')
+  const mt = settings.macroTargets
+  const setMacro = (patch: Partial<typeof mt>) => updateSettings({ macroTargets: { ...mt, ...patch } })
 
   async function onImportFoods(file?: File) {
     if (!file) return
@@ -31,29 +30,18 @@ export default function Goals() {
         <label className="row spread">{t('goals.dailyBudget')}
           <NumberInput testId="budget-input" integer value={settings.dailyBudget}
             onChange={v => updateSettings({ dailyBudget: v })} style={{ width: 100, textAlign: 'end' }} /></label>
+        <label className="row spread">{t('goals.carbsTarget')}
+          <NumberInput testId="carbs-target" integer value={mt.carbs}
+            onChange={v => setMacro({ carbs: v })} style={{ width: 100, textAlign: 'end' }} /></label>
         <label className="row spread">{t('goals.proteinTarget')}
-          <NumberInput integer value={settings.macroTargets.protein}
-            onChange={v => updateSettings({ macroTargets: { ...settings.macroTargets, protein: v } })} style={{ width: 100, textAlign: 'end' }} /></label>
+          <NumberInput testId="protein-target" integer value={mt.protein}
+            onChange={v => setMacro({ protein: v })} style={{ width: 100, textAlign: 'end' }} /></label>
+        <label className="row spread">{t('goals.fatTarget')}
+          <NumberInput testId="fat-target" integer value={mt.fat}
+            onChange={v => setMacro({ fat: v })} style={{ width: 100, textAlign: 'end' }} /></label>
         <label className="row spread">{t('goals.fiberTarget')}
-          <NumberInput integer value={settings.macroTargets.fiber}
-            onChange={v => updateSettings({ macroTargets: { ...settings.macroTargets, fiber: v } })} style={{ width: 100, textAlign: 'end' }} /></label>
-      </div>
-
-      <div className="card">
-        <strong>{t('dashboard.exercise')}</strong>
-        {day.exercise.map(e => (
-          <div key={e.id} className="row spread" style={{ padding: '6px 0' }}>
-            <span>{e.name}</span>
-            <div className="row" style={{ gap: 8 }}><span>{e.caloriesBurned}</span>
-              <button className="btn-ghost" onClick={() => deleteExercise(e.id)}>✕</button></div>
-          </div>
-        ))}
-        <div className="row" style={{ gap: 8, marginTop: 8 }}>
-          <input data-testid="exercise-name" placeholder="Run" value={exName} onChange={e => setExName(e.target.value)} style={{ flex: 1 }} />
-          <NumberInput testId="exercise-cals" integer value={exCals} onChange={setExCals} style={{ width: 80 }} />
-          <button className="btn-accent" data-testid="exercise-add"
-            onClick={() => { if (exName.trim()) { addExercise({ id: newId(), name: exName.trim(), caloriesBurned: exCals }); setExName(''); setExCals(0) } }}>{t('common.add')}</button>
-        </div>
+          <NumberInput testId="fiber-target" integer value={mt.fiber}
+            onChange={v => setMacro({ fiber: v })} style={{ width: 100, textAlign: 'end' }} /></label>
       </div>
 
       <div className="card">

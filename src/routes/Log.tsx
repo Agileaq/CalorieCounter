@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { MEAL_KEYS } from '../types'
 import { DateHeader } from '../components/DateHeader'
 import { MealCard } from '../components/MealCard'
+import { ExerciseCard } from '../components/ExerciseCard'
 import { CalendarModal } from '../components/CalendarModal'
 
 export default function Log() {
@@ -10,6 +11,7 @@ export default function Log() {
     <div className="screen">
       <DateHeader onOpenCalendar={() => setCal(true)} />
       {MEAL_KEYS.map(m => <MealCard key={m} meal={m} />)}
+      <ExerciseCard />
       {cal && <CalendarModal onClose={() => setCal(false)} />}
     </div>
   )

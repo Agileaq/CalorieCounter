@@ -5,9 +5,15 @@ import { AppProvider } from '../state/AppContext'
 import Dashboard from './Dashboard'
 
 describe('Dashboard', () => {
-  it('renders the budget gauge and a version badge', () => {
+  it('renders the five stat cards and a version badge', () => {
     render(<AppProvider><Dashboard /></AppProvider>)
-    expect(screen.getByTestId('gauge-remaining')).toBeInTheDocument()
+    for (const title of ['Calories', 'Carbohydrates', 'Protein', 'Fat', 'Fiber']) {
+      expect(screen.getByText(title)).toBeInTheDocument()
+    }
+    // one half-ring gauge value per card
+    expect(screen.getAllByTestId('stat-gauge-value')).toHaveLength(5)
+    // 5 cards × 7 weekday bars
+    expect(screen.getAllByTestId('stat-bar')).toHaveLength(35)
     expect(screen.getByTestId('build-info').textContent).toMatch(/^v/)
   })
 })

@@ -62,7 +62,7 @@ export type Language = 'en' | 'zh' | 'es' | 'fr' | 'ar' | 'ru'
 
 export interface Settings {
   dailyBudget: number
-  macroTargets: { protein: number; fiber: number }
+  macroTargets: { carbs: number; protein: number; fat: number; fiber: number }
   language: Language
 }
 

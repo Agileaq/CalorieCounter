@@ -30,7 +30,7 @@ describe('importExport', () => {
     expect(merged.map(x => x.name.toLowerCase()).sort()).toEqual(['bread', 'rice'])
   })
   it('backup round-trips', () => {
-    const data = { days: {}, myFoods: [f('Rice')], settings: { dailyBudget: 2012, macroTargets: { protein: 1, fiber: 1 }, language: 'en' as const } }
+    const data = { days: {}, myFoods: [f('Rice')], settings: { dailyBudget: 2012, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const } }
     const parsed = parseBackup(exportBackup(data))
     expect(parsed.settings.dailyBudget).toBe(2012)
     expect(parsed.myFoods).toHaveLength(1)
