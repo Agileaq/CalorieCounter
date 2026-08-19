@@ -5,6 +5,7 @@ import { newFood, newServing, cloneAsCustom } from '../lib/food'
 import { newId } from '../lib/ids'
 import { IconPicker } from './IconPicker'
 import { NutritionFields } from './NutritionFields'
+import { NumberInput } from './NumberInput'
 
 export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave: (f: Food) => void; onClose: () => void }) {
   const { t } = useTranslation()
@@ -54,7 +55,7 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
           {food.servings.map(s => (
             <div key={s.id} className="row spread" style={{ padding: '8px 0' }}>
               <input value={s.label} onChange={e => updateServing(s.id, { label: e.target.value })} style={{ width: 90 }} />
-              <input type="number" value={s.amount} onChange={e => updateServing(s.id, { amount: parseFloat(e.target.value) || 0 })} style={{ width: 70, textAlign: 'end' }} />
+              <NumberInput value={s.amount} onChange={v => updateServing(s.id, { amount: v })} style={{ width: 70, textAlign: 'end' }} />
               <input value={s.unit} onChange={e => updateServing(s.id, { unit: e.target.value })} style={{ width: 50 }} />
               <label className="muted"><input type="radio" name="primary" checked={s.isPrimary} onChange={() => makePrimary(s.id)} /> ★</label>
             </div>

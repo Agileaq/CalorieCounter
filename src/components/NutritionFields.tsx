@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Nutrition } from '../types'
+import { NumberInput } from './NumberInput'
 
 type NumPath = (n: Nutrition, v: number) => Nutrition
 
@@ -7,8 +8,7 @@ function Field({ label, value, onChange, testId, indent }: { label: string; valu
   return (
     <div className="row spread" style={{ padding: '10px 0', borderBottom: '1px solid var(--line)', paddingInlineStart: indent ? 16 : 0 }}>
       <label style={{ color: indent ? 'var(--muted)' : 'inherit' }}>{label}</label>
-      <input data-testid={testId} type="number" inputMode="decimal" value={Number.isFinite(value) ? value : 0}
-        onChange={e => onChange(parseFloat(e.target.value) || 0)}
+      <NumberInput testId={testId} value={Number.isFinite(value) ? value : 0} onChange={onChange}
         style={{ width: 90, textAlign: 'end', border: 'none', background: 'transparent' }} />
     </div>
   )

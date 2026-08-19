@@ -4,6 +4,7 @@ import { useApp } from '../state/useApp'
 import { exportFoods, parseFoodsImport, exportBackup, parseBackup } from '../lib/importExport'
 import { download, readFileText } from '../lib/download'
 import { newId } from '../lib/ids'
+import { NumberInput } from '../components/NumberInput'
 
 export default function Goals() {
   const { t } = useTranslation()
@@ -28,14 +29,14 @@ export default function Goals() {
       <h2>{t('goals.title')}</h2>
       <div className="card">
         <label className="row spread">{t('goals.dailyBudget')}
-          <input data-testid="budget-input" type="number" value={settings.dailyBudget}
-            onChange={e => updateSettings({ dailyBudget: parseInt(e.target.value) || 0 })} style={{ width: 100, textAlign: 'end' }} /></label>
+          <NumberInput testId="budget-input" integer value={settings.dailyBudget}
+            onChange={v => updateSettings({ dailyBudget: v })} style={{ width: 100, textAlign: 'end' }} /></label>
         <label className="row spread">{t('goals.proteinTarget')}
-          <input type="number" value={settings.macroTargets.protein}
-            onChange={e => updateSettings({ macroTargets: { ...settings.macroTargets, protein: parseInt(e.target.value) || 0 } })} style={{ width: 100, textAlign: 'end' }} /></label>
+          <NumberInput integer value={settings.macroTargets.protein}
+            onChange={v => updateSettings({ macroTargets: { ...settings.macroTargets, protein: v } })} style={{ width: 100, textAlign: 'end' }} /></label>
         <label className="row spread">{t('goals.fiberTarget')}
-          <input type="number" value={settings.macroTargets.fiber}
-            onChange={e => updateSettings({ macroTargets: { ...settings.macroTargets, fiber: parseInt(e.target.value) || 0 } })} style={{ width: 100, textAlign: 'end' }} /></label>
+          <NumberInput integer value={settings.macroTargets.fiber}
+            onChange={v => updateSettings({ macroTargets: { ...settings.macroTargets, fiber: v } })} style={{ width: 100, textAlign: 'end' }} /></label>
       </div>
 
       <div className="card">
