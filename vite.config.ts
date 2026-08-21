@@ -21,7 +21,7 @@ export default defineConfig({
       includeAssets: ['icons/icon-dark.svg', 'icons/apple-touch-icon.png'],
       manifest: {
         name: 'Calorie Counter',
-        short_name: 'Calories',
+        short_name: 'BurnCalories',
         start_url: '/CalorieCounter/',
         scope: '/CalorieCounter/',
         display: 'standalone',
