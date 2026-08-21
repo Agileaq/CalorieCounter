@@ -38,7 +38,8 @@
     "walking": "Walking",
     "running": "Running",
     "swimming": "Swimming",
-    "custom": "Type your own…"
+    "custom": "Type your own…",
+    "addExercise": "Add exercise"
   },
   "meal": {
     "breakfast": "Breakfast",

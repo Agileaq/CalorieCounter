@@ -38,7 +38,8 @@
     "walking": "Ходьба",
     "running": "Бег",
     "swimming": "Плавание",
-    "custom": "Свой вариант…"
+    "custom": "Свой вариант…",
+    "addExercise": "Добавить упражнение"
   },
   "meal": {
     "breakfast": "Завтрак",

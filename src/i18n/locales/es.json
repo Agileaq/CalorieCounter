@@ -38,7 +38,8 @@
     "walking": "Caminar",
     "running": "Correr",
     "swimming": "Nadar",
-    "custom": "Escribe el tuyo…"
+    "custom": "Escribe el tuyo…",
+    "addExercise": "Añadir ejercicio"
   },
   "meal": {
     "breakfast": "Desayuno",

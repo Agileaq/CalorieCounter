@@ -38,7 +38,8 @@
     "walking": "走路",
     "running": "跑步",
     "swimming": "游泳",
-    "custom": "自定义…"
+    "custom": "自定义…",
+    "addExercise": "添加运动"
   },
   "meal": {
     "breakfast": "早餐",
