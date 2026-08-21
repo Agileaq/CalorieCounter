@@ -18,7 +18,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['icons/icon-dark.svg'],
+      includeAssets: ['icons/icon-dark.svg', 'icons/apple-touch-icon.png'],
       manifest: {
         name: 'Calorie Counter',
         short_name: 'Calories',
