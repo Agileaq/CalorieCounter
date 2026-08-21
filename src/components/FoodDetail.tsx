@@ -5,6 +5,7 @@ import type { Food, LogEntry } from '../types'
 import { primaryServing, computedCalories, entryNutrition } from '../lib/nutrition'
 import { newId } from '../lib/ids'
 import { NumberInput } from './NumberInput'
+import { SheetModal } from './SheetModal'
 import { FoodForm } from './FoodForm'
 
 const fmt = (v: number, unit: string) => `${Math.round(v * 10) / 10}${unit}`
@@ -52,13 +53,12 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
   }
 
   return (
-    <div className="modal-backdrop full" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <div className="row spread">
-          <button className="icon-btn" data-testid="food-detail-close" aria-label={t('common.close')} onClick={onClose}>✕</button>
-          <strong style={{ flex: 1, textAlign: 'center' }}>{food.icon} {food.name}</strong>
-          <button className="btn-accent" data-testid="food-detail-add" onClick={add}>{t('common.add')}</button>
-        </div>
+    <SheetModal onClose={onClose}>
+      <div className="row spread">
+        <button className="icon-btn" data-testid="food-detail-close" aria-label={t('common.close')} onClick={onClose}>✕</button>
+        <strong style={{ flex: 1, textAlign: 'center' }}>{food.icon} {food.name}</strong>
+        <button className="btn-accent" data-testid="food-detail-add" onClick={add}>{t('common.add')}</button>
+      </div>
         {food.brand && <div className="muted" style={{ textAlign: 'center' }}>{food.brand}</div>}
 
         <div className="card" data-testid="food-detail-quantity">
@@ -144,8 +144,7 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
             <button className="btn-ghost" data-testid="food-detail-reset" onClick={() => resetOverride(food.id)}>{t('foodDetail.resetOverride')}</button>
           )}
         </div>
-      </div>
       {editing && <FoodForm initial={food} onSave={save} onClose={() => setEditing(false)} />}
-    </div>
+    </SheetModal>
   )
 }

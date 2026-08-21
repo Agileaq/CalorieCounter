@@ -45,7 +45,8 @@ input, select { font: inherit; }
 
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
 .modal { background: var(--card); width: 100%; max-width: 480px; border-radius: 18px 18px 0 0; padding: 16px; max-height: 85vh; overflow-y: auto; }
-/* a full-screen overlay (e.g. FoodDetail over FoodPicker) fully covers the layer below */
-.modal-backdrop.full { align-items: stretch; background: var(--bg); }
-.modal-backdrop.full .modal { max-height: none; height: 100%; border-radius: 0; }
+/* a full-screen sheet (FoodPicker / FoodDetail / FoodForm) fully covers the layer below */
+.modal-backdrop.sheet { align-items: stretch; background: var(--bg); overscroll-behavior: contain; }
+.modal-backdrop.sheet .modal { max-height: none; height: 100%; border-radius: 0; overscroll-behavior: contain; }
+.sheet-grabber { width: 36px; height: 4px; border-radius: 999px; background: var(--line); margin: 0 auto 10px; }
 @media (min-width: 520px) { .modal-backdrop { align-items: center; } .modal { border-radius: 18px; } }

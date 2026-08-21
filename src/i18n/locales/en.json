@@ -21,7 +21,7 @@
     "goals": "Goals"
   },
   "dashboard": {
-    "budget": "Budget: {{n}} cals",
+    "budget": "Budget: {{n}} kcal",
     "food": "Food",
     "exercise": "Exercise",
     "under": "Under",
@@ -35,7 +35,7 @@
     "fat": "Fat",
     "of": "{{cur}} of {{target}}g",
     "avgPrior": "{{n}}g avg prior to today",
-    "ofCals": "{{cur}} of {{target}} cals"
+    "ofCals": "{{cur}} of {{target}} kcal"
   },
   "exercise": {
     "strength": "Strength training",
@@ -50,7 +50,7 @@
     "lunch": "Lunch",
     "dinner": "Dinner",
     "snacks": "Snacks",
-    "cals": "{{n}} cals",
+    "cals": "{{n}} kcal",
     "addFood": "Add Food",
     "proteinFiber": "{{p}}g protein · {{f}}g fiber",
     "macros": "{{c}}g carbs · {{p}}g protein · {{f}}g fat · {{fi}}g fiber",

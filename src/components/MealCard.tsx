@@ -27,18 +27,18 @@ export function MealCard({ meal }: { meal: MealKey }) {
         return (
           <div key={e.id} className="row spread" style={{ padding: '8px 0' }}>
             <div className="row" style={{ gap: 8 }}>
-              <span style={{ fontSize: 20 }}>{e.foodSnapshot.icon}</span>
+              <span style={{ fontSize: 18 }}>{e.foodSnapshot.icon}</span>
               <div>
-                <div className="row" style={{ gap: 6, alignItems: 'baseline' }}>
+                <div className="row" style={{ gap: 6, alignItems: 'baseline', fontSize: 13 }}>
                   <span>{e.foodSnapshot.name}</span>
                   <span className="muted">{e.quantity} {ps.label}</span>
                 </div>
-                <div className="muted" data-testid="entry-macros">{t('meal.macros', { c: Math.round(en.carbs.total), p: Math.round(en.protein), f: Math.round(en.fat.total), fi: Math.round(en.carbs.fiber) })}</div>
+                <div className="muted" style={{ fontSize: 12 }} data-testid="entry-macros">{t('meal.macros', { c: Math.round(en.carbs.total), p: Math.round(en.protein), f: Math.round(en.fat.total), fi: Math.round(en.carbs.fiber) })}</div>
               </div>
             </div>
             <div className="row" style={{ gap: 10 }}>
-              <span>{t('meal.cals', { n: Math.round(en.calories) })}</span>
-              <button className="btn-ghost" aria-label={t('common.deleteEntry', { name: e.foodSnapshot.name })} onClick={() => deleteEntry(meal, e.id)}>✕</button>
+              <span style={{ fontSize: 13 }}>{t('meal.cals', { n: Math.round(en.calories) })}</span>
+              <button className="icon-btn" style={{ width: 28, height: 28, fontSize: 14 }} aria-label={t('common.deleteEntry', { name: e.foodSnapshot.name })} onClick={() => deleteEntry(meal, e.id)}>✕</button>
             </div>
           </div>
         )
