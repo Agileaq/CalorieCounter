@@ -18,19 +18,18 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['icons/apple-touch-icon.png'],
+      includeAssets: ['icons/icon-dark.svg'],
       manifest: {
         name: 'Calorie Counter',
         short_name: 'Calories',
         start_url: '/CalorieCounter/',
         scope: '/CalorieCounter/',
         display: 'standalone',
-        background_color: '#ffffff',
+        background_color: '#000000',
         theme_color: '#d2691e',
         icons: [
-          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icons/icon-dark.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: 'icons/icon-dark.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
         ],
       },
     }),
