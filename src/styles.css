@@ -10,8 +10,11 @@ body {
   background: var(--bg); color: var(--text);
   -webkit-tap-highlight-color: transparent;
 }
-.app { min-height: 100%; padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); }
+/* safe-area-inset-top stays 0 unless a browser extends content under the status bar;
+   bottom inset keeps the fixed nav clear of the home indicator */
+.app { min-height: 100%; padding-top: env(safe-area-inset-top); padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); }
 .screen { padding: 12px; padding-inline: 12px; }
+.date-header { padding: 8px 12px; }
 .card { background: var(--card); border-radius: 16px; padding: 16px; margin-block: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
 .row { display: flex; align-items: center; gap: 12px; }
 .spread { justify-content: space-between; }
