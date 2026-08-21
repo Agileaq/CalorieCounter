@@ -50,4 +50,19 @@ describe('FoodPicker', () => {
     expect(onPick).toHaveBeenCalled()
     expect(onPick.mock.calls[0][0].quantity).toBeGreaterThan(0)
   })
+  it('pulling down the FoodDetail closes it back to the picker, not the picker itself', () => {
+    const onClose = vi.fn()
+    const { container } = render(<AppProvider><FoodPicker onPick={() => {}} onClose={onClose} /></AppProvider>)
+    fireEvent.click(screen.getAllByTestId('food-add')[0])
+    expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
+    // the FoodDetail sheet is the second .modal in the tree (above the picker)
+    const sheets = container.querySelectorAll('.modal')
+    const detail = sheets[sheets.length - 1] as HTMLElement
+    fireEvent.touchStart(detail, { touches: [{ clientY: 100 }] })
+    fireEvent.touchMove(detail, { touches: [{ clientY: 200 }] }) // +100px downward
+    fireEvent.touchEnd(detail)
+    // detail is gone; picker is still open (its close not called)
+    expect(screen.queryByTestId('food-detail-cals')).not.toBeInTheDocument()
+    expect(onClose).not.toHaveBeenCalled()
+  })
 })

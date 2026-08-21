@@ -10,6 +10,13 @@ import { useEffect, useRef, type ReactNode, type TouchEvent } from 'react'
  * Pull-to-dismiss: when the sheet is scrolled to the very top and the user
  * keeps dragging downward past a threshold, the sheet closes (onClose). This
  * mirrors the FoodPicker behavior the user expects on all three sheets.
+ *
+ * Stacking: a sheet can open on top of another sheet (FoodDetail over
+ * FoodPicker, FoodForm over either). Touch handlers stop propagation so a
+ * gesture on the top sheet never also fires on the sheet beneath it — the top
+ * sheet is the only one that should react. A gesture dismiss also swallows the
+ * trailing synthetic click so it does not fall through to the now-exposed
+ * sheet below.
  */
 export function SheetModal({ onClose, children }: { onClose: () => void; children: ReactNode }) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -24,12 +31,26 @@ export function SheetModal({ onClose, children }: { onClose: () => void; childre
     return () => { document.body.style.overflow = prev }
   }, [])
 
+  function swallowGhostClick() {
+    const swallow = (e: MouseEvent) => {
+      e.stopPropagation()
+      e.preventDefault()
+      document.removeEventListener('click', swallow, true)
+    }
+    // capture phase so it runs before any backdrop onClick handler beneath
+    document.addEventListener('click', swallow, true)
+    // safety: drop the listener if no ghost click ever arrives
+    setTimeout(() => document.removeEventListener('click', swallow, true), 0)
+  }
+
   function onTouchStart(e: TouchEvent) {
+    e.stopPropagation()
     const el = scrollRef.current
     start.current = { y: e.touches[0].clientY, top: el ? el.scrollTop : 0 }
     drag.current = 0
   }
   function onTouchMove(e: TouchEvent) {
+    e.stopPropagation()
     const el = scrollRef.current
     const s = start.current
     if (!el || !s) return
@@ -43,8 +64,12 @@ export function SheetModal({ onClose, children }: { onClose: () => void; childre
       drag.current = 0
     }
   }
-  function onTouchEnd() {
-    if (drag.current > 70) onClose()
+  function onTouchEnd(e: TouchEvent) {
+    e.stopPropagation()
+    if (drag.current > 70) {
+      swallowGhostClick()
+      onClose()
+    }
     start.current = null
     drag.current = 0
   }

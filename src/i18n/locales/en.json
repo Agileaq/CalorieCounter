@@ -53,7 +53,7 @@
     "cals": "{{n}} kcal",
     "addFood": "Add Food",
     "proteinFiber": "{{p}}g protein · {{f}}g fiber",
-    "macros": "{{c}}g carbs · {{p}}g protein · {{f}}g fat · {{fi}}g fiber",
+    "macros": "{{c}}g c · {{p}}g p · {{f}}g ft · {{fi}}g fb",
     "clear": "Clear meal"
   },
   "foodPicker": {
