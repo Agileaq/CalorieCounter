@@ -39,12 +39,14 @@ describe('FoodPicker', () => {
     expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
     expect(screen.getByTestId('food-detail-edit')).toBeInTheDocument()
   })
-  it('adding a food opens the quantity sheet and confirms an entry', () => {
+  it('the ＋ button opens the food detail (same as tapping the row)', () => {
     const onPick = vi.fn()
     render(<AppProvider><FoodPicker onPick={onPick} onClose={() => {}} /></AppProvider>)
     fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
     fireEvent.click(screen.getAllByTestId('food-add')[0])
-    fireEvent.click(screen.getByTestId('qty-confirm'))
+    expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
+    expect(screen.getByTestId('food-detail-add')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('food-detail-add'))
     expect(onPick).toHaveBeenCalled()
     expect(onPick.mock.calls[0][0].quantity).toBeGreaterThan(0)
   })

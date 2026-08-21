@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import type { Food, LogEntry } from '../types'
-import { primaryServing, computedCalories } from '../lib/nutrition'
-import { QuantitySheet } from './QuantitySheet'
+import { primaryServing, computedCalories, entryNutrition } from '../lib/nutrition'
+import { newId } from '../lib/ids'
+import { NumberInput } from './NumberInput'
 import { FoodForm } from './FoodForm'
 
 const fmt = (v: number, unit: string) => `${Math.round(v * 10) / 10}${unit}`
@@ -29,10 +30,12 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
   const { updateMyFood, deleteMyFood, overrideFood, resetOverride, foodOverrides } = useApp()
   const [showFull, setShowFull] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [picking, setPicking] = useState(false)
+  const [servingId, setServingId] = useState(primaryServing(food).id)
+  const [qty, setQty] = useState(primaryServing(food).amount)
 
-  const ps = primaryServing(food)
   const n = food.nutrition
+  const entry: LogEntry = { id: newId(), foodSnapshot: food, servingId, quantity: qty }
+  const previewCals = Math.round(entryNutrition(entry).calories)
 
   function save(f: Food) {
     if (f.source === 'custom') updateMyFood(f)
@@ -43,6 +46,10 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
     deleteMyFood(food.id)
     onClose()
   }
+  function add() {
+    onAdd(entry)
+    onClose()
+  }
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -50,9 +57,23 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
         <div className="row spread">
           <button className="btn-ghost" data-testid="food-detail-close" onClick={onClose}>✕</button>
           <strong style={{ flex: 1, textAlign: 'center' }}>{food.icon} {food.name}</strong>
-          <button className="btn-accent" data-testid="food-detail-add" onClick={() => setPicking(true)}>{t('common.add')}</button>
+          <button className="btn-accent" data-testid="food-detail-add" onClick={add}>{t('common.add')}</button>
         </div>
         {food.brand && <div className="muted" style={{ textAlign: 'center' }}>{food.brand}</div>}
+
+        <div className="card" data-testid="food-detail-quantity">
+          <div className="muted">{t('foodForm.quantity')}</div>
+          <div className="row" style={{ gap: 8, marginTop: 6 }}>
+            <NumberInput testId="qty-input" value={qty} onChange={setQty} style={{ width: 100, padding: 8 }} />
+            <select value={servingId} onChange={e => setServingId(e.target.value)} style={{ padding: 8, flex: 1 }} aria-label={t('foodForm.serving')}>
+              {food.servings.map(s => <option key={s.id} value={s.id}>{s.label} ({s.amount}{s.unit})</option>)}
+            </select>
+          </div>
+          <div className="row spread" style={{ marginTop: 10 }}>
+            <span className="muted">{t('foodForm.calories')}</span>
+            <strong data-testid="qty-preview-cals">{previewCals} {t('meal.cals', { n: '' }).trim()}</strong>
+          </div>
+        </div>
 
         <div className="row spread" style={{ marginTop: 10 }}>
           <span className="muted">{t('foodDetail.nutritionFacts')}</span>
@@ -60,10 +81,6 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
         </div>
 
         <div className="card">
-          <div className="row spread" style={{ borderBottom: '2px solid var(--text)', paddingBottom: 8 }}>
-            <span>{t('foodDetail.amount')}</span>
-            <span>{ps.amount} {ps.label}</span>
-          </div>
           <div className="row" style={{ gap: 16, padding: '12px 0' }}>
             <div style={{ textAlign: 'center', minWidth: 90 }}>
               <div data-testid="food-detail-cals" style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.1 }}>{computedCalories(n)}</div>
@@ -129,7 +146,6 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
         </div>
       </div>
       {editing && <FoodForm initial={food} onSave={save} onClose={() => setEditing(false)} />}
-      {picking && <QuantitySheet food={food} onConfirm={onAdd} onClose={() => setPicking(false)} />}
     </div>
   )
 }

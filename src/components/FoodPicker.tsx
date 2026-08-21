@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import type { Food, LogEntry } from '../types'
 import { primaryServing } from '../lib/nutrition'
-import { QuantitySheet } from './QuantitySheet'
 import { FoodForm } from './FoodForm'
 import { FoodDetail } from './FoodDetail'
 
@@ -21,7 +20,6 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
   const { allFoods, myFoods, addMyFood } = useApp()
   const [tab, setTab] = useState<'all' | 'my'>('all')
   const [q, setQ] = useState('')
-  const [picking, setPicking] = useState<Food | null>(null)
   const [creating, setCreating] = useState(false)
   const [detailId, setDetailId] = useState<string | null>(null)
   // look the food up live so edits/overrides refresh an open detail view
@@ -63,7 +61,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
                         <div className="muted">{t('foodPicker.perServing', { cal: Math.round(f.nutrition.calories), amount: ps.amount, label: ps.label })}</div>
                       </div>
                     </button>
-                    <button className="btn-ghost" data-testid="food-add" aria-label={`add ${f.name}`} style={{ fontSize: 22 }} onClick={() => setPicking(f)}>＋</button>
+                    <button className="btn-ghost" data-testid="food-add" aria-label={`add ${f.name}`} style={{ fontSize: 22 }} onClick={() => setDetailId(f.id)}>＋</button>
                   </div>
                 )
               })}
@@ -71,7 +69,6 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
           ))}
         </div>
       </div>
-      {picking && <QuantitySheet food={picking} onConfirm={onPick} onClose={() => setPicking(null)} />}
       {creating && <FoodForm onSave={f => { addMyFood(f); setTab('my') }} onClose={() => setCreating(false)} />}
       {detail && <FoodDetail food={detail} onAdd={onPick} onClose={() => setDetailId(null)} />}
     </div>

@@ -37,12 +37,14 @@ describe('FoodDetail', () => {
     fireEvent.click(screen.getByTestId('food-detail-full'))
     expect(screen.getByText(/Vitamin B12/)).toBeInTheDocument()
   })
-  it('✓ opens the quantity sheet and confirms an entry', () => {
+  it('✓ logs an entry with the chosen serving and quantity', () => {
     const onAdd = vi.fn()
     render(<AppProvider><FoodDetail food={mkFood()} onAdd={onAdd} onClose={() => {}} /></AppProvider>)
     fireEvent.click(screen.getByTestId('food-detail-add'))
-    fireEvent.click(screen.getByTestId('qty-confirm'))
     expect(onAdd).toHaveBeenCalled()
+    const entry = onAdd.mock.calls[0][0]
+    expect(entry.quantity).toBeGreaterThan(0)
+    expect(entry.servingId).toBe('s1')
   })
   it('editing a predefined food stores an override under the same id and source', () => {
     render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)

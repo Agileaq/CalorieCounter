@@ -10,7 +10,7 @@ describe('MealCard', () => {
     fireEvent.click(screen.getByText(/Add Food/i))
     fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
     fireEvent.click(screen.getAllByTestId('food-add')[0])
-    fireEvent.click(screen.getByTestId('qty-confirm'))
+    fireEvent.click(screen.getByTestId('food-detail-add'))
     // entry now visible in the card
     expect(screen.getByTestId('meal-total').textContent).toMatch(/\d/)
     expect(screen.getAllByText(/Rice/i).length).toBeGreaterThan(0)

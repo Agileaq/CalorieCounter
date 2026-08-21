@@ -53,6 +53,7 @@
     "cals": "{{n}} 千卡",
     "addFood": "添加食物",
     "proteinFiber": "蛋白质 {{p}}g · 纤维 {{f}}g",
+    "macros": "碳水 {{c}}g · 蛋白质 {{p}}g · 脂肪 {{f}}g · 纤维 {{fi}}g",
     "clear": "清空此餐"
   },
   "foodPicker": {
