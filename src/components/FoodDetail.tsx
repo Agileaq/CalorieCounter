@@ -52,10 +52,10 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
   }
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop full" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="row spread">
-          <button className="btn-ghost" data-testid="food-detail-close" onClick={onClose}>✕</button>
+          <button className="icon-btn" data-testid="food-detail-close" aria-label={t('common.close')} onClick={onClose}>✕</button>
           <strong style={{ flex: 1, textAlign: 'center' }}>{food.icon} {food.name}</strong>
           <button className="btn-accent" data-testid="food-detail-add" onClick={add}>{t('common.add')}</button>
         </div>

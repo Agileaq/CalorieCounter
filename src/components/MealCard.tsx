@@ -29,8 +29,10 @@ export function MealCard({ meal }: { meal: MealKey }) {
             <div className="row" style={{ gap: 8 }}>
               <span style={{ fontSize: 20 }}>{e.foodSnapshot.icon}</span>
               <div>
-                <div>{e.foodSnapshot.name}</div>
-                <div className="muted">{e.quantity} {ps.label}</div>
+                <div className="row" style={{ gap: 6, alignItems: 'baseline' }}>
+                  <span>{e.foodSnapshot.name}</span>
+                  <span className="muted">{e.quantity} {ps.label}</span>
+                </div>
                 <div className="muted" data-testid="entry-macros">{t('meal.macros', { c: Math.round(en.carbs.total), p: Math.round(en.protein), f: Math.round(en.fat.total), fi: Math.round(en.carbs.fiber) })}</div>
               </div>
             </div>
