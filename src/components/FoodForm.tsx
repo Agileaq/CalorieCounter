@@ -34,7 +34,7 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="row spread">
-          <button className="btn-ghost" onClick={onClose}>✕</button>
+          <button className="btn-ghost" aria-label={t('common.close')} onClick={onClose}>✕</button>
           <strong>{initial ? t('foodForm.editFood') : t('foodForm.newFood')}</strong>
           <button className="btn-accent" data-testid="food-save" onClick={save}>{t('common.save')}</button>
         </div>

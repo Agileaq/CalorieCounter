@@ -22,7 +22,7 @@ export function IconPicker({ value, onChange, onClose }: { value: string; onChan
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="row spread">
           <strong>{t('foodForm.icon')}</strong>
-          <button className="btn-ghost" onClick={onClose}>✕</button>
+          <button className="btn-ghost" aria-label={t('common.close')} onClick={onClose}>✕</button>
         </div>
         <input placeholder={t('foodPicker.search')} value={q} onChange={e => setQ(e.target.value)}
           style={{ width: '100%', padding: 8, margin: '8px 0' }} />

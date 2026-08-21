@@ -9,7 +9,11 @@
     "none": "لا شيء",
     "required": "مطلوب",
     "today": "اليوم",
-    "week": "أسبوع"
+    "week": "أسبوع",
+    "menu": "القائمة",
+    "prevMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
+    "deleteEntry": "حذف {{name}}"
   },
   "nav": {
     "dashboard": "لوحة",

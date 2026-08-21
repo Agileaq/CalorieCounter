@@ -9,7 +9,11 @@
     "none": "无",
     "required": "必填",
     "today": "今天",
-    "week": "周"
+    "week": "周",
+    "menu": "菜单",
+    "prevMonth": "上个月",
+    "nextMonth": "下个月",
+    "deleteEntry": "删除{{name}}"
   },
   "nav": {
     "dashboard": "仪表盘",

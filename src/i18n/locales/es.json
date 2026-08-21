@@ -9,7 +9,11 @@
     "none": "Ninguno",
     "required": "Obligatorio",
     "today": "Hoy",
-    "week": "Semana"
+    "week": "Semana",
+    "menu": "Menú",
+    "prevMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente",
+    "deleteEntry": "Eliminar {{name}}"
   },
   "nav": {
     "dashboard": "Panel",

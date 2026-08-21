@@ -9,7 +9,11 @@
     "none": "None",
     "required": "Required",
     "today": "Today",
-    "week": "Week"
+    "week": "Week",
+    "menu": "Menu",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "deleteEntry": "Delete {{name}}"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -39,7 +43,7 @@
     "running": "Running",
     "swimming": "Swimming",
     "custom": "Type your own…",
-    "addExercise": "Add exercise"
+    "addExercise": "Add Exercise"
   },
   "meal": {
     "breakfast": "Breakfast",

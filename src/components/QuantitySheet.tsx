@@ -14,7 +14,7 @@ export function QuantitySheet({ food, onConfirm, onClose }: { food: Food; onConf
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        <div className="row spread"><strong>{food.icon} {food.name}</strong><button className="btn-ghost" onClick={onClose}>✕</button></div>
+        <div className="row spread"><strong>{food.icon} {food.name}</strong><button className="btn-ghost" aria-label={t('common.close')} onClick={onClose}>✕</button></div>
         <div className="row" style={{ gap: 8, marginTop: 8 }}>
           <NumberInput testId="qty-input" value={qty}
             onChange={setQty} style={{ width: 100, padding: 8 }} />

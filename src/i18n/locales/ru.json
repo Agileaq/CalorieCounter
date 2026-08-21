@@ -9,7 +9,11 @@
     "none": "Нет",
     "required": "Обязательно",
     "today": "Сегодня",
-    "week": "Неделя"
+    "week": "Неделя",
+    "menu": "Меню",
+    "prevMonth": "Предыдущий месяц",
+    "nextMonth": "Следующий месяц",
+    "deleteEntry": "Удалить {{name}}"
   },
   "nav": {
     "dashboard": "Панель",

@@ -38,7 +38,7 @@ export function ExerciseCard() {
         <div key={e.id} className="row spread" style={{ padding: '6px 0' }}>
           <span>{e.name}</span>
           <div className="row" style={{ gap: 8 }}><span>{e.caloriesBurned}</span>
-            <button className="btn-ghost" onClick={() => deleteExercise(e.id)}>✕</button></div>
+            <button className="btn-ghost" aria-label={t('common.deleteEntry', { name: e.name })} onClick={() => deleteExercise(e.id)}>✕</button></div>
         </div>
       ))}
       <div className="row" style={{ gap: 8, marginTop: 8 }}>

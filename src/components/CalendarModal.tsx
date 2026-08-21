@@ -32,12 +32,12 @@ export function CalendarModal({ onClose }: { onClose: () => void }) {
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="row spread">
           <strong>{monthName} {year}</strong>
-          <button className="btn-ghost" onClick={onClose}>✕</button>
+          <button className="btn-ghost" aria-label={t('common.close')} onClick={onClose}>✕</button>
         </div>
         <div className="row spread" style={{ margin: '8px 0' }}>
           <div className="row" style={{ gap: 6 }}>
-            <button className="btn-ghost" onClick={() => shiftMonth(-1)}>‹</button>
-            <button className="btn-ghost" onClick={() => shiftMonth(1)}>›</button>
+            <button className="btn-ghost" aria-label={t('common.prevMonth')} onClick={() => shiftMonth(-1)}>‹</button>
+            <button className="btn-ghost" aria-label={t('common.nextMonth')} onClick={() => shiftMonth(1)}>›</button>
           </div>
           <button className="btn-ghost" onClick={goToday}>{t('common.today')}</button>
         </div>

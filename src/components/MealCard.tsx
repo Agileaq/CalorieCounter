@@ -17,7 +17,7 @@ export function MealCard({ meal }: { meal: MealKey }) {
     <div className="card">
       <div className="row spread">
         <strong>{t(`meal.${meal}`)}: {t('meal.cals', { n: Math.round(n.calories) })}</strong>
-        <button className="btn-ghost" aria-label="menu" onClick={() => setMenu(m => !m)}>⋯</button>
+        <button className="btn-ghost" aria-label={t('common.menu')} onClick={() => setMenu(m => !m)}>⋯</button>
       </div>
       <div className="muted" data-testid="meal-total">{t('meal.proteinFiber', { p: Math.round(n.protein), f: Math.round(n.carbs.fiber) })}</div>
       {menu && <button className="btn-ghost" onClick={() => { clearMeal(meal); setMenu(false) }}>{t('meal.clear')}</button>}
@@ -34,7 +34,7 @@ export function MealCard({ meal }: { meal: MealKey }) {
             </div>
             <div className="row" style={{ gap: 10 }}>
               <span>{Math.round(entryNutrition(e).calories)}</span>
-              <button className="btn-ghost" aria-label={`delete ${e.foodSnapshot.name}`} onClick={() => deleteEntry(meal, e.id)}>✕</button>
+              <button className="btn-ghost" aria-label={t('common.deleteEntry', { name: e.foodSnapshot.name })} onClick={() => deleteEntry(meal, e.id)}>✕</button>
             </div>
           </div>
         )
