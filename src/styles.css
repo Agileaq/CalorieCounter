@@ -16,9 +16,9 @@ body {
 .screen { padding: 12px; padding-inline: 12px; }
 .date-header { padding: 8px 12px; }
 /* Header row (date + language) sized larger than the 16px body "早餐" heading.
-   Emoji (‹ › 📅 flag) render smaller than text at the same font-size, so 1.6em
-   makes the row read clearly bigger than the meal headings below it. */
-.header-row { font-size: 1.6em; }
+   Emoji (‹ › 📅 flag) render smaller than text at the same font-size, so 1.35em
+   keeps the row a bit bigger than the meal headings below it. */
+.header-row { font-size: 1.35em; }
 /* buttons use the UA default font-size and do NOT inherit it from parents
    (the global reset covers input/select but missed button) — without this the
    .header-row size above would have no effect on ‹ › 📅 date or the flag.
