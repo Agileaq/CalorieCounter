@@ -19,6 +19,11 @@ body {
    Emoji (‹ › 📅 flag) render smaller than text at the same font-size, so 1.6em
    makes the row read clearly bigger than the meal headings below it. */
 .header-row { font-size: 1.6em; }
+/* buttons use the UA default font-size and do NOT inherit it from parents
+   (the global reset covers input/select but missed button) — without this the
+   .header-row size above would have no effect on ‹ › 📅 date or the flag.
+   font-size only (not the font shorthand) so .btn-ghost's weight survives */
+.header-row button { font-size: inherit; }
 .card { background: var(--card); border-radius: 16px; padding: 16px; margin-block: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
 .row { display: flex; align-items: center; gap: 12px; }
 .spread { justify-content: space-between; }
