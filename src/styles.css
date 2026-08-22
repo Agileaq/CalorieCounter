@@ -15,9 +15,10 @@ body {
 .app { min-height: 100%; padding-top: env(safe-area-inset-top); padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); }
 .screen { padding: 12px; padding-inline: 12px; }
 .date-header { padding: 8px 12px; }
-/* 1.3× scale for the date + language header row on Dashboard and Log:
-   emoji (‹ › 📅 flag) and text inherit, so everything grows together */
-.header-row { font-size: 1.3em; }
+/* Header row (date + language) sized larger than the 16px body "早餐" heading.
+   Emoji (‹ › 📅 flag) render smaller than text at the same font-size, so 1.6em
+   makes the row read clearly bigger than the meal headings below it. */
+.header-row { font-size: 1.6em; }
 .card { background: var(--card); border-radius: 16px; padding: 16px; margin-block: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
 .row { display: flex; align-items: center; gap: 12px; }
 .spread { justify-content: space-between; }
