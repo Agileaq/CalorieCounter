@@ -9,7 +9,9 @@ export default function Log() {
   const [cal, setCal] = useState(false)
   return (
     <div className="screen">
-      <DateHeader onOpenCalendar={() => setCal(true)} />
+      <div className="header-row">
+        <DateHeader onOpenCalendar={() => setCal(true)} />
+      </div>
       {MEAL_KEYS.map(m => <MealCard key={m} meal={m} />)}
       <ExerciseCard />
       {cal && <CalendarModal onClose={() => setCal(false)} />}

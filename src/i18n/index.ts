@@ -12,6 +12,10 @@ export const LANGUAGE_NATIVE_NAMES: Record<Language, string> = {
   en: 'English', zh: '中文', es: 'Español', fr: 'Français', ar: 'العربية', ru: 'Русский',
 }
 
+export const LANGUAGE_FLAGS: Record<Language, string> = {
+  en: '🇬🇧', zh: '🇨🇳', es: '🇪🇸', fr: '🇫🇷', ar: '🇸🇦', ru: '🇷🇺',
+}
+
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en }, zh: { translation: zh }, es: { translation: es },

@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   return (
     <div className="screen">
-      <div className="row spread">
+      <div className="row spread header-row">
         <DateHeader onOpenCalendar={() => setCal(true)} />
         <LanguageSwitcher />
       </div>
