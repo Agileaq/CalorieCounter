@@ -50,14 +50,14 @@ describe('Goals', () => {
     }
     enter('cut-weight', '75')
     enter('bulk-weight', '75')
-    // unique computed values (avoid the weight "75" itself, shown in the input)
-    expect(screen.getByText('2040')).toBeInTheDocument()   // cut calories
-    expect(screen.getByText('263')).toBeInTheDocument()    // cut carbs
-    expect(screen.getByText('113')).toBeInTheDocument()    // cut protein
-    expect(screen.getByText('60')).toBeInTheDocument()     // cut fat
-    expect(screen.getByText('2475')).toBeInTheDocument()   // bulk calories
-    expect(screen.getByText('300')).toBeInTheDocument()     // bulk carbs
-    expect(screen.getByText('150')).toBeInTheDocument()    // bulk protein
+    // ready values render as "<value><unit>"; unset fields stay "—" (no unit)
+    expect(screen.getByText('2040kcal')).toBeInTheDocument()  // cut calories
+    expect(screen.getByText('263g')).toBeInTheDocument()     // cut carbs
+    expect(screen.getByText('113g')).toBeInTheDocument()    // cut protein
+    expect(screen.getByText('60g')).toBeInTheDocument()     // cut fat
+    expect(screen.getByText('2475kcal')).toBeInTheDocument() // bulk calories
+    expect(screen.getByText('300g')).toBeInTheDocument()    // bulk carbs
+    expect(screen.getByText('150g')).toBeInTheDocument()     // bulk protein
   })
   it('the info-tip toggles open and closes on outside click', () => {
     render(<AppProvider><Goals /></AppProvider>)

@@ -40,24 +40,26 @@ function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; to
   const ready = weight > 0
   return (
     <div className="card">
-      <span className="info-wrap" ref={tipRef}>
-        <strong>{title}</strong>
-        <button className="info-tip" aria-label={title} title=""
-          onClick={() => setShowTip(s => !s)}>
-          {'!'}
-          {showTip && <div className="info-bubble">{tooltip}</div>}
-        </button>
-      </span>
-      <label className="row spread" style={{ marginTop: 8 }}>
-        {t('goals.weightLabel')}
-        <NumberInput testId={weightTestId} value={weight} onChange={setWeight}
-          style={{ width: 100, textAlign: 'end' }} />
-      </label>
+      <div className="row spread">
+        <span className="info-wrap" ref={tipRef}>
+          <strong>{title}</strong>
+          <button className="info-tip" aria-label={title} title=""
+            onClick={() => setShowTip(s => !s)}>
+            {'!'}
+            {showTip && <div className="info-bubble">{tooltip}</div>}
+          </button>
+        </span>
+        <label className="row" style={{ gap: 6 }}>
+          {t('goals.weightLabel')}:
+          <NumberInput testId={weightTestId} value={weight} onChange={setWeight}
+            style={{ width: 80, textAlign: 'end' }} />
+        </label>
+      </div>
       <div className="advice-readout">
-        <div>{t('goals.adviceCalories')} <span className="advice-val readonly">{ready ? calories : '—'}</span></div>
-        <div>{t('goals.adviceCarbs')} <span className="advice-val readonly">{ready ? carbs : '—'}</span></div>
-        <div>{t('goals.adviceProtein')} <span className="advice-val readonly">{ready ? protein : '—'}</span></div>
-        <div>{t('goals.adviceFat')} <span className="advice-val readonly">{ready ? fat : '—'}</span></div>
+        <div>{t('goals.adviceCalories')} <span className="advice-val readonly">{ready ? `${calories}kcal` : '—'}</span></div>
+        <div>{t('goals.adviceCarbs')} <span className="advice-val readonly">{ready ? `${carbs}g` : '—'}</span></div>
+        <div>{t('goals.adviceProtein')} <span className="advice-val readonly">{ready ? `${protein}g` : '—'}</span></div>
+        <div>{t('goals.adviceFat')} <span className="advice-val readonly">{ready ? `${fat}g` : '—'}</span></div>
       </div>
     </div>
   )
