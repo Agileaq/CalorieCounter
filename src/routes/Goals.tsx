@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import { exportFoods, parseFoodsImport, exportBackup, parseBackup } from '../lib/importExport'
@@ -20,6 +20,18 @@ function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; to
   const { t } = useTranslation()
   const [weight, setWeight] = useState(0)
   const [showTip, setShowTip] = useState(false)
+  const tipRef = useRef<HTMLSpanElement>(null)
+  // Click outside (or tap) the tip wrapper closes the bubble. onBlur can't do this
+  // reliably on touch — the button loses focus immediately after a tap, so a later
+  // tap elsewhere never fires blur, and the bubble gets stuck open.
+  useEffect(() => {
+    if (!showTip) return
+    const onDown = (e: PointerEvent) => {
+      if (tipRef.current && !tipRef.current.contains(e.target as Node)) setShowTip(false)
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [showTip])
   const w = weight > 0 ? weight : 0
   const carbs = Math.round(w * quota.carbs)
   const protein = Math.round(w * quota.protein)
@@ -28,14 +40,14 @@ function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; to
   const ready = weight > 0
   return (
     <div className="card">
-      <div className="info-wrap">
+      <span className="info-wrap" ref={tipRef}>
         <strong>{title}</strong>
         <button className="info-tip" aria-label={title} title=""
-          onClick={() => setShowTip(s => !s)} onBlur={() => setShowTip(false)}>
+          onClick={() => setShowTip(s => !s)}>
           {'!'}
         </button>
         {showTip && <div className="info-bubble">{tooltip}</div>}
-      </div>
+      </span>
       <label className="row spread" style={{ marginTop: 8 }}>
         {t('goals.weightLabel')}
         <NumberInput testId={weightTestId} value={weight} onChange={setWeight}

@@ -59,4 +59,15 @@ describe('Goals', () => {
     expect(screen.getByText('300')).toBeInTheDocument()     // bulk carbs
     expect(screen.getByText('150')).toBeInTheDocument()    // bulk protein
   })
+  it('the info-tip toggles open and closes on outside click', () => {
+    render(<AppProvider><Goals /></AppProvider>)
+    const tip = screen.getAllByRole('button', { name: /Fat-loss Advice|Muscle-gain Advice/ })[0]
+    // closed initially
+    expect(screen.queryByText(/Quota \(daily intake per kg body weight\)/)).toBeNull()
+    fireEvent.click(tip)
+    expect(screen.getAllByText(/Quota \(daily intake per kg body weight\)/).length).toBeGreaterThan(0)
+    // clicking outside the tip closes it
+    fireEvent.pointerDown(document.body)
+    expect(screen.queryByText(/Quota \(daily intake per kg body weight\)/)).toBeNull()
+  })
 })
