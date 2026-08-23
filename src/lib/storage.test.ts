@@ -37,7 +37,7 @@ describe('storage', () => {
     localStorage.setItem('cc.settings', JSON.stringify({ dailyBudget: 1800, macroTargets: { protein: 128, fiber: 30 }, language: 'en' }))
     const s = loadSettings()
     // stored protein/fiber preserved; carbs/fat filled from defaults
-    expect(s.macroTargets).toEqual({ carbs: 212, fat: 64, protein: 128, fiber: 30 })
+    expect(s.macroTargets).toEqual({ carbs: 280, fat: 72, protein: 128, fiber: 30 })
   })
   it('ensureSchema sets the current version', () => {
     ensureSchema()

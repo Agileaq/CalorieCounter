@@ -39,4 +39,24 @@ describe('Goals', () => {
     expect(input).toHaveValue(0)
     expect(JSON.parse(localStorage.getItem('cc.settings')!).dailyBudget).toBe(0)
   })
+  it('advice cards derive read-only macros from weight', () => {
+    render(<AppProvider><Goals /></AppProvider>)
+    // 75kg → cut 3.5/1.5/0.8 → 263/113/60g, calories 2040
+    // 75kg → bulk 4/2/1 → 300/150/75g, calories 2475
+    const enter = (id: string, v: string) => {
+      const el = screen.getByTestId(id)
+      fireEvent.focus(el)
+      fireEvent.change(el, { target: { value: v } })
+    }
+    enter('cut-weight', '75')
+    enter('bulk-weight', '75')
+    // unique computed values (avoid the weight "75" itself, shown in the input)
+    expect(screen.getByText('2040')).toBeInTheDocument()   // cut calories
+    expect(screen.getByText('263')).toBeInTheDocument()    // cut carbs
+    expect(screen.getByText('113')).toBeInTheDocument()    // cut protein
+    expect(screen.getByText('60')).toBeInTheDocument()     // cut fat
+    expect(screen.getByText('2475')).toBeInTheDocument()   // bulk calories
+    expect(screen.getByText('300')).toBeInTheDocument()     // bulk carbs
+    expect(screen.getByText('150')).toBeInTheDocument()    // bulk protein
+  })
 })

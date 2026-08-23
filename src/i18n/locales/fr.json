@@ -153,7 +153,16 @@
     "importFoodsDone": "{{n}} aliments importés",
     "importError": "Échec de l'import : {{msg}}",
     "carbsTarget": "Objectif glucides (g)",
-    "fatTarget": "Objectif lipides (g)"
+    "fatTarget": "Objectif lipides (g)",
+    "cutTitle": "Conseil sèche",
+    "bulkTitle": "Conseil prise de masse",
+    "weightLabel": "Saisis ton poids (kg)",
+    "adviceCalories": "Calories (kcal)",
+    "adviceCarbs": "Glucides (g)",
+    "adviceProtein": "Protéines (g)",
+    "adviceFat": "Lipides (g)",
+    "cutTooltip": "Quota (apport quotidien par kg de poids)\nPhase de sèche\nGlucides 3,5g  Protéines 1,5g  Lipides 0,8g (sèche, avec une base)\nAprès une perte de poids, baisse le quota de glucides progressivement (glucides ≥ 2,5g)",
+    "bulkTooltip": "Quota (apport quotidien par kg de poids)\nPhase de prise de masse\nGlucides 4,0g  Protéines 2,0g  Lipides 1,0g (prise de masse, avec une base)\nPrends 1-3 jin/mois ; sinon ajuste les glucides ; protéines et lipides fixes"
   },
   "update": {
     "available": "Nouvelle version disponible",

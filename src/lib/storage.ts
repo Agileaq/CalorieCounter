@@ -10,8 +10,8 @@ const K = {
 } as const
 
 export const DEFAULT_SETTINGS: Settings = {
-  dailyBudget: 2000,
-  macroTargets: { carbs: 212, protein: 160, fat: 64, fiber: 28 },
+  dailyBudget: 2248,
+  macroTargets: { carbs: 280, protein: 120, fat: 72, fiber: 30 },
   language: 'en',
 }
 

@@ -5,6 +5,52 @@ import { exportFoods, parseFoodsImport, exportBackup, parseBackup } from '../lib
 import { download, readFileText } from '../lib/download'
 import { NumberInput } from '../components/NumberInput'
 
+/** Macros per kg of body weight for an advice card. calories = carbs*4 + protein*4 + fat*9. */
+interface Quota { carbs: number; protein: number; fat: number }
+const CUT: Quota = { carbs: 3.5, protein: 1.5, fat: 0.8 }
+const BULK: Quota = { carbs: 4, protein: 2, fat: 1 }
+
+/**
+ * Advice card: a weight input (kg) drives read-only calorie/macro suggestions.
+ * Values cannot be edited directly — they are derived from weight × quota, so the
+ * user gets a starting point to copy into the targets above. No fiber is suggested
+ * (the quota tables don't define one).
+ */
+function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; tooltip: string; quota: Quota; weightTestId: string }) {
+  const { t } = useTranslation()
+  const [weight, setWeight] = useState(0)
+  const [showTip, setShowTip] = useState(false)
+  const w = weight > 0 ? weight : 0
+  const carbs = Math.round(w * quota.carbs)
+  const protein = Math.round(w * quota.protein)
+  const fat = Math.round(w * quota.fat)
+  const calories = Math.round(w * (quota.carbs * 4 + quota.protein * 4 + quota.fat * 9))
+  const ready = weight > 0
+  return (
+    <div className="card">
+      <div className="info-wrap">
+        <strong>{title}</strong>
+        <button className="info-tip" aria-label={title} title=""
+          onClick={() => setShowTip(s => !s)} onBlur={() => setShowTip(false)}>
+          {'!'}
+        </button>
+        {showTip && <div className="info-bubble">{tooltip}</div>}
+      </div>
+      <label className="row spread" style={{ marginTop: 8 }}>
+        {t('goals.weightLabel')}
+        <NumberInput testId={weightTestId} value={weight} onChange={setWeight}
+          style={{ width: 100, textAlign: 'end' }} />
+      </label>
+      <div className="advice-readout">
+        <div>{t('goals.adviceCalories')} <span className="advice-val readonly">{ready ? calories : '—'}</span></div>
+        <div>{t('goals.adviceCarbs')} <span className="advice-val readonly">{ready ? carbs : '—'}</span></div>
+        <div>{t('goals.adviceProtein')} <span className="advice-val readonly">{ready ? protein : '—'}</span></div>
+        <div>{t('goals.adviceFat')} <span className="advice-val readonly">{ready ? fat : '—'}</span></div>
+      </div>
+    </div>
+  )
+}
+
 export default function Goals() {
   const { t } = useTranslation()
   const { settings, updateSettings, myFoods, allFoods, foodOverrides, days, importFoods, replaceAll } = useApp()
@@ -44,20 +90,19 @@ export default function Goals() {
             onChange={v => setMacro({ fiber: v })} style={{ width: 100, textAlign: 'end' }} /></label>
       </div>
 
+      <AdviceCard title={t('goals.cutTitle')} tooltip={t('goals.cutTooltip')} quota={CUT} weightTestId="cut-weight" />
+      <AdviceCard title={t('goals.bulkTitle')} tooltip={t('goals.bulkTooltip')} quota={BULK} weightTestId="bulk-weight" />
+
       <div className="card">
         <strong>{t('goals.data')}</strong>
         <div className="muted">{t('goals.backupNote')}</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-          <div className="row" style={{ gap: 8 }}>
-            <button className="btn-outline" onClick={() => download('foods.json', exportFoods(allFoods))}>{t('goals.exportFoods')}</button>
-            <label className="btn-outline">{t('goals.importFoods')}
-              <input type="file" accept="application/json" hidden onChange={e => onImportFoods(e.target.files?.[0] ?? undefined)} /></label>
-          </div>
-          <div className="row" style={{ gap: 8 }}>
-            <button className="btn-outline" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings, foodOverrides }))}>{t('goals.exportBackup')}</button>
-            <label className="btn-outline">{t('goals.importBackup')}
-              <input type="file" accept="application/json" hidden onChange={e => onImportBackup(e.target.files?.[0] ?? undefined)} /></label>
-          </div>
+        <div className="row" style={{ gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+          <button className="btn-outline" onClick={() => download('foods.json', exportFoods(allFoods))}>{t('goals.exportFoods')}</button>
+          <label className="btn-outline">{t('goals.importFoods')}
+            <input type="file" accept="application/json" hidden onChange={e => onImportFoods(e.target.files?.[0] ?? undefined)} /></label>
+          <button className="btn-outline" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings, foodOverrides }))}>{t('goals.exportBackup')}</button>
+          <label className="btn-outline">{t('goals.importBackup')}
+            <input type="file" accept="application/json" hidden onChange={e => onImportBackup(e.target.files?.[0] ?? undefined)} /></label>
         </div>
         {msg && <div className="muted" style={{ marginTop: 8 }}>{msg}</div>}
       </div>

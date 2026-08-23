@@ -153,7 +153,16 @@
     "importFoodsDone": "已导入 {{n}} 种食物",
     "importError": "导入失败：{{msg}}",
     "carbsTarget": "碳水目标 (g)",
-    "fatTarget": "脂肪目标 (g)"
+    "fatTarget": "脂肪目标 (g)",
+    "cutTitle": "减脂期建议",
+    "bulkTitle": "增肌期建议",
+    "weightLabel": "请输入你的体重 (kg)",
+    "adviceCalories": "热量 (kcal)",
+    "adviceCarbs": "碳水 (g)",
+    "adviceProtein": "蛋白质 (g)",
+    "adviceFat": "脂肪 (g)",
+    "cutTooltip": "配额（每kg体重的日摄入量）\n减脂期\n碳水3.5g 蛋白质1.5g 脂肪0.8g（减脂期、有基础）\n体重下降后缓慢降低碳水配额（碳水不低于2.5g）",
+    "bulkTooltip": "配额（每kg体重的日摄入量）\n增肌期\n碳水4.0g 蛋白质2.0g 脂肪1.0g（增肌期、有基础）\n体重增长1-3斤/月 否则调整碳水 蛋白质脂肪不动"
   },
   "update": {
     "available": "有新版本可用",
