@@ -88,9 +88,9 @@ input, select { font: inherit; }
 }
 .info-tip:hover { background: var(--accent); color: #fff; }
 .info-bubble {
-  position: absolute; bottom: calc(100% + 6px); left: 0; z-index: 20;
+  position: absolute; bottom: calc(100% + 6px); inset-inline-start: 0; z-index: 20;
   background: var(--text); color: #fff; font-size: 12px; line-height: 1.5;
   border-radius: 10px; padding: 10px 12px; width: max-content; max-width: 240px;
-  white-space: pre-line; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  white-space: pre-line; text-align: start; box-shadow: 0 4px 14px rgba(0,0,0,.18);
 }
 .info-wrap { display: inline-flex; align-items: center; }
