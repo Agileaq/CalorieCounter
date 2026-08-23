@@ -45,8 +45,8 @@ function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; to
         <button className="info-tip" aria-label={title} title=""
           onClick={() => setShowTip(s => !s)}>
           {'!'}
+          {showTip && <div className="info-bubble">{tooltip}</div>}
         </button>
-        {showTip && <div className="info-bubble">{tooltip}</div>}
       </span>
       <label className="row spread" style={{ marginTop: 8 }}>
         {t('goals.weightLabel')}
