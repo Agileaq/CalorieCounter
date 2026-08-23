@@ -47,13 +47,17 @@ export default function Goals() {
       <div className="card">
         <strong>{t('goals.data')}</strong>
         <div className="muted">{t('goals.backupNote')}</div>
-        <div className="row" style={{ gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-          <button className="btn-outline" onClick={() => download('foods.json', exportFoods(allFoods))}>{t('goals.exportFoods')}</button>
-          <label className="btn-outline">{t('goals.importFoods')}
-            <input type="file" accept="application/json" hidden onChange={e => onImportFoods(e.target.files?.[0] ?? undefined)} /></label>
-          <button className="btn-outline" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings, foodOverrides }))}>{t('goals.exportBackup')}</button>
-          <label className="btn-outline">{t('goals.importBackup')}
-            <input type="file" accept="application/json" hidden onChange={e => onImportBackup(e.target.files?.[0] ?? undefined)} /></label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+          <div className="row" style={{ gap: 8 }}>
+            <button className="btn-outline" onClick={() => download('foods.json', exportFoods(allFoods))}>{t('goals.exportFoods')}</button>
+            <label className="btn-outline">{t('goals.importFoods')}
+              <input type="file" accept="application/json" hidden onChange={e => onImportFoods(e.target.files?.[0] ?? undefined)} /></label>
+          </div>
+          <div className="row" style={{ gap: 8 }}>
+            <button className="btn-outline" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings, foodOverrides }))}>{t('goals.exportBackup')}</button>
+            <label className="btn-outline">{t('goals.importBackup')}
+              <input type="file" accept="application/json" hidden onChange={e => onImportBackup(e.target.files?.[0] ?? undefined)} /></label>
+          </div>
         </div>
         {msg && <div className="muted" style={{ marginTop: 8 }}>{msg}</div>}
       </div>
