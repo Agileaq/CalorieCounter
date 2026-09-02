@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { newId } from './ids'
-import { newFood, newServing, cloneAsCustom, DEFAULT_ICON } from './food'
+import { newFood, newServing, cloneAsCustom, DEFAULT_ICON, collapseToPrimaryServing } from './food'
 
 describe('food factory', () => {
   it('newId returns unique strings', () => {
@@ -30,5 +30,25 @@ describe('food factory', () => {
     // deep clone: mutating clone does not touch original
     c.servings[0].amount = 999
     expect(pre.servings[0].amount).toBe(100)
+  })
+  it('collapseToPrimaryServing keeps only the primary serving', () => {
+    const primary = { ...newServing(), id: 'p', label: 'Grams', isPrimary: true }
+    const other = { ...newServing(), id: 'o', label: 'Cup', isPrimary: false }
+    const f = { ...newFood(), name: 'Rice', servings: [primary, other] }
+    const c = collapseToPrimaryServing(f)
+    expect(c.servings).toHaveLength(1)
+    expect(c.servings[0].id).toBe('p')
+    expect(c.servings[0].isPrimary).toBe(true)
+    expect(c.nutrition).toBe(f.nutrition) // untouched, same reference
+    expect(c.name).toBe('Rice')
+    // original is not mutated
+    expect(f.servings).toHaveLength(2)
+  })
+  it('collapseToPrimaryServing falls back to the first serving if none is primary', () => {
+    const a = { ...newServing(), id: 'a', isPrimary: false }
+    const f = { ...newFood(), servings: [a] }
+    const c = collapseToPrimaryServing(f)
+    expect(c.servings[0].id).toBe('a')
+    expect(c.servings[0].isPrimary).toBe(true) // forced true
   })
 })

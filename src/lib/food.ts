@@ -36,3 +36,11 @@ export function cloneAsCustom(food: Food): Food {
   copy.servings = copy.servings.map(s => ({ ...s, id: newId() }))
   return copy
 }
+
+/** Collapse to the primary serving only — the single-serving model keeps the
+ *  primary and discards the rest. Nutrition is already expressed for the
+ *  primary serving (per the Food type doc), so no rescaling is needed. */
+export function collapseToPrimaryServing(food: Food): Food {
+  const primary = food.servings.find(s => s.isPrimary) ?? food.servings[0]
+  return { ...food, servings: [{ ...primary, isPrimary: true }] }
+}
