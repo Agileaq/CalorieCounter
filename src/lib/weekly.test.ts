@@ -10,7 +10,7 @@ function dayWithCalories(key: string, cals: number): DayLog {
   d.meals.breakfast.push({
     id: 'e' + key,
     servingId: 's',
-    quantity: 100,
+    quantity: 1,  // 1 serving × cals/serving = cals
     foodSnapshot: {
       id: 'f', name: 'x', icon: '🍽️', source: 'custom', createdAt: key,
       servings: [{ id: 's', kind: 'weight', label: 'g', amount: 100, unit: 'g', isPrimary: true }],
