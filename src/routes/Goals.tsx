@@ -4,6 +4,7 @@ import { useApp } from '../state/useApp'
 import { exportFoods, parseFoodsImport, exportBackup, parseBackup } from '../lib/importExport'
 import { download, readFileText } from '../lib/download'
 import { NumberInput } from '../components/NumberInput'
+import { distributeBudget } from '../lib/nutrition'
 
 /** Macros per kg of body weight for an advice card. calories = carbs*4 + protein*4 + fat*9. */
 interface Quota { carbs: number; protein: number; fat: number }
@@ -72,6 +73,21 @@ export default function Goals() {
   const mt = settings.macroTargets
   const setMacro = (patch: Partial<typeof mt>) => updateSettings({ macroTargets: { ...mt, ...patch } })
 
+  // Two-way macro auto-calc, purely event-driven (no watch/effect loops):
+  //  - edit budget → redistribute carbs/protein/fat by 3.5:1.5:0.8 (±1g, drift ≤ 2),
+  //    budget stays as typed; fiber preserved.
+  //  - edit carbs/protein/fat → recompute budget = 4c + 4p + 9f exactly; the other
+  //    two macros and fiber are left untouched.
+  //  - edit fiber → fiber only; budget and other macros unchanged.
+  function onBudgetChange(v: number) {
+    updateSettings({ dailyBudget: v, macroTargets: { ...mt, ...distributeBudget(v) } })
+  }
+  function onMacroChange(field: 'carbs' | 'protein' | 'fat', v: number) {
+    const next = { ...mt, [field]: v }
+    const budget = 4 * next.carbs + 4 * next.protein + 9 * next.fat
+    updateSettings({ dailyBudget: budget, macroTargets: next })
+  }
+
   async function onImportFoods(file?: File) {
     if (!file) return
     try { const n = importFoods(parseFoodsImport(await readFileText(file))); setMsg(t('goals.importFoodsDone', { n })) }
@@ -89,16 +105,16 @@ export default function Goals() {
       <div className="card">
         <label className="row spread">{t('goals.dailyBudget')}
           <NumberInput testId="budget-input" integer value={settings.dailyBudget}
-            onChange={v => updateSettings({ dailyBudget: v })} style={{ width: 100, textAlign: 'end' }} /></label>
+            onChange={onBudgetChange} style={{ width: 100, textAlign: 'end' }} /></label>
         <label className="row spread">{t('goals.carbsTarget')}
           <NumberInput testId="carbs-target" integer value={mt.carbs}
-            onChange={v => setMacro({ carbs: v })} style={{ width: 100, textAlign: 'end' }} /></label>
+            onChange={v => onMacroChange('carbs', v)} style={{ width: 100, textAlign: 'end' }} /></label>
         <label className="row spread">{t('goals.proteinTarget')}
           <NumberInput testId="protein-target" integer value={mt.protein}
-            onChange={v => setMacro({ protein: v })} style={{ width: 100, textAlign: 'end' }} /></label>
+            onChange={v => onMacroChange('protein', v)} style={{ width: 100, textAlign: 'end' }} /></label>
         <label className="row spread">{t('goals.fatTarget')}
           <NumberInput testId="fat-target" integer value={mt.fat}
-            onChange={v => setMacro({ fat: v })} style={{ width: 100, textAlign: 'end' }} /></label>
+            onChange={v => onMacroChange('fat', v)} style={{ width: 100, textAlign: 'end' }} /></label>
         <label className="row spread">{t('goals.fiberTarget')}
           <NumberInput testId="fiber-target" integer value={mt.fiber}
             onChange={v => setMacro({ fiber: v })} style={{ width: 100, textAlign: 'end' }} /></label>

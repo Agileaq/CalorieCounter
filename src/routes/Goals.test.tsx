@@ -70,4 +70,52 @@ describe('Goals', () => {
     fireEvent.pointerDown(document.body)
     expect(screen.queryByText(/Quota \(daily intake per kg body weight\)/)).toBeNull()
   })
+
+  // Two-way macro auto-calc. Budget ↔ 3 macros (carbs/protein/fat) by the
+  // 3.5:1.5:0.8 ratio; fiber is manual and never affects the budget.
+  describe('macro auto-calc', () => {
+    it('editing the budget redistributes carbs/protein/fat by 3.5:1.5:0.8 and keeps the budget as typed', () => {
+      render(<AppProvider><Goals /></AppProvider>)
+      const budget = screen.getByTestId('budget-input')
+      fireEvent.focus(budget)
+      fireEvent.change(budget, { target: { value: '2275' } })
+      const s = JSON.parse(localStorage.getItem('cc.settings')!)
+      // budget unchanged as typed
+      expect(s.dailyBudget).toBe(2275)
+      // macros redistributed by the ratio (±1g, drift <= 2)
+      const { carbs, protein, fat } = s.macroTargets
+      const recompute = 4 * carbs + 4 * protein + 9 * fat
+      expect(Math.abs(recompute - 2275)).toBeLessThanOrEqual(2)
+      // fiber preserved (default 30), untouched by a budget edit
+      expect(s.macroTargets.fiber).toBe(30)
+    })
+    it('editing carbs recomputes the budget exactly and leaves protein/fat/fiber alone', () => {
+      render(<AppProvider><Goals /></AppProvider>)
+      const carbs = screen.getByTestId('carbs-target')
+      fireEvent.focus(carbs)
+      fireEvent.change(carbs, { target: { value: '300' } })
+      const s = JSON.parse(localStorage.getItem('cc.settings')!)
+      // budget = 4*carbs + 4*protein + 9*fat, using the new carbs + the other two as-is
+      const { protein, fat } = s.macroTargets
+      expect(s.dailyBudget).toBe(4 * 300 + 4 * protein + 9 * fat)
+      expect(s.macroTargets.carbs).toBe(300)
+      // protein/fat/fiber unchanged from defaults (120/72/30)
+      expect(s.macroTargets.protein).toBe(120)
+      expect(s.macroTargets.fat).toBe(72)
+      expect(s.macroTargets.fiber).toBe(30)
+    })
+    it('editing fiber changes only fiber (no budget or other macro recompute)', () => {
+      render(<AppProvider><Goals /></AppProvider>)
+      const fiber = screen.getByTestId('fiber-target')
+      fireEvent.focus(fiber)
+      fireEvent.change(fiber, { target: { value: '45' } })
+      const s = JSON.parse(localStorage.getItem('cc.settings')!)
+      expect(s.macroTargets.fiber).toBe(45)
+      // budget and other macros stay at their defaults
+      expect(s.dailyBudget).toBe(2248)
+      expect(s.macroTargets.carbs).toBe(280)
+      expect(s.macroTargets.protein).toBe(120)
+      expect(s.macroTargets.fat).toBe(72)
+    })
+  })
 })

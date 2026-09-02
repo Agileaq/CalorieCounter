@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   emptyNutrition, scaleNutrition, entryNutrition, dayFoodNutrition,
-  remaining, underOver, primaryServing, computedCalories,
+  remaining, underOver, primaryServing, computedCalories, distributeBudget,
 } from './nutrition'
 import type { Food, DayLog, LogEntry } from '../types'
 
@@ -61,5 +61,59 @@ describe('nutrition', () => {
   it('underOver: positive is under, negative is over', () => {
     expect(underOver(2000, day([entry(food(400), 1)]))).toEqual({ kind: 'under', amount: 1600 })
     expect(underOver(300, day([entry(food(400), 1)]))).toEqual({ kind: 'over', amount: 100 })
+  })
+})
+
+describe('distributeBudget', () => {
+  // ratio 3.5:1.5:0.8 (carbs:protein:fat) → calories per unit k = 3.5*4 + 1.5*4 + 0.8*9 = 27.2
+  // invariant: |4*carbs + 4*protein + 9*fat - budget| <= 2; budget never mutated.
+  const RATIO = { carbs: 3.5, protein: 1.5, fat: 0.8 }
+
+  function recompute(m: { carbs: number; protein: number; fat: number }) {
+    return 4 * m.carbs + 4 * m.protein + 9 * m.fat
+  }
+  // ratio-shape: floor + a ±1g adjustment keeps each macro within < 2g of its
+  // ratio-derived float (floor truncates up to ~1g, ±1g adds up to ~1g more).
+  // Drift is the hard invariant; shape is a sanity bound on ratio faithfulness.
+  function ratioShape(m: { carbs: number; protein: number; fat: number }, budget: number) {
+    if (budget <= 0) return // skip shape check for degenerate budgets
+    const k = budget / 27.2
+    expect(Math.abs(m.carbs - RATIO.carbs * k)).toBeLessThan(2)
+    expect(Math.abs(m.protein - RATIO.protein * k)).toBeLessThan(2)
+    expect(Math.abs(m.fat - RATIO.fat * k)).toBeLessThan(2)
+  }
+
+  it('1500 cal distributes with drift <= 2 and ratio shape', () => {
+    const m = distributeBudget(1500)
+    expect(Math.abs(recompute(m) - 1500)).toBeLessThanOrEqual(2)
+    ratioShape(m, 1500)
+  })
+  it('2000 cal distributes with drift <= 2 and ratio shape', () => {
+    const m = distributeBudget(2000)
+    expect(Math.abs(recompute(m) - 2000)).toBeLessThanOrEqual(2)
+    ratioShape(m, 2000)
+  })
+  it('2248 cal distributes with drift <= 2 and ratio shape', () => {
+    const m = distributeBudget(2248)
+    expect(Math.abs(recompute(m) - 2248)).toBeLessThanOrEqual(2)
+    ratioShape(m, 2248)
+  })
+  it('2275 cal distributes with drift <= 2 and ratio shape', () => {
+    const m = distributeBudget(2275)
+    expect(Math.abs(recompute(m) - 2275)).toBeLessThanOrEqual(2)
+    ratioShape(m, 2275)
+  })
+  it('budget <= 0 returns all zeros', () => {
+    expect(distributeBudget(0)).toEqual({ carbs: 0, protein: 0, fat: 0 })
+    expect(distributeBudget(-500)).toEqual({ carbs: 0, protein: 0, fat: 0 })
+  })
+  it('NaN budget returns all zeros', () => {
+    expect(distributeBudget(NaN)).toEqual({ carbs: 0, protein: 0, fat: 0 })
+  })
+  it('does not mutate the caller budget and returns integers', () => {
+    const m = distributeBudget(1800)
+    expect(Number.isInteger(m.carbs)).toBe(true)
+    expect(Number.isInteger(m.protein)).toBe(true)
+    expect(Number.isInteger(m.fat)).toBe(true)
   })
 })

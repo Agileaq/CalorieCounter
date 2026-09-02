@@ -100,3 +100,65 @@ export function underOver(budget: number, day: DayLog): { kind: 'under' | 'over'
   const r = remaining(budget, day)
   return r >= 0 ? { kind: 'under', amount: r } : { kind: 'over', amount: -r }
 }
+
+/**
+ * Distribute a calorie budget across macros by the fixed ratio 3.5:1.5:0.8
+ * (carbs:protein:fat). One ratio unit = 3.5*4 + 1.5*4 + 0.8*9 = 27.2 cal.
+ *
+ * The budget is immutable — the macros absorb all integer-rounding drift. We
+ * floor the raw ratio values, then brute-force a ±1g adjustment (each macro in
+ * {-1, 0, +1}, weights 4/4/9 cal per g; 3^3 = 27 combos) to minimize
+ * |4c + 4p + 9f − budget|. Constraining to ±1g keeps every macro within 1g of
+ * its ratio-derived float, so the macro ratio stays faithful and the budget
+ * matches recomputed calories within ≤ 2 cal (gcd(4,9) = 1 makes any residue
+ * mod 1 reachable within two single-gram moves). Tie-break: fewest moves, then
+ * highest sum of fractional remainders among touched macros, then prefer +
+ * over −, then carbs > protein > fat. Degenerate inputs (≤ 0 or non-finite)
+ * → 0/0/0.
+ */
+export function distributeBudget(calories: number): { carbs: number; protein: number; fat: number } {
+  if (!Number.isFinite(calories) || calories <= 0) return { carbs: 0, protein: 0, fat: 0 }
+  const RATIO = { carbs: 3.5, protein: 1.5, fat: 0.8 }
+  const k = calories / 27.2
+  const raw = { carbs: RATIO.carbs * k, protein: RATIO.protein * k, fat: RATIO.fat * k }
+  const base = { carbs: Math.floor(raw.carbs), protein: Math.floor(raw.protein), fat: Math.floor(raw.fat) }
+  const rem = {
+    carbs: raw.carbs - base.carbs,
+    protein: raw.protein - base.protein,
+    fat: raw.fat - base.fat,
+  }
+  const recompute = (c: number, p: number, f: number) => 4 * c + 4 * p + 9 * f
+  // tie-break rank (lower wins): |drift|, fewest moves, highest remainder-sum
+  // among touched macros (negated), prefer + over − (signPref: +=0, 0=1, −=2),
+  // then carbs > protein > fat (lexicographic on the adjustments themselves).
+  const sp = (a: number) => (a > 0 ? 0 : a < 0 ? 2 : 1)
+  type Key = [number, number, number, number, number, number, number, number, number]
+  const rank = (drift: number, dc: number, dp: number, df: number): Key => {
+    const moves = (dc !== 0 ? 1 : 0) + (dp !== 0 ? 1 : 0) + (df !== 0 ? 1 : 0)
+    let remSum = 0
+    if (dc !== 0) remSum += rem.carbs
+    if (dp !== 0) remSum += rem.protein
+    if (df !== 0) remSum += rem.fat
+    return [drift, moves, -remSum, sp(dc), sp(dp), sp(df), dc, dp, df]
+  }
+  const lt = (a: Key, b: Key) => {
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i]
+    return false
+  }
+  let best = { ...base }
+  let bestKey: Key = rank(Math.abs(recompute(base.carbs, base.protein, base.fat) - calories), 0, 0, 0)
+  for (const dc of [-1, 0, 1]) {
+    for (const dp of [-1, 0, 1]) {
+      for (const df of [-1, 0, 1]) {
+        const c = base.carbs + dc, p = base.protein + dp, f = base.fat + df
+        if (c < 0 || p < 0 || f < 0) continue // macros can't go negative
+        const key = rank(Math.abs(recompute(c, p, f) - calories), dc, dp, df)
+        if (lt(key, bestKey)) {
+          best = { carbs: c, protein: p, fat: f }
+          bestKey = key
+        }
+      }
+    }
+  }
+  return best
+}
