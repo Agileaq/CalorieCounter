@@ -50,7 +50,7 @@ describe('FoodPicker', () => {
     expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
     expect(screen.getByTestId('food-detail-edit')).toBeInTheDocument()
   })
-  it('the 📝 memo button opens the food detail (same as tapping the row)', () => {
+  it('the details button opens the food detail (same as tapping the row)', () => {
     const onPick = vi.fn()
     render(<AppProvider><FoodPicker onPick={onPick} onClose={() => {}} /></AppProvider>)
     fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })

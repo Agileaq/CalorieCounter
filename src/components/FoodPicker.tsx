@@ -114,8 +114,8 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
           </div>
         </button>
         <div className="row" style={{ gap: 6 }}>
-          {/* memo/details button → opens the full FoodDetail sheet */}
-          <button className="btn-ghost" data-testid="food-detail-open" aria-label={t('foodPicker.details', { name: f.name })} style={{ fontSize: 18 }} onClick={() => setDetailId(f.id)}>📝</button>
+          {/* details button → opens the full FoodDetail sheet (nutrition facts + edit) */}
+          <button className="btn-ghost" data-testid="food-detail-open" aria-label={t('foodPicker.details', { name: f.name })} style={{ fontSize: 18 }} onClick={() => setDetailId(f.id)}>🔍</button>
           {/* fast-add → logs qty 1 immediately, stays on the picker */}
           <button className="btn-ghost" data-testid="food-add" aria-label={t('foodPicker.fastAdd', { name: f.name })} style={{ fontSize: 22 }} onClick={() => fastAdd(f)}>＋</button>
         </div>
