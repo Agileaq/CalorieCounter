@@ -31,11 +31,10 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
   const { updateMyFood, deleteMyFood, overrideFood, resetOverride, foodOverrides } = useApp()
   const [showFull, setShowFull] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [servingId, setServingId] = useState(primaryServing(food).id)
-  const [qty, setQty] = useState(primaryServing(food).amount)
+  const [qty, setQty] = useState(1)
 
   const n = food.nutrition
-  const entry: LogEntry = { id: newId(), foodSnapshot: food, servingId, quantity: qty }
+  const entry: LogEntry = { id: newId(), foodSnapshot: food, servingId: primaryServing(food).id, quantity: qty }
   const previewCals = Math.round(entryNutrition(entry).calories)
 
   function save(f: Food) {
@@ -65,9 +64,9 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
           <div className="muted">{t('foodForm.quantity')}</div>
           <div className="row" style={{ gap: 8, marginTop: 6 }}>
             <NumberInput testId="qty-input" value={qty} onChange={setQty} style={{ width: 100, padding: 8 }} />
-            <select value={servingId} onChange={e => setServingId(e.target.value)} style={{ padding: 8, flex: 1 }} aria-label={t('foodForm.serving')}>
-              {food.servings.map(s => <option key={s.id} value={s.id}>{s.label} ({s.amount}{s.unit})</option>)}
-            </select>
+            <span className="muted" style={{ alignSelf: 'center' }}>
+              {primaryServing(food).label} ({primaryServing(food).amount}{primaryServing(food).unit})
+            </span>
           </div>
           <div className="row spread" style={{ marginTop: 10 }}>
             <span className="muted">{t('foodForm.calories')}</span>
@@ -124,16 +123,6 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
               <Row label={t('foodForm.caffeine')} value={fmt(n.caffeine, 'mg')} />
             </div>
           )}
-        </div>
-
-        <div className="card">
-          <div className="muted">{t('foodDetail.servings')}</div>
-          {food.servings.map(s => (
-            <div key={s.id} className="row spread" style={{ padding: '4px 0' }}>
-              <span>{s.label} ({s.amount}{s.unit})</span>
-              {s.isPrimary && <span style={{ color: 'var(--accent)' }}>★</span>}
-            </div>
-          ))}
         </div>
 
         <div className="row" style={{ gap: 8 }}>

@@ -93,4 +93,19 @@ describe('FoodDetail', () => {
     fireEvent.click(back)
     expect(onClose).toHaveBeenCalled()
   })
+  it('quantity defaults to 1 and the preview scales with servings', () => {
+    render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
+    const qty = screen.getByTestId('qty-input')
+    expect(qty).toHaveValue(1)
+    // base calories 130; 1.5 servings → 195
+    fireEvent.change(qty, { target: { value: '1.5' } })
+    expect(screen.getByTestId('qty-preview-cals')).toHaveTextContent('195')
+  })
+  it('has no serving dropdown and no bottom servings-list card', () => {
+    render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
+    // no <select> serving dropdown
+    expect(document.querySelector('select')).toBeNull()
+    // the static serving label is shown instead
+    expect(screen.getByText(/Grams \(100g\)/)).toBeInTheDocument()
+  })
 })
