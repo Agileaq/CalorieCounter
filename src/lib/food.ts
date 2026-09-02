@@ -49,6 +49,15 @@ export function collapseToPrimaryServing(food: Food): Food {
 
 const COUNT_WINDOW_DAYS = 180
 
+/** Classify a serving for display: weight/volume kinds ("每 100g") vs the
+ *  count kind ("每份"). Uses the serving's `kind`, not its unit string, so
+ *  a count serving whose unit happens to be "g" (e.g. label "serving",
+ *  amount 55, unit "g" = "一份 55g") is still treated as a per-serving count.
+ *  `amount` kinds without an explicit weight/volume read as "每份". */
+export function servingUnitType(s: Serving): 'weight' | 'count' {
+  return s.kind === 'weight' || s.kind === 'volume' ? 'weight' : 'count'
+}
+
 /**
  * Count how many times each food has been logged over the last COUNT_WINDOW_DAYS
  * days (inclusive of `today - 180`, exclusive of future days), keyed by food id.

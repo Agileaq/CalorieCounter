@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { newId } from './ids'
-import { newFood, newServing, cloneAsCustom, DEFAULT_ICON, collapseToPrimaryServing, foodCounts } from './food'
+import { newFood, newServing, cloneAsCustom, DEFAULT_ICON, collapseToPrimaryServing, foodCounts, servingUnitType } from './food'
 import { addDays, todayKey } from './date'
 import type { DayLog, LogEntry, MealKey } from '../types'
 import { MEAL_KEYS } from '../types'
@@ -108,5 +108,20 @@ describe('foodCounts', () => {
     }
     const counts = foodCounts(days, today)
     expect(counts.size).toBe(0)
+  })
+})
+
+describe('servingUnitType', () => {
+  it("classifies weight/volume kinds as 'weight'", () => {
+    const g = { ...newServing(), kind: 'weight' as const, unit: 'g' }
+    const mL = { ...newServing(), kind: 'volume' as const, unit: 'mL' }
+    expect(servingUnitType(g)).toBe('weight')
+    expect(servingUnitType(mL)).toBe('weight')
+  })
+  it("classifies amount kinds as 'count'", () => {
+    const egg = { ...newServing(), kind: 'amount' as const, label: '1 Egg', unit: 'egg' }
+    const serving = { ...newServing(), kind: 'amount' as const, label: 'serving', unit: 'g' }
+    expect(servingUnitType(egg)).toBe('count')
+    expect(servingUnitType(serving)).toBe('count')
   })
 })

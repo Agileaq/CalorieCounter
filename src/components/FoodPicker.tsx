@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import type { Food, LogEntry } from '../types'
 import { primaryServing } from '../lib/nutrition'
-import { foodCounts } from '../lib/food'
+import { foodCounts, servingUnitType } from '../lib/food'
 import { newId } from '../lib/ids'
 import { todayKey } from '../lib/date'
 import { SheetModal } from './SheetModal'
@@ -110,7 +110,11 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
           <span style={{ fontSize: 24 }}>{f.icon}</span>
           <div>
             <div>{f.name}</div>
-            <div className="muted">{t('foodPicker.perServing', { cal: Math.round(f.nutrition.calories), amount: ps.amount, label: ps.label })}</div>
+            <div className="muted" data-testid="food-subtitle">
+              {servingUnitType(ps) === 'weight'
+                ? t('foodPicker.perWeight', { cal: Math.round(f.nutrition.calories), amount: ps.amount, unit: ps.unit })
+                : t('foodPicker.perCount', { cal: Math.round(f.nutrition.calories) })}
+            </div>
           </div>
         </button>
         <div className="row" style={{ gap: 6 }}>
