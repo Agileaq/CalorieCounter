@@ -43,9 +43,9 @@ export function scaleNutrition(n: Nutrition, factor: number): Nutrition {
 }
 
 export function entryNutrition(entry: LogEntry): Nutrition {
-  const base = primaryServing(entry.foodSnapshot)
-  const factor = base.amount === 0 ? 0 : entry.quantity / base.amount
-  return scaleNutrition(entry.foodSnapshot.nutrition, factor)
+  // quantity is the number of servings; the food's nutrition is expressed
+  // for its (single, primary) serving, so the factor is the quantity itself.
+  return scaleNutrition(entry.foodSnapshot.nutrition, entry.quantity)
 }
 
 export function sumNutrition(list: Nutrition[]): Nutrition {
