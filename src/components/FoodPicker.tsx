@@ -36,8 +36,8 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
   return (
     <SheetModal onClose={onClose}>
       <div className="row spread">
+        <button className="icon-btn" aria-label={t('common.back')} onClick={onClose}>←</button>
         <input placeholder={t('foodPicker.search')} value={q} onChange={e => setQ(e.target.value)} style={{ flex: 1, padding: 8, margin: '0 8px' }} />
-        <button className="icon-btn" aria-label={t('common.close')} onClick={onClose}>✕</button>
       </div>
       <div className="row" style={{ gap: 8, margin: '10px 0' }}>
         <button className={tab === 'all' ? 'btn-accent' : 'btn-ghost'} onClick={() => setTab('all')}>{t('foodPicker.all')}</button>

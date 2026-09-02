@@ -1,10 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
 import { FoodPicker } from './FoodPicker'
 
 beforeEach(() => localStorage.clear())
+
+// flush any leftover ghost-click guard a prior sheet gesture installed
+// (SheetModal swallows the click after a gesture dismiss via a setTimeout)
+function flushTimers() {
+  return act(async () => { await new Promise(r => setTimeout(r, 1)) })
+}
 
 describe('FoodPicker', () => {
   it('lists predefined foods under All and filters by search', () => {
@@ -64,5 +70,18 @@ describe('FoodPicker', () => {
     // detail is gone; picker is still open (its close not called)
     expect(screen.queryByTestId('food-detail-cals')).not.toBeInTheDocument()
     expect(onClose).not.toHaveBeenCalled()
+  })
+  it('uses a leftmost left-arrow back button instead of a close ✕', async () => {
+    await flushTimers()
+    const onClose = vi.fn()
+    const { container } = render(<AppProvider><FoodPicker onPick={() => {}} onClose={onClose} /></AppProvider>)
+    const header = container.querySelector('.modal .row.spread')! as HTMLElement
+    const back = screen.getByRole('button', { name: /back/i })
+    expect(back).toHaveTextContent('←')
+    // the back arrow is the first child of the header (leftmost), not after the search input
+    expect(header.firstElementChild).toBe(back)
+    expect(() => screen.getByRole('button', { name: /close/i })).toThrow()
+    fireEvent.click(back)
+    expect(onClose).toHaveBeenCalled()
   })
 })

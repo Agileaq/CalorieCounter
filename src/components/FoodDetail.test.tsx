@@ -84,4 +84,13 @@ describe('FoodDetail', () => {
     fireEvent.click(screen.getByTestId('food-detail-reset'))
     expect(JSON.parse(localStorage.getItem('cc.foodOverrides')!)).toEqual({})
   })
+  it('uses a left-arrow back button instead of a close ✕', () => {
+    const onClose = vi.fn()
+    render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={onClose} /></AppProvider>)
+    const back = screen.getByTestId('food-detail-close')
+    expect(back).toHaveTextContent('←')
+    expect(back.getAttribute('aria-label')).toMatch(/back/i)
+    fireEvent.click(back)
+    expect(onClose).toHaveBeenCalled()
+  })
 })
