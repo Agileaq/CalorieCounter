@@ -1,6 +1,8 @@
-import type { Food, Serving } from '../types'
+import type { Food, Serving, DayLog } from '../types'
+import { MEAL_KEYS } from '../types'
 import { emptyNutrition } from './nutrition'
 import { newId } from './ids'
+import { addDays, fromDateKey } from './date'
 
 export const DEFAULT_ICON = '🍽️'
 
@@ -43,4 +45,38 @@ export function cloneAsCustom(food: Food): Food {
 export function collapseToPrimaryServing(food: Food): Food {
   const primary = food.servings.find(s => s.isPrimary) ?? food.servings[0]
   return { ...food, servings: [{ ...primary, isPrimary: true }] }
+}
+
+const COUNT_WINDOW_DAYS = 180
+
+/**
+ * Count how many times each food has been logged over the last COUNT_WINDOW_DAYS
+ * days (inclusive of `today - 180`, exclusive of future days), keyed by food id.
+ * Derived purely from day logs — no persisted counter — so it rides inside the
+ * `days` field of a backup and recomputes on load. Used to rank the All tab by
+ * frequency (most-logged first). O(total entries in the window) per render.
+ */
+export function foodCounts(
+  days: Record<string, DayLog>,
+  today: string,
+  windowDays = COUNT_WINDOW_DAYS,
+): Map<string, number> {
+  const counts = new Map<string, number>()
+  const start = addDays(today, -windowDays)
+  const startMs = fromDateKey(start).getTime()
+  const endMs = fromDateKey(today).getTime()
+  for (const key in days) {
+    /* Skip keys we can't parse; keys are "YYYY-MM-DD" but be defensive. */
+    const parts = key.split('-').map(Number)
+    if (parts.length !== 3 || parts.some(Number.isNaN)) continue
+    const ms = fromDateKey(key).getTime()
+    if (ms < startMs || ms > endMs) continue
+    const day = days[key]
+    for (const meal of MEAL_KEYS) {
+      for (const e of day.meals[meal]) {
+        counts.set(e.foodSnapshot.id, (counts.get(e.foodSnapshot.id) ?? 0) + 1)
+      }
+    }
+  }
+  return counts
 }

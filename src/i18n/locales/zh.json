@@ -63,7 +63,10 @@
     "myFoods": "我的食物",
     "newFood": "新食物",
     "perServing": "每 {{amount}} {{label}} {{cal}} 千卡",
-    "newMyFood": "新建我的食物"
+    "newMyFood": "新建我的食物",
+    "fastAdd": "快速添加 {{name}}",
+    "details": "{{name}} 详情",
+    "added": "已添加 {{name}}"
   },
   "foodForm": {
     "newFood": "新食物",

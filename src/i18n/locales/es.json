@@ -63,7 +63,10 @@
     "myFoods": "Mis comidas",
     "newFood": "Nueva comida",
     "perServing": "{{cal}} cal por {{amount}} {{label}}",
-    "newMyFood": "Nueva comida mía"
+    "newMyFood": "Nueva comida mía",
+    "fastAdd": "Añadir rápido {{name}}",
+    "details": "Detalles de {{name}}",
+    "added": "Añadido {{name}}"
   },
   "foodForm": {
     "newFood": "Nueva comida",

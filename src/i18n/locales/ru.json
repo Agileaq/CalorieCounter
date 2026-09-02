@@ -63,7 +63,10 @@
     "myFoods": "Мои продукты",
     "newFood": "Новый продукт",
     "perServing": "{{cal}} ккал на {{amount}} {{label}}",
-    "newMyFood": "Моя новая еда"
+    "newMyFood": "Моя новая еда",
+    "fastAdd": "Быстро добавить {{name}}",
+    "details": "Подробнее о {{name}}",
+    "added": "Добавлено: {{name}}"
   },
   "foodForm": {
     "newFood": "Новый продукт",

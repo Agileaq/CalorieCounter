@@ -67,6 +67,20 @@ input, select { font: inherit; }
 .modal-backdrop.sheet { align-items: stretch; background: var(--bg); overscroll-behavior: contain; }
 .modal-backdrop.sheet .modal { max-height: none; height: 100%; border-radius: 0; overscroll-behavior: contain; }
 .sheet-grabber { width: 36px; height: 4px; border-radius: 999px; background: var(--line); margin: 0 auto 10px; }
+
+/* Fast-add confirmation toast (FoodPicker). Sticky to the sheet bottom so it
+   stays visible while the scrollable list moves; never intercepts taps so a
+   rapid second fast-add isn't blocked. */
+.fast-add-toast {
+  position: sticky; bottom: 8px; margin-inline: auto; margin-top: 12px;
+  width: max-content; max-width: 90%;
+  padding: 6px 14px; border-radius: 999px;
+  background: var(--green); color: #fff; font-size: 13px; font-weight: 600;
+  pointer-events: none; z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  animation: fast-add-pop 140ms ease-out;
+}
+@keyframes fast-add-pop { from { transform: scale(.9); opacity: 0 } to { transform: scale(1); opacity: 1 } }
 @media (min-width: 520px) { .modal-backdrop { align-items: center; } .modal { border-radius: 18px; } }
 
 /* Advice cards (fat-loss / muscle-gain): weight input drives read-only macros.

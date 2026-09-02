@@ -3,6 +3,11 @@ import { render, screen, fireEvent, act } from '@testing-library/react'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
 import { FoodPicker } from './FoodPicker'
+import { todayKey } from '../lib/date'
+import { newId } from '../lib/ids'
+import { emptyNutrition } from '../lib/nutrition'
+import type { DayLog, LogEntry, MealKey } from '../types'
+import { MEAL_KEYS } from '../types'
 
 beforeEach(() => localStorage.clear())
 
@@ -45,21 +50,56 @@ describe('FoodPicker', () => {
     expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
     expect(screen.getByTestId('food-detail-edit')).toBeInTheDocument()
   })
-  it('the ＋ button opens the food detail (same as tapping the row)', () => {
+  it('the 📝 memo button opens the food detail (same as tapping the row)', () => {
     const onPick = vi.fn()
     render(<AppProvider><FoodPicker onPick={onPick} onClose={() => {}} /></AppProvider>)
     fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
-    fireEvent.click(screen.getAllByTestId('food-add')[0])
+    fireEvent.click(screen.getAllByTestId('food-detail-open')[0])
     expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
     expect(screen.getByTestId('food-detail-add')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('food-detail-add'))
     expect(onPick).toHaveBeenCalled()
     expect(onPick.mock.calls[0][0].quantity).toBeGreaterThan(0)
   })
+  it('the fast-add ＋ logs qty 1 immediately without opening detail or closing the picker', () => {
+    const onPick = vi.fn()
+    const onClose = vi.fn()
+    render(<AppProvider><FoodPicker onPick={onPick} onClose={onClose} /></AppProvider>)
+    fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
+    fireEvent.click(screen.getAllByTestId('food-add')[0])
+    // logged with quantity 1, picker never closed, no detail sheet opened
+    expect(onPick).toHaveBeenCalledTimes(1)
+    expect(onPick.mock.calls[0][0].quantity).toBe(1)
+    expect(onClose).not.toHaveBeenCalled()
+    expect(screen.queryByTestId('food-detail-cals')).not.toBeInTheDocument()
+    // the search input is still there → picker still open
+    expect(screen.getByPlaceholderText(/search/i)).toBeInTheDocument()
+  })
+  it('fast-add shows a transient "added" toast that dismisses itself', async () => {
+    const onPick = vi.fn()
+    render(<AppProvider><FoodPicker onPick={onPick} onClose={() => {}} /></AppProvider>)
+    fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
+    await act(async () => { fireEvent.click(screen.getAllByTestId('food-add')[0]) })
+    const toast = await screen.findByTestId('fast-add-toast')
+    expect(toast.textContent).toMatch(/added/i)
+    // the 1200ms dismiss timer fires on its own; wait for the toast to leave
+    await screen.findByTestId('fast-add-toast') // still present immediately
+    await act(async () => { await new Promise(r => setTimeout(r, 1400)) })
+    expect(screen.queryByTestId('fast-add-toast')).not.toBeInTheDocument()
+  })
+  it('repeated fast-adds keep the picker open and log each one', () => {
+    const onPick = vi.fn()
+    render(<AppProvider><FoodPicker onPick={onPick} onClose={() => {}} /></AppProvider>)
+    fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
+    const add = screen.getAllByTestId('food-add')[0]
+    fireEvent.click(add); fireEvent.click(add); fireEvent.click(add)
+    expect(onPick).toHaveBeenCalledTimes(3)
+    expect(onPick.mock.calls.every(c => c[0].quantity === 1)).toBe(true)
+  })
   it('pulling down the FoodDetail closes it back to the picker, not the picker itself', () => {
     const onClose = vi.fn()
     const { container } = render(<AppProvider><FoodPicker onPick={() => {}} onClose={onClose} /></AppProvider>)
-    fireEvent.click(screen.getAllByTestId('food-add')[0])
+    fireEvent.click(screen.getAllByTestId('food-detail-open')[0])
     expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
     // the FoodDetail sheet is the second .modal in the tree (above the picker)
     const sheets = container.querySelectorAll('.modal')
@@ -83,5 +123,48 @@ describe('FoodPicker', () => {
     expect(() => screen.getByRole('button', { name: /close/i })).toThrow()
     fireEvent.click(back)
     expect(onClose).toHaveBeenCalled()
+  })
+
+  // — frequency sort on the All tab —
+  function myFood(id: string, name: string) {
+    return {
+      id, name, icon: '🍽️', source: 'custom' as const, createdAt: '',
+      servings: [{ id: 's', kind: 'weight' as const, label: 'Grams', amount: 100, unit: 'g', isPrimary: true }],
+      nutrition: emptyNutrition(),
+    }
+  }
+  function dayWithEntries(meals: Partial<Record<MealKey, LogEntry[]>>): DayLog {
+    const m: Record<MealKey, LogEntry[]> = { breakfast: [], lunch: [], dinner: [], snacks: [] }
+    for (const k of MEAL_KEYS) m[k] = meals[k] ?? []
+    return { date: todayKey(), meals: m, exercise: [] }
+  }
+  function loggedEntry(foodId: string): LogEntry {
+    return { id: newId(), foodSnapshot: myFood(foodId, foodId), servingId: 's', quantity: 1 }
+  }
+
+  it('All tab orders by log frequency (most-logged first) and has no letter headers', () => {
+    // "Bbbb" logged twice, "Aaaa" never → Bbbb ranks above Aaaa despite the name order
+    localStorage.setItem('cc.myFoods', JSON.stringify([myFood('a', 'Aaaa'), myFood('b', 'Bbbb')]))
+    localStorage.setItem('cc.days', JSON.stringify({
+      [todayKey()]: dayWithEntries({ breakfast: [loggedEntry('b'), loggedEntry('b')] }),
+    }))
+    render(<AppProvider><FoodPicker onPick={() => {}} onClose={() => {}} /></AppProvider>)
+    const names = screen.getAllByTestId('food-row').map(r => r.textContent)
+    const bIdx = names.findIndex(n => /Bbbb/.test(n))
+    const aIdx = names.findIndex(n => /Aaaa/.test(n))
+    expect(bIdx).toBeGreaterThanOrEqual(0)
+    expect(aIdx).toBeGreaterThanOrEqual(0)
+    expect(bIdx).toBeLessThan(aIdx) // more-logged food first
+    // All tab is a flat list — no letter group headers (single-letter "muted" divs)
+    expect(screen.queryByText('A')).not.toBeInTheDocument()
+    expect(screen.queryByText('B')).not.toBeInTheDocument()
+  })
+
+  it('My Foods tab still groups by letter', () => {
+    localStorage.setItem('cc.myFoods', JSON.stringify([myFood('a', 'Aaaa'), myFood('b', 'Bbbb')]))
+    render(<AppProvider><FoodPicker onPick={() => {}} onClose={() => {}} /></AppProvider>)
+    fireEvent.click(screen.getByText(/My Foods/))
+    expect(screen.getByText('A')).toBeInTheDocument()
+    expect(screen.getByText('B')).toBeInTheDocument()
   })
 })

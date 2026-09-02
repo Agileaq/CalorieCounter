@@ -63,7 +63,10 @@
     "myFoods": "أطعمتي",
     "newFood": "طعام جديد",
     "perServing": "{{cal}} سعرة لكل {{amount}} {{label}}",
-    "newMyFood": "طعامي الجديد"
+    "newMyFood": "طعامي الجديد",
+    "fastAdd": "إضافة سريعة {{name}}",
+    "details": "تفاصيل {{name}}",
+    "added": "تمت إضافة {{name}}"
   },
   "foodForm": {
     "newFood": "طعام جديد",
