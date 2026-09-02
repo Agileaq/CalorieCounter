@@ -6,16 +6,19 @@ import {
 } from '../lib/storage'
 import { mergeFoods } from '../lib/importExport'
 import predefinedRaw from '../data/predefinedFoods.json'
+import { collapseToPrimaryServing } from '../lib/food'
 import { setLanguage as applyI18nLanguage, applyDir } from '../i18n'
 import { AppContext, type AppContextValue } from './useApp'
 import { todayKey } from '../lib/date'
 
-const predefined = predefinedRaw as Food[]
+const predefined = (predefinedRaw as Food[]).map(collapseToPrimaryServing)
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(() => { ensureSchema(); return loadSettings() })
-  const [myFoods, setMyFoods] = useState<Food[]>(() => loadMyFoods())
-  const [overrides, setOverrides] = useState<Record<string, Food>>(() => loadFoodOverrides())
+  const [myFoods, setMyFoods] = useState<Food[]>(() => loadMyFoods().map(collapseToPrimaryServing))
+  const [overrides, setOverrides] = useState<Record<string, Food>>(() =>
+    Object.fromEntries(Object.entries(loadFoodOverrides()).map(([k, f]) => [k, collapseToPrimaryServing(f)]))
+  )
   const [days, setDays] = useState<Record<string, DayLog>>(() => loadDays())
   const [selectedDate, setSelectedDate] = useState<string>(() => todayKey())
 
@@ -55,9 +58,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     deleteExercise: (id) => mutateDay(d => ({ ...d, exercise: d.exercise.filter(e => e.id !== id) })),
     setLanguage: (lang: Language) => persistSettings({ ...settings, language: lang }),
     importFoods: (foods) => {
+      const collapsed = foods.map(collapseToPrimaryServing)
       // custom entries become My Foods; predefined entries become in-place overrides
-      persistMyFoods(mergeFoods(myFoods, foods.filter(f => f.source === 'custom')))
-      const overs = foods.filter(f => f.source === 'predefined')
+      persistMyFoods(mergeFoods(myFoods, collapsed.filter(f => f.source === 'custom')))
+      const overs = collapsed.filter(f => f.source === 'predefined')
       if (overs.length) {
         const next = { ...overrides }
         for (const f of overs) next[f.id] = f
@@ -66,8 +70,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return foods.length
     },
     replaceAll: (data) => {
-      persistDays(data.days); persistMyFoods(data.myFoods); persistSettings(data.settings)
-      persistOverrides(data.foodOverrides ?? {})
+      persistDays(data.days)
+      persistMyFoods(data.myFoods.map(collapseToPrimaryServing))
+      persistSettings(data.settings)
+      persistOverrides(Object.fromEntries(Object.entries(data.foodOverrides ?? {}).map(([k, f]) => [k, collapseToPrimaryServing(f)])))
     },
   }
 

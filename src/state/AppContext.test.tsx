@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import { AppProvider } from './AppContext'
 import { useApp } from './useApp'
-import { newFood } from '../lib/food'
+import { newFood, newServing } from '../lib/food'
 import { entryNutrition } from '../lib/nutrition'
 
 function Probe() {
@@ -15,7 +15,7 @@ function Probe() {
       <button onClick={() => app.addMyFood(newFood({ name: 'Test', nutrition: { ...app.allFoods[0].nutrition } }))}>addFood</button>
       <button onClick={() => {
         const f = newFood({ name: 'Rice', nutrition: { ...app.allFoods[0].nutrition, calories: 130 } })
-        app.addEntry('breakfast', { id: 'e1', foodSnapshot: f, servingId: f.servings[0].id, quantity: 200 })
+        app.addEntry('breakfast', { id: 'e1', foodSnapshot: f, servingId: f.servings[0].id, quantity: 2 })
       }}>log</button>
     </div>
   )
@@ -27,7 +27,7 @@ describe('AppContext', () => {
     const before = Number(screen.getByTestId('foodCount').textContent)
     expect(before).toBeGreaterThanOrEqual(15)
     act(() => { screen.getByText('log').click() })
-    // 130 cal/100g × 200g = 260
+    // 130 cal/serving × 2 servings = 260
     expect(screen.getByTestId('dayCals').textContent).toBe('260')
   })
   it('addMyFood increases food count and persists', () => {
@@ -61,5 +61,25 @@ describe('AppContext overrides', () => {
     // a fresh provider must apply the stored override on startup
     render(<AppProvider><OverrideProbe /></AppProvider>)
     expect(screen.getByTestId('riceCals').textContent).toBe('999')
+  })
+})
+
+function MultiServingProbe() {
+  const app = useApp()
+  const first = app.myFoods[0]
+  return <span data-testid="myServings">{first ? first.servings.length : 0}</span>
+}
+
+describe('AppContext collapse', () => {
+  beforeEach(() => localStorage.clear())
+  it('collapses myFoods loaded from storage to a single serving', () => {
+    const twoServings = newFood({ name: 'Zebra' })
+    twoServings.servings = [
+      { ...newServing(), id: 'p', label: 'Grams', isPrimary: true },
+      { ...newServing(), id: 'o', label: 'Cup', isPrimary: false },
+    ]
+    localStorage.setItem('cc.myFoods', JSON.stringify([twoServings]))
+    render(<AppProvider><MultiServingProbe /></AppProvider>)
+    expect(screen.getByTestId('myServings').textContent).toBe('1')
   })
 })
