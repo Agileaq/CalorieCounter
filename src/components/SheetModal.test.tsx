@@ -46,4 +46,12 @@ describe('SheetModal', () => {
     expect(onClose).not.toHaveBeenCalled()
     await flushTimers()
   })
+  it('renders the grabber by default but hides it when dismissible is false', () => {
+    const onClose = vi.fn()
+    const defaultSheet = render(<SheetModal onClose={onClose}><div>body</div></SheetModal>)
+    expect(defaultSheet.container.querySelector('.sheet-grabber')).not.toBeNull()
+
+    const { container } = render(<SheetModal onClose={onClose} dismissible={false}><div>body</div></SheetModal>)
+    expect(container.querySelector('.sheet-grabber')).toBeNull()
+  })
 })

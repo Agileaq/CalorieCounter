@@ -11,6 +11,8 @@ import { useEffect, useRef, type ReactNode, type TouchEvent } from 'react'
  * keeps dragging downward past a threshold, the sheet closes (onClose). This
  * is the default; pass `dismissible={false}` to opt a sheet out (FoodForm uses
  * it so the new/edit-food sheet closes only via its close button or backdrop).
+ * The sheet-grabber handle is also hidden when non-dismissible, since it
+ * advertises a pull gesture the sheet no longer supports.
  *
  * Stacking: a sheet can open on top of another sheet (FoodDetail over
  * FoodPicker, FoodForm over either). Touch handlers stop propagation so a
@@ -88,7 +90,7 @@ export function SheetModal({ onClose, children, dismissible = true }: { onClose:
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <div className="sheet-grabber" aria-hidden="true" />
+        {dismissible && <div className="sheet-grabber" aria-hidden="true" />}
         {children}
       </div>
     </div>
