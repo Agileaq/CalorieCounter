@@ -13,11 +13,13 @@ export interface AppContextValue {
   myFoods: Food[]
   predefined: Food[]
   foodOverrides: Record<string, Food>
+  hiddenFoods: Record<string, true>
   addMyFood: (f: Food) => void
   updateMyFood: (f: Food) => void
   deleteMyFood: (id: string) => void
   overrideFood: (f: Food) => void
   resetOverride: (id: string) => void
+  hideFood: (id: string) => void
   addEntry: (meal: MealKey, entry: LogEntry) => void
   updateEntry: (meal: MealKey, entry: LogEntry) => void
   deleteEntry: (meal: MealKey, id: string) => void

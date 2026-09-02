@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import {
   DEFAULT_SETTINGS, loadSettings, saveSettings, loadMyFoods, saveMyFoods,
   loadDays, saveDays, getDay, emptyDay, ensureSchema,
+  loadHiddenFoods, saveHiddenFoods,
 } from './storage'
 
 beforeEach(() => localStorage.clear())
@@ -42,5 +43,12 @@ describe('storage', () => {
   it('ensureSchema sets the current version', () => {
     ensureSchema()
     expect(localStorage.getItem('cc.schemaVersion')).toBe('1')
+  })
+  it('loadHiddenFoods returns an empty map when nothing is stored', () => {
+    expect(loadHiddenFoods()).toEqual({})
+  })
+  it('round-trips hiddenFoods', () => {
+    saveHiddenFoods({ 'pre-white-rice': true, 'pre-egg': true })
+    expect(loadHiddenFoods()).toEqual({ 'pre-white-rice': true, 'pre-egg': true })
   })
 })

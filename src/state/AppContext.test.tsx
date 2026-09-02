@@ -83,3 +83,42 @@ describe('AppContext collapse', () => {
     expect(screen.getByTestId('myServings').textContent).toBe('1')
   })
 })
+
+function HiddenProbe() {
+  const app = useApp()
+  return (
+    <div>
+      <span data-testid="foodCount">{app.allFoods.length}</span>
+      <span data-testid="riceInAll">{app.allFoods.some(f => f.id === 'pre-white-rice') ? 'yes' : 'no'}
+      </span>
+      <span data-testid="riceHidden">{app.hiddenFoods['pre-white-rice'] ? 'yes' : 'no'}
+      </span>
+      <button onClick={() => app.hideFood('pre-white-rice')}>hide</button>
+    </div>
+  )
+}
+
+describe('AppContext hide', () => {
+  beforeEach(() => localStorage.clear())
+  it('allFoods excludes ids in cc.hiddenFoods loaded from storage', () => {
+    localStorage.setItem('cc.hiddenFoods', JSON.stringify({ 'pre-white-rice': true }))
+    render(<AppProvider><HiddenProbe /></AppProvider>)
+    // rice is one of the predefined foods; with it hidden, it's absent from allFoods
+    expect(screen.getByTestId('riceInAll').textContent).toBe('no')
+    expect(screen.getByTestId('riceHidden').textContent).toBe('yes')
+  })
+  it('hideFood adds the id to hiddenFoods and persists to cc.hiddenFoods', () => {
+    const before = render(<AppProvider><HiddenProbe /></AppProvider>)
+    const countBefore = Number(screen.getByTestId('foodCount').textContent)
+    expect(screen.getByTestId('riceInAll').textContent).toBe('yes')
+    act(() => { screen.getByText('hide').click() })
+    expect(screen.getByTestId('riceHidden').textContent).toBe('yes')
+    expect(screen.getByTestId('riceInAll').textContent).toBe('no')
+    expect(Number(screen.getByTestId('foodCount').textContent)).toBe(countBefore - 1)
+    expect(JSON.parse(localStorage.getItem('cc.hiddenFoods')!)).toEqual({ 'pre-white-rice': true })
+    before.unmount()
+    // a fresh provider applies the stored hide on startup
+    render(<AppProvider><HiddenProbe /></AppProvider>)
+    expect(screen.getByTestId('riceHidden').textContent).toBe('yes')
+  })
+})

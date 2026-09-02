@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { DayLog, Food, Language, Settings } from '../types'
 import {
   loadSettings, saveSettings, loadMyFoods, saveMyFoods, loadDays, saveDays,
-  loadFoodOverrides, saveFoodOverrides, getDay, ensureSchema,
+  loadFoodOverrides, saveFoodOverrides, loadHiddenFoods, saveHiddenFoods,
+  getDay, ensureSchema,
 } from '../lib/storage'
 import { mergeFoods } from '../lib/importExport'
 import predefinedRaw from '../data/predefinedFoods.json'
@@ -19,6 +20,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [overrides, setOverrides] = useState<Record<string, Food>>(() =>
     Object.fromEntries(Object.entries(loadFoodOverrides()).map(([k, f]) => [k, collapseToPrimaryServing(f)]))
   )
+  const [hidden, setHidden] = useState<Record<string, true>>(() => loadHiddenFoods())
   const [days, setDays] = useState<Record<string, DayLog>>(() => loadDays())
   const [selectedDate, setSelectedDate] = useState<string>(() => todayKey())
 
@@ -31,6 +33,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   function persistMyFoods(next: Food[]) { setMyFoods(next); saveMyFoods(next) }
   function persistSettings(next: Settings) { setSettings(next); saveSettings(next) }
   function persistOverrides(next: Record<string, Food>) { setOverrides(next); saveFoodOverrides(next) }
+  function persistHidden(next: Record<string, true>) { setHidden(next); saveHiddenFoods(next) }
 
   function mutateDay(fn: (d: DayLog) => DayLog) {
     const current = getDay(days, selectedDate)
@@ -42,14 +45,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     settings,
     updateSettings: (patch) => persistSettings({ ...settings, ...patch }),
     days, day,
-    allFoods: useMemo(() => [...predefined.map(f => overrides[f.id] ?? f), ...myFoods], [myFoods, overrides]),
+    allFoods: useMemo(() =>
+      [...predefined.map(f => overrides[f.id] ?? f), ...myFoods].filter(f => !hidden[f.id]),
+      [myFoods, overrides, hidden]),
     myFoods, predefined,
     foodOverrides: overrides,
+    hiddenFoods: hidden,
     addMyFood: (f) => persistMyFoods([...myFoods, f]),
     updateMyFood: (f) => persistMyFoods(myFoods.map(x => x.id === f.id ? f : x)),
     deleteMyFood: (id) => persistMyFoods(myFoods.filter(x => x.id !== id)),
     overrideFood: (f) => persistOverrides({ ...overrides, [f.id]: f }),
     resetOverride: (id) => { const next = { ...overrides }; delete next[id]; persistOverrides(next) },
+    hideFood: (id) => persistHidden({ ...hidden, [id]: true }),
     addEntry: (meal, entry) => mutateDay(d => ({ ...d, meals: { ...d.meals, [meal]: [...d.meals[meal], entry] } })),
     updateEntry: (meal, entry) => mutateDay(d => ({ ...d, meals: { ...d.meals, [meal]: d.meals[meal].map(e => e.id === entry.id ? entry : e) } })),
     deleteEntry: (meal, id) => mutateDay(d => ({ ...d, meals: { ...d.meals, [meal]: d.meals[meal].filter(e => e.id !== id) } })),
@@ -74,6 +81,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       persistMyFoods(data.myFoods.map(collapseToPrimaryServing))
       persistSettings(data.settings)
       persistOverrides(Object.fromEntries(Object.entries(data.foodOverrides ?? {}).map(([k, f]) => [k, collapseToPrimaryServing(f)])))
+      persistHidden(data.hiddenFoods ?? {})
     },
   }
 

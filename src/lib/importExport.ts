@@ -39,6 +39,7 @@ export type BackupData = {
   myFoods: Food[]
   settings: Settings
   foodOverrides?: Record<string, Food>
+  hiddenFoods?: Record<string, true>
 }
 
 export function exportBackup(data: BackupData): string {
@@ -51,5 +52,5 @@ export function parseBackup(text: string): BackupData {
   if (!parsed || typeof parsed !== 'object' || !('days' in parsed) || !('myFoods' in parsed) || !('settings' in parsed)) {
     throw new Error('Invalid backup file')
   }
-  return { days: parsed.days, myFoods: parsed.myFoods, settings: parsed.settings, foodOverrides: parsed.foodOverrides }
+  return { days: parsed.days, myFoods: parsed.myFoods, settings: parsed.settings, foodOverrides: parsed.foodOverrides, hiddenFoods: parsed.hiddenFoods }
 }

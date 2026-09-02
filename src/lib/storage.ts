@@ -7,6 +7,7 @@ const K = {
   settings: 'cc.settings',
   schemaVersion: 'cc.schemaVersion',
   foodOverrides: 'cc.foodOverrides',
+  hiddenFoods: 'cc.hiddenFoods',
 } as const
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -43,6 +44,13 @@ export function saveMyFoods(f: Food[]): void { write(K.myFoods, f) }
 // Absent in older installs → empty map, no schema migration needed.
 export function loadFoodOverrides(): Record<string, Food> { return read<Record<string, Food>>(K.foodOverrides, {}) }
 export function saveFoodOverrides(o: Record<string, Food>): void { write(K.foodOverrides, o) }
+
+// Hidden (user-"deleted") predefined food ids. Mirrors foodOverrides: absent
+// in older installs → empty map, no schema migration needed. A predefined food
+// can't be removed from the bundled JSON, so "delete" records its id here and
+// allFoods filters these ids out.
+export function loadHiddenFoods(): Record<string, true> { return read<Record<string, true>>(K.hiddenFoods, {}) }
+export function saveHiddenFoods(h: Record<string, true>): void { write(K.hiddenFoods, h) }
 
 export function loadDays(): Record<string, DayLog> { return read<Record<string, DayLog>>(K.days, {}) }
 export function saveDays(d: Record<string, DayLog>): void { write(K.days, d) }

@@ -65,9 +65,22 @@ describe('FoodDetail', () => {
     expect(mine[0].name).toBe('Mine v2')
     expect(localStorage.getItem('cc.foodOverrides')).toBeNull()
   })
-  it('predefined foods offer no delete button', () => {
+  it('predefined foods offer a delete button (Topic C: hides via hiddenFoods)', () => {
     render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
-    expect(screen.queryByTestId('food-detail-delete')).not.toBeInTheDocument()
+    expect(screen.getByTestId('food-detail-delete')).toBeInTheDocument()
+  })
+  it('deleting a predefined food hides it via hideFood and removes it from allFoods', () => {
+    localStorage.setItem('cc.myFoods', JSON.stringify([mkFood({ id: 'm1', source: 'custom', name: 'Mine' })]))
+    const spy = vi.spyOn(window, 'confirm').mockReturnValue(true)
+    render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
+    // predefined food now shows a delete button (the gate was removed)
+    fireEvent.click(screen.getByTestId('food-detail-delete'))
+    expect(spy).toHaveBeenCalled()
+    // the predefined food's id was added to cc.hiddenFoods
+    expect(JSON.parse(localStorage.getItem('cc.hiddenFoods')!)).toEqual({ f1: true })
+    // the custom food is untouched (deleteMyFood not called for predefined)
+    expect(JSON.parse(localStorage.getItem('cc.myFoods')!)).toHaveLength(1)
+    spy.mockRestore()
   })
   it('deleting a custom food asks for confirmation and removes it', () => {
     localStorage.setItem('cc.myFoods', JSON.stringify([mkFood({ id: 'm1', source: 'custom' })]))

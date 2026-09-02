@@ -28,7 +28,7 @@ function Row({ label, value, indent }: { label: string; value: string; indent?: 
  */
 export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: LogEntry) => void; onClose: () => void }) {
   const { t } = useTranslation()
-  const { updateMyFood, deleteMyFood, overrideFood, resetOverride, foodOverrides } = useApp()
+  const { updateMyFood, deleteMyFood, overrideFood, resetOverride, foodOverrides, hideFood } = useApp()
   const [showFull, setShowFull] = useState(false)
   const [editing, setEditing] = useState(false)
   const [qty, setQty] = useState(1)
@@ -43,7 +43,10 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
   }
   function del() {
     if (!window.confirm(t('foodDetail.confirmDelete'))) return
-    deleteMyFood(food.id)
+    // Custom foods are actually removed; predefined foods come from a static
+    // JSON file, so "delete" hides them (records the id in cc.hiddenFoods).
+    if (food.source === 'custom') deleteMyFood(food.id)
+    else hideFood(food.id)
     onClose()
   }
   function add() {
@@ -126,9 +129,7 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
         </div>
 
         <div className="row" style={{ gap: 8 }}>
-          {food.source === 'custom' && (
-            <button className="btn-ghost" data-testid="food-detail-delete" style={{ color: 'var(--red)' }} onClick={del}>{t('common.delete')}</button>
-          )}
+          <button className="btn-ghost" data-testid="food-detail-delete" style={{ color: 'var(--red)' }} onClick={del}>{t('common.delete')}</button>
           {food.source === 'predefined' && foodOverrides[food.id] && (
             <button className="btn-ghost" data-testid="food-detail-reset" onClick={() => resetOverride(food.id)}>{t('foodDetail.resetOverride')}</button>
           )}
