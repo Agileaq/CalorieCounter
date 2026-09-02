@@ -36,4 +36,14 @@ describe('SheetModal', () => {
     fireEvent.click(container.querySelector('.modal-backdrop')!)
     expect(onClose).toHaveBeenCalled()
   })
+  it('does not close on pull-down when dismissible is false', async () => {
+    const onClose = vi.fn()
+    const { container } = render(<SheetModal onClose={onClose} dismissible={false}><div>body</div></SheetModal>)
+    const sheet = container.querySelector('.modal')! as HTMLElement
+    fireEvent.touchStart(sheet, { touches: [{ clientY: 100 }] })
+    fireEvent.touchMove(sheet, { touches: [{ clientY: 180 }] }) // +80px downward > 70
+    fireEvent.touchEnd(sheet, { touches: [{ clientY: 180 }] })
+    expect(onClose).not.toHaveBeenCalled()
+    await flushTimers()
+  })
 })

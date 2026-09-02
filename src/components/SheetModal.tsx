@@ -9,7 +9,8 @@ import { useEffect, useRef, type ReactNode, type TouchEvent } from 'react'
  *
  * Pull-to-dismiss: when the sheet is scrolled to the very top and the user
  * keeps dragging downward past a threshold, the sheet closes (onClose). This
- * mirrors the FoodPicker behavior the user expects on all three sheets.
+ * is the default; pass `dismissible={false}` to opt a sheet out (FoodForm uses
+ * it so the new/edit-food sheet closes only via its close button or backdrop).
  *
  * Stacking: a sheet can open on top of another sheet (FoodDetail over
  * FoodPicker, FoodForm over either). Touch handlers stop propagation so a
@@ -18,7 +19,7 @@ import { useEffect, useRef, type ReactNode, type TouchEvent } from 'react'
  * trailing synthetic click so it does not fall through to the now-exposed
  * sheet below.
  */
-export function SheetModal({ onClose, children }: { onClose: () => void; children: ReactNode }) {
+export function SheetModal({ onClose, children, dismissible = true }: { onClose: () => void; children: ReactNode; dismissible?: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const start = useRef<{ y: number; top: number } | null>(null)
   // downward drag accumulated while pinned at scrollTop 0, used to decide dismiss
@@ -45,12 +46,14 @@ export function SheetModal({ onClose, children }: { onClose: () => void; childre
 
   function onTouchStart(e: TouchEvent) {
     e.stopPropagation()
+    if (!dismissible) return
     const el = scrollRef.current
     start.current = { y: e.touches[0].clientY, top: el ? el.scrollTop : 0 }
     drag.current = 0
   }
   function onTouchMove(e: TouchEvent) {
     e.stopPropagation()
+    if (!dismissible) return
     const el = scrollRef.current
     const s = start.current
     if (!el || !s) return
@@ -66,6 +69,7 @@ export function SheetModal({ onClose, children }: { onClose: () => void; childre
   }
   function onTouchEnd(e: TouchEvent) {
     e.stopPropagation()
+    if (!dismissible) return
     if (drag.current > 70) {
       swallowGhostClick()
       onClose()
