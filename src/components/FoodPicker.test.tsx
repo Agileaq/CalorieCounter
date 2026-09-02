@@ -3,6 +3,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
 import { FoodPicker } from './FoodPicker'
+import { MealCard } from './MealCard'
 import { todayKey } from '../lib/date'
 import { newId } from '../lib/ids'
 import { emptyNutrition } from '../lib/nutrition'
@@ -166,5 +167,36 @@ describe('FoodPicker', () => {
     fireEvent.click(screen.getByText(/My Foods/))
     expect(screen.getByText('A')).toBeInTheDocument()
     expect(screen.getByText('B')).toBeInTheDocument()
+  })
+
+  // Regression: scroll-lock leak across the stacked-sheet "Add" flow.
+  // SheetModal locked the page behind it by saving body.style.overflow into
+  // a local const and restoring it on unmount. When FoodDetail (its own
+  // SheetModal) opened on top of FoodPicker (another SheetModal) and the user
+  // tapped ✓ Add, both sheets unmounted in the same render pass via state
+  // updates spread across AppContext + FoodPicker + MealCard. The inner
+  // sheet had snapshotted prev='hidden' (the outer already locked the body),
+  // so its cleanup restored 'hidden' and clobbered the outer's restore to ''.
+  // body.overflow stayed 'hidden' forever — page scroll froze across every
+  // tab (bottom-nav taps still worked because overflow doesn't block fixed
+  // elements), survived iOS backgrounding, and only cleared after killing
+  // the app. This drives the real MealCard→FoodPicker→FoodDetail tree so the
+  // cross-component state updates that trigger the bug are exercised.
+  it('Add from FoodDetail restores body scroll (no leftover overflow:hidden lock)', () => {
+    document.body.style.overflow = '' // start clean, like a fresh page
+    render(
+      <AppProvider>
+        <MealCard meal="breakfast" />
+      </AppProvider>,
+    )
+    // open the picker, then the detail sheet via the magnifier
+    fireEvent.click(screen.getByText(/add food/i, { exact: false }))
+    fireEvent.click(screen.getAllByTestId('food-detail-open')[0])
+    expect(document.body.style.overflow).toBe('hidden') // locked while open
+
+    // the reported freeze trigger: tap Add — unmounts detail AND picker
+    act(() => { fireEvent.click(screen.getByTestId('food-detail-add')) })
+
+    expect(document.body.style.overflow).toBe('')
   })
 })

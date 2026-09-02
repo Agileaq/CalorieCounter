@@ -20,18 +20,38 @@ import { useEffect, useRef, type ReactNode, type TouchEvent } from 'react'
  * sheet is the only one that should react. A gesture dismiss also swallows the
  * trailing synthetic click so it does not fall through to the now-exposed
  * sheet below.
+ *
+ * Body lock: the page is locked with a module-level refcount rather than a
+ * save/restore snapshot. Each mounted sheet increments the count on mount and
+ * decrements on unmount; the FIRST sheet to mount remembers body.overflow's
+ * true original value, and only the LAST sheet to unmount restores it. This is
+ * order-independent, so it stays correct when sheets stack and unmount
+ * together — e.g. tapping ✓ Add in FoodDetail unmounts FoodDetail and
+ * FoodPicker in one render pass. A snapshot per sheet would break that: the
+ * inner sheet snapshotted 'hidden' (the outer already locked) and its cleanup
+ * restored 'hidden', leaving the page frozen at overflow:hidden forever.
  */
+// number of sheets currently locking the page; 0 → page is scrollable
+let lockDepth = 0
+// the real pre-lock value of body.style.overflow, captured by the first lock
+let prevOverflow = ''
+
 export function SheetModal({ onClose, children, dismissible = true }: { onClose: () => void; children: ReactNode; dismissible?: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const start = useRef<{ y: number; top: number } | null>(null)
   // downward drag accumulated while pinned at scrollTop 0, used to decide dismiss
   const drag = useRef(0)
 
-  // lock the page behind the sheet while it is mounted
+  // lock the page behind the sheet while it is mounted (refcounted so stacked
+  // sheets never restore 'hidden' over each other or leave the page locked)
   useEffect(() => {
-    const prev = document.body.style.overflow
+    if (lockDepth === 0) prevOverflow = document.body.style.overflow
+    lockDepth += 1
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = prev }
+    return () => {
+      lockDepth -= 1
+      if (lockDepth === 0) document.body.style.overflow = prevOverflow
+    }
   }, [])
 
   function swallowGhostClick() {
