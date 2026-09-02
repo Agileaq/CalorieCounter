@@ -42,4 +42,12 @@ describe('FoodForm', () => {
     expect(saved.id).toBe('pre-x')
     expect(saved.source).toBe('predefined')
   })
+  it('uses a left-arrow back button instead of a close ✕', () => {
+    const onClose = vi.fn()
+    render(<FoodForm onSave={() => {}} onClose={onClose} />)
+    const back = screen.getByRole('button', { name: /back/i })
+    expect(back).toHaveTextContent('←')
+    fireEvent.click(back)
+    expect(onClose).toHaveBeenCalled()
+  })
 })

@@ -34,7 +34,7 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
   return (
     <SheetModal onClose={onClose} dismissible={false}>
       <div className="row spread">
-        <button className="icon-btn" aria-label={t('common.close')} onClick={onClose}>✕</button>
+        <button className="icon-btn" aria-label={t('common.back')} onClick={onClose}>←</button>
         <strong>{initial ? t('foodForm.editFood') : t('foodForm.newFood')}</strong>
         <button className="btn-accent" data-testid="food-save" onClick={save}>{t('common.save')}</button>
       </div>
