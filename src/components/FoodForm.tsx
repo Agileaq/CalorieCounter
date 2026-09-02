@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Food, Serving } from '../types'
-import { newFood, newServing } from '../lib/food'
+import { newFood, collapseToPrimaryServing } from '../lib/food'
 import { computedCalories } from '../lib/nutrition'
 import { IconPicker } from './IconPicker'
 import { NutritionFields } from './NutritionFields'
@@ -10,21 +10,19 @@ import { SheetModal } from './SheetModal'
 
 export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave: (f: Food) => void; onClose: () => void }) {
   const { t } = useTranslation()
-  const [food, setFood] = useState<Food>(() => initial ? JSON.parse(JSON.stringify(initial)) : newFood())
+  const [food, setFood] = useState<Food>(() => {
+    const base = initial ? JSON.parse(JSON.stringify(initial)) : newFood()
+    return collapseToPrimaryServing(base)
+  })
   const [showIcon, setShowIcon] = useState(false)
   const [error, setError] = useState('')
 
   function updateServing(id: string, patch: Partial<Serving>) {
     setFood(f => ({ ...f, servings: f.servings.map(s => s.id === id ? { ...s, ...patch } : s) }))
   }
-  function addServing() { setFood(f => ({ ...f, servings: [...f.servings, newServing({ isPrimary: false })] })) }
-  function makePrimary(id: string) {
-    setFood(f => ({ ...f, servings: f.servings.map(s => ({ ...s, isPrimary: s.id === id })) }))
-  }
 
   function save() {
     if (!food.name.trim()) { setError(t('foodForm.foodName')); return }
-    if (food.servings.length < 1) { setError(t('foodForm.oneServingRequired')); return }
     // calories are always derived from macros (fat×9 + carbs×4 + protein×4);
     // id/source stay as-is — the caller decides where the food lands
     onSave({ ...food, nutrition: { ...food.nutrition, calories: computedCalories(food.nutrition) } })
@@ -51,15 +49,13 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
       <div className="card">
         <strong>{t('foodForm.nutritionFacts')}</strong>
         <div className="muted">{t('foodForm.servingsNote')}</div>
-        {food.servings.map(s => (
-          <div key={s.id} className="row spread" style={{ padding: '8px 0' }}>
-            <input value={s.label} onChange={e => updateServing(s.id, { label: e.target.value })} style={{ width: 90 }} />
-            <NumberInput value={s.amount} onChange={v => updateServing(s.id, { amount: v })} style={{ width: 70, textAlign: 'end' }} />
-            <input value={s.unit} onChange={e => updateServing(s.id, { unit: e.target.value })} style={{ width: 50 }} />
-            <label className="muted"><input type="radio" name="primary" checked={s.isPrimary} onChange={() => makePrimary(s.id)} /> ★</label>
-          </div>
-        ))}
-        <button className="btn-ghost" onClick={addServing}>{t('foodForm.addServing')}</button>
+        <div className="row spread" style={{ padding: '8px 0' }}>
+          <input data-testid="serving-label" value={food.servings[0].label}
+            onChange={e => updateServing(food.servings[0].id, { label: e.target.value })} style={{ flex: 1 }} />
+          <NumberInput testId="serving-amount" value={food.servings[0].amount}
+            onChange={v => updateServing(food.servings[0].id, { amount: v })} style={{ width: 70, textAlign: 'end' }} />
+          <input value={food.servings[0].unit} onChange={e => updateServing(food.servings[0].id, { unit: e.target.value })} style={{ width: 50 }} />
+        </div>
       </div>
       <NutritionFields nutrition={food.nutrition} onChange={n => setFood({ ...food, nutrition: n })} />
       {showIcon && <IconPicker value={food.icon} onChange={c => setFood(f => ({ ...f, icon: c }))} onClose={() => setShowIcon(false)} />}

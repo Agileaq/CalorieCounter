@@ -50,4 +50,28 @@ describe('FoodForm', () => {
     fireEvent.click(back)
     expect(onClose).toHaveBeenCalled()
   })
+  it('renders a single serving row and no add-serving or make-primary controls', () => {
+    const onSave = vi.fn()
+    render(<FoodForm onSave={onSave} onClose={() => {}} />)
+    // exactly one label input and one amount input for the serving
+    expect(screen.getByTestId('serving-label')).toBeInTheDocument()
+    expect(screen.getByTestId('serving-amount')).toBeInTheDocument()
+    // no add-serving button
+    expect(() => screen.getByText(/add serving/i)).toThrow()
+    // no primary radio (no radio named "primary")
+    expect(document.querySelector('input[name="primary"]')).toBeNull()
+  })
+  it('saves the edited serving label/amount/unit on the single serving', () => {
+    const onSave = vi.fn()
+    render(<FoodForm onSave={onSave} onClose={() => {}} />)
+    fireEvent.change(screen.getByTestId('food-name'), { target: { value: 'Oats' } })
+    fireEvent.change(screen.getByTestId('serving-label'), { target: { value: 'Bowl' } })
+    fireEvent.change(screen.getByTestId('serving-amount'), { target: { value: '40' } })
+    fireEvent.click(screen.getByTestId('food-save'))
+    const saved = onSave.mock.calls[0][0]
+    expect(saved.servings).toHaveLength(1)
+    expect(saved.servings[0].label).toBe('Bowl')
+    expect(saved.servings[0].amount).toBe(40)
+    expect(saved.servings[0].isPrimary).toBe(true)
+  })
 })
