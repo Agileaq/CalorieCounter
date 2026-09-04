@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import type { MealKey } from '../types'
-import { mealNutrition, entryNutrition, primaryServing } from '../lib/nutrition'
+import { mealNutrition, entryNutrition, primaryServing, servingSubtitle } from '../lib/nutrition'
 import { FoodPicker } from './FoodPicker'
 import { FoodDetail } from './FoodDetail'
 
@@ -28,14 +28,9 @@ export function MealCard({ meal }: { meal: MealKey }) {
         const en = entryNutrition(e)
         // e.g. qty 1.5 × 100g → "1.5 份 · 150 g · Grams". When the serving has
         // no label (blank/whitespace-only), the trailing " · {label}" segment
-        // is dropped via entrySubtitleNoLabel so it reads "1.5 份 · 150 g".
-        // count servings use the same templates; total is rounded to one
-        // decimal to shed JS float tails (1.1×100 = 110.00000000000001).
-        const total = Math.round(e.quantity * ps.amount * 10) / 10
-        const label = ps.label.trim()
-        const subtitle = label
-          ? t('meal.entrySubtitle', { count: e.quantity, total, unit: ps.unit, label })
-          : t('meal.entrySubtitleNoLabel', { count: e.quantity, total, unit: ps.unit })
+        // is dropped so it reads "1.5 份 · 150 g". Shared with FoodPicker via
+        // servingSubtitle so the log and the picker read identically.
+        const subtitle = servingSubtitle(t, e.quantity, ps)
         return (
           <div key={e.id} className="row spread" style={{ padding: '8px 0' }}>
             <button type="button" data-testid="entry-edit" aria-label={t('common.edit')} onClick={() => setEditingId(e.id)}

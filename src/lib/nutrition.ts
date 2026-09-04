@@ -19,6 +19,28 @@ export function primaryServing(food: Food): Serving {
   return food.servings.find(s => s.isPrimary) ?? food.servings[0]
 }
 
+/**
+ * One-line subtitle describing a logged serving the way the meal log shows it:
+ * "{count} 份 · {total} {unit} · {label}" (or the no-label variant that drops
+ * the trailing " · {label}"). Shared by MealCard (per entry) and FoodPicker
+ * (per food, quantity 1) so both surfaces read identically.
+ *
+ * `t` is kept as a narrow callable so this pure-data module doesn't import
+ * react-i18next; callers pass their hook's `t`. `total` is rounded to one
+ * decimal to shed JS float tails (1.1×100 = 110.00000000000001).
+ */
+export function servingSubtitle(
+  t: (key: string, opts?: Record<string, unknown>) => string,
+  quantity: number,
+  ps: Serving,
+): string {
+  const total = Math.round(quantity * ps.amount * 10) / 10
+  const label = ps.label.trim()
+  return label
+    ? t('meal.entrySubtitle', { count: quantity, total, unit: ps.unit, label })
+    : t('meal.entrySubtitleNoLabel', { count: quantity, total, unit: ps.unit })
+}
+
 export function scaleNutrition(n: Nutrition, factor: number): Nutrition {
   return {
     calories: n.calories * factor,

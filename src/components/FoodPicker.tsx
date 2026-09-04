@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import type { Food, LogEntry } from '../types'
-import { primaryServing } from '../lib/nutrition'
-import { foodCounts, servingUnitType } from '../lib/food'
+import { primaryServing, servingSubtitle } from '../lib/nutrition'
+import { foodCounts } from '../lib/food'
 import { newId } from '../lib/ids'
 import { todayKey } from '../lib/date'
 import { SheetModal } from './SheetModal'
@@ -102,6 +102,9 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
 
   function renderRow(f: Food) {
     const ps = primaryServing(f)
+    // Same subtitle format as the meal log: "1 份 · {total} {unit} · {label}"
+    // (or the no-label variant). quantity 1 = one primary serving.
+    const subtitle = servingSubtitle(t, 1, ps)
     return (
       <div key={f.id} className="row spread card" style={{ padding: 10 }}>
         <button type="button" data-testid="food-row" className="row"
@@ -110,11 +113,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
           <span style={{ fontSize: 24 }}>{f.icon}</span>
           <div>
             <div>{f.name}</div>
-            <div className="muted" data-testid="food-subtitle">
-              {servingUnitType(ps) === 'weight'
-                ? t('foodPicker.perWeight', { cal: Math.round(f.nutrition.calories), amount: ps.amount, unit: ps.unit })
-                : t('foodPicker.perCount', { cal: Math.round(f.nutrition.calories) })}
-            </div>
+            <div className="muted" data-testid="food-subtitle">{subtitle}</div>
           </div>
         </button>
         <div className="row" style={{ gap: 6 }}>
