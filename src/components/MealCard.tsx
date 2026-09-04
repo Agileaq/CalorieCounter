@@ -4,12 +4,14 @@ import { useApp } from '../state/useApp'
 import type { MealKey } from '../types'
 import { mealNutrition, entryNutrition, primaryServing } from '../lib/nutrition'
 import { FoodPicker } from './FoodPicker'
+import { FoodDetail } from './FoodDetail'
 
 export function MealCard({ meal }: { meal: MealKey }) {
   const { t } = useTranslation()
-  const { day, addEntry, deleteEntry, clearMeal } = useApp()
+  const { day, addEntry, updateEntry, deleteEntry, clearMeal } = useApp()
   const [adding, setAdding] = useState(false)
   const [menu, setMenu] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const entries = day.meals[meal]
   const n = mealNutrition(day, meal)
 
@@ -26,7 +28,8 @@ export function MealCard({ meal }: { meal: MealKey }) {
         const en = entryNutrition(e)
         return (
           <div key={e.id} className="row spread" style={{ padding: '8px 0' }}>
-            <div className="row" style={{ gap: 8 }}>
+            <button type="button" data-testid="entry-edit" aria-label={t('common.edit')} onClick={() => setEditingId(e.id)}
+              className="row" style={{ gap: 8, flex: 1, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'start', font: 'inherit', color: 'inherit' }}>
               <span style={{ fontSize: 18 }}>{e.foodSnapshot.icon}</span>
               <div>
                 <div className="row" style={{ gap: 6, alignItems: 'baseline', fontSize: 13 }}>
@@ -35,7 +38,7 @@ export function MealCard({ meal }: { meal: MealKey }) {
                 </div>
                 <div className="muted" style={{ fontSize: 12 }} data-testid="entry-macros">{t('meal.macros', { c: Math.round(en.carbs.total), p: Math.round(en.protein), f: Math.round(en.fat.total), fi: Math.round(en.carbs.fiber) })}</div>
               </div>
-            </div>
+            </button>
             <div className="row" style={{ gap: 10 }}>
               <span style={{ fontSize: 13 }}>{t('meal.cals', { n: Math.round(en.calories) })}</span>
               <button className="icon-btn" style={{ width: 28, height: 28, fontSize: 14 }} aria-label={t('common.deleteEntry', { name: e.foodSnapshot.name })} onClick={() => deleteEntry(meal, e.id)}>✕</button>
@@ -47,6 +50,11 @@ export function MealCard({ meal }: { meal: MealKey }) {
         <button className="btn-accent" onClick={() => setAdding(true)}>{t('meal.addFood')}</button>
       </div>
       {adding && <FoodPicker onPick={e => addEntry(meal, e)} onClose={() => setAdding(false)} />}
+      {editingId && (() => {
+        const e = entries.find(x => x.id === editingId)
+        if (!e) return null
+        return <FoodDetail food={e.foodSnapshot} initialEntry={e} onSaveEntry={ne => updateEntry(meal, ne)} onAdd={() => {}} onClose={() => setEditingId(null)} />
+      })()}
     </div>
   )
 }

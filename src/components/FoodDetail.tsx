@@ -25,16 +25,32 @@ function Row({ label, value, indent }: { label: string; value: string; indent?: 
  * rows, expandable full nutrition label, servings, and Edit / Delete / Reset.
  * Editing a predefined food writes an override (in place); custom foods edit
  * directly. Add (✓) logs the food to the day like the picker's ＋ does.
+ *
+ * Entry-edit mode: when `initialEntry` + `onSaveEntry` are passed (used by
+ * MealCard to edit a logged entry), the quantity is seeded from the entry and
+ * the header button becomes Save, which writes the updated quantity back to
+ * the same entry id. The food's own nutrition facts remain editable too —
+ * changes there still flow to updateMyFood/overrideFood as in add mode.
  */
-export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: LogEntry) => void; onClose: () => void }) {
+export function FoodDetail({
+  food, onAdd, onClose, initialEntry, onSaveEntry,
+}: {
+  food: Food
+  onAdd: (e: LogEntry) => void
+  onClose: () => void
+  initialEntry?: LogEntry
+  onSaveEntry?: (e: LogEntry) => void
+}) {
   const { t } = useTranslation()
   const { updateMyFood, deleteMyFood, overrideFood, resetOverride, foodOverrides, hideFood } = useApp()
   const [showFull, setShowFull] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [qty, setQty] = useState(1)
+  const [qty, setQty] = useState(initialEntry?.quantity ?? 1)
+  const editingEntry = Boolean(initialEntry && onSaveEntry)
 
   const n = food.nutrition
-  const entry: LogEntry = { id: newId(), foodSnapshot: food, servingId: primaryServing(food).id, quantity: qty }
+  const servingId = initialEntry?.servingId ?? primaryServing(food).id
+  const entry: LogEntry = { id: initialEntry?.id ?? newId(), foodSnapshot: food, servingId, quantity: qty }
   const previewCals = Math.round(entryNutrition(entry).calories)
 
   function save(f: Food) {
@@ -53,13 +69,19 @@ export function FoodDetail({ food, onAdd, onClose }: { food: Food; onAdd: (e: Lo
     onAdd(entry)
     onClose()
   }
+  function saveEntry() {
+    onSaveEntry!(entry)
+    onClose()
+  }
 
   return (
     <SheetModal onClose={onClose}>
       <div className="row spread">
         <button className="icon-btn" data-testid="food-detail-close" aria-label={t('common.back')} onClick={onClose}>←</button>
         <strong style={{ flex: 1, textAlign: 'center' }}>{food.icon} {food.name}</strong>
-        <button className="btn-accent" data-testid="food-detail-add" onClick={add}>{t('common.add')}</button>
+        {editingEntry
+          ? <button className="btn-accent" data-testid="food-detail-save-entry" onClick={saveEntry}>{t('common.save')}</button>
+          : <button className="btn-accent" data-testid="food-detail-add" onClick={add}>{t('common.add')}</button>}
       </div>
         {food.brand && <div className="muted" style={{ textAlign: 'center' }}>{food.brand}</div>}
 

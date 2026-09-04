@@ -15,4 +15,26 @@ describe('MealCard', () => {
     expect(screen.getByTestId('meal-total').textContent).toMatch(/\d/)
     expect(screen.getAllByText(/Rice/i).length).toBeGreaterThan(0)
   })
+
+  it('clicking an entry opens an editor where quantity can be changed and saved', () => {
+    render(<AppProvider><MealCard meal="breakfast" /></AppProvider>)
+    // log an entry first
+    fireEvent.click(screen.getByText(/Add Food/i))
+    fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
+    fireEvent.click(screen.getAllByTestId('food-detail-open')[0])
+    fireEvent.click(screen.getByTestId('food-detail-add'))
+
+    // open the per-entry editor by clicking the entry row
+    fireEvent.click(screen.getByTestId('entry-edit'))
+    // entry-edit mode shows Save and seeds quantity with the logged value (1)
+    const qty = screen.getByTestId('qty-input')
+    expect(qty).toHaveValue(1)
+    // bump to 2.5 and save
+    fireEvent.change(qty, { target: { value: '2.5' } })
+    fireEvent.click(screen.getByTestId('food-detail-save-entry'))
+    // editor closes
+    expect(screen.queryByTestId('food-detail-save-entry')).not.toBeInTheDocument()
+    // the row now reflects the new quantity
+    expect(screen.getByText(/2\.5/)).toBeInTheDocument()
+  })
 })
