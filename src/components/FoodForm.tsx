@@ -12,7 +12,14 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
   const { t } = useTranslation()
   const [food, setFood] = useState<Food>(() => {
     const base = initial ? JSON.parse(JSON.stringify(initial)) : newFood()
-    return collapseToPrimaryServing(base)
+    const collapsed = collapseToPrimaryServing(base)
+    // For a brand-new food, start the serving row empty — label/amount/unit are
+    // all hinted via placeholders rather than prefilled with "Grams / 100 / g".
+    // Editing an existing food keeps its serving values as-is.
+    if (!initial) {
+      collapsed.servings = collapsed.servings.map(s => ({ ...s, label: '', amount: 0, unit: '' }))
+    }
+    return collapsed
   })
   const [showIcon, setShowIcon] = useState(false)
   const [error, setError] = useState('')
@@ -50,11 +57,12 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
         <strong>{t('foodForm.nutritionFacts')}</strong>
         <div className="muted">{t('foodForm.servingsNote')}</div>
         <div className="row spread" style={{ padding: '8px 0' }}>
-          <input data-testid="serving-label" value={food.servings[0].label}
+          <input data-testid="serving-label" placeholder={t('foodForm.servingLabelHint')} value={food.servings[0].label}
             onChange={e => updateServing(food.servings[0].id, { label: e.target.value })} style={{ flex: 1 }} />
-          <NumberInput testId="serving-amount" value={food.servings[0].amount}
+          <NumberInput testId="serving-amount" placeholder={t('foodForm.servingAmountHint')} hideZero
+            value={food.servings[0].amount}
             onChange={v => updateServing(food.servings[0].id, { amount: v })} style={{ width: 70, textAlign: 'end' }} />
-          <input value={food.servings[0].unit} onChange={e => updateServing(food.servings[0].id, { unit: e.target.value })} style={{ width: 50 }} />
+          <input data-testid="serving-unit" value={food.servings[0].unit} placeholder={t('foodForm.servingUnitHint')} onChange={e => updateServing(food.servings[0].id, { unit: e.target.value })} style={{ width: 50 }} />
         </div>
       </div>
       <NutritionFields nutrition={food.nutrition} onChange={n => setFood({ ...food, nutrition: n })} />

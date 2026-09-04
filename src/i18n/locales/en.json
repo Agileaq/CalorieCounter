@@ -115,7 +115,10 @@
     "zinc": "Zinc (mg)",
     "caffeine": "Caffeine (mg)",
     "quantity": "Quantity",
-    "serving": "Serving"
+    "serving": "Serving",
+    "servingLabelHint": "label",
+    "servingAmountHint": "amount",
+    "servingUnitHint": "unit"
   },
   "foodDetail": {
     "nutritionFacts": "Nutrition Facts",

@@ -115,7 +115,10 @@
     "zinc": "الزنك (مغ)",
     "caffeine": "الكافيين (مغ)",
     "quantity": "الكمية",
-    "serving": "حصة"
+    "serving": "حصة",
+    "servingLabelHint": "التسمية",
+    "servingAmountHint": "الكمية",
+    "servingUnitHint": "الوحدة"
   },
   "foodDetail": {
     "nutritionFacts": "القيم الغذائية",

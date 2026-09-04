@@ -115,7 +115,10 @@
     "zinc": "Цинк (мг)",
     "caffeine": "Кофеин (мг)",
     "quantity": "Количество",
-    "serving": "Порция"
+    "serving": "Порция",
+    "servingLabelHint": "Метка",
+    "servingAmountHint": "Количество",
+    "servingUnitHint": "Единица"
   },
   "foodDetail": {
     "nutritionFacts": "Пищевая ценность",

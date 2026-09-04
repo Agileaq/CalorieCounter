@@ -115,7 +115,10 @@
     "zinc": "锌 (mg)",
     "caffeine": "咖啡因 (mg)",
     "quantity": "数量",
-    "serving": "份量"
+    "serving": "份量",
+    "servingLabelHint": "标签",
+    "servingAmountHint": "份量",
+    "servingUnitHint": "单位"
   },
   "foodDetail": {
     "nutritionFacts": "营养成分",

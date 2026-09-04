@@ -74,4 +74,27 @@ describe('FoodForm', () => {
     expect(saved.servings[0].amount).toBe(40)
     expect(saved.servings[0].isPrimary).toBe(true)
   })
+  it('starts a new food with an empty serving row (label/amount/unit) and shows hint placeholders', () => {
+    render(<FoodForm onSave={() => {}} onClose={() => {}} />)
+    const label = screen.getByTestId('serving-label') as HTMLInputElement
+    const amount = screen.getByTestId('serving-amount') as HTMLInputElement
+    const unit = screen.getByTestId('serving-unit') as HTMLInputElement
+    expect(label.value).toBe('')
+    expect(label.placeholder).toBe('label')
+    // amount persists as 0 but renders empty so the placeholder shows through
+    expect(amount.value).toBe('')
+    expect(amount.placeholder).toBe('amount')
+    expect(unit.value).toBe('')
+    expect(unit.placeholder).toBe('unit')
+  })
+  it('editing an existing food keeps its prefilled serving label/amount/unit', () => {
+    const pre = { id: 'pre-x', name: 'Rice', icon: '🍚', source: 'predefined' as const, createdAt: '',
+      servings: [{ id: 's', kind: 'weight' as const, label: 'Grams', amount: 100, unit: 'g', isPrimary: true }],
+      nutrition: { calories: 130, fat:{total:0,mono:0,poly:0,saturated:0,trans:0}, cholesterol: 0, sodium: 0, carbs:{total:0,fiber:0,sugar:0}, protein: 0, vitamins:{a:0,c:0,b1:0,b2:0,b3:0,b9:0,b6:0,b12:0}, minerals:{calcium:0,iron:0,magnesium:0,phosphorus:0,potassium:0,zinc:0}, caffeine: 0 } }
+    render(<FoodForm initial={pre} onSave={() => {}} onClose={() => {}} />)
+    const label = screen.getByTestId('serving-label') as HTMLInputElement
+    const amount = screen.getByTestId('serving-amount') as HTMLInputElement
+    expect(label.value).toBe('Grams')
+    expect(amount.value).toBe('100')
+  })
 })

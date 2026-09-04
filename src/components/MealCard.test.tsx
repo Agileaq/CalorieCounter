@@ -49,6 +49,7 @@ describe('MealCard', () => {
     fireEvent.change(screen.getByTestId('food-name'), { target: { value: 'Plain Water' } })
     fireEvent.change(screen.getByTestId('serving-label'), { target: { value: '' } })
     fireEvent.change(screen.getByTestId('serving-amount'), { target: { value: '50' } })
+    fireEvent.change(screen.getByTestId('serving-unit'), { target: { value: 'g' } })
     fireEvent.change(screen.getByTestId('nutri-protein'), { target: { value: '4' } }) // calories derive from macros
     fireEvent.click(screen.getByTestId('food-save'))
     // the new custom food appears in the picker (All tab includes myFoods); find and add it
