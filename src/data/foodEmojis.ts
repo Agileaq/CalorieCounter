@@ -15,12 +15,14 @@ export const FOOD_EMOJI_CATEGORIES: EmojiCategory[] = [
     { char: '🌽', keywords: ['corn', '玉米'] }, { char: '🥔', keywords: ['potato', '土豆'] },
     { char: '🧅', keywords: ['onion', '洋葱'] }, { char: '🥬', keywords: ['lettuce', 'greens', '生菜'] },
     { char: '🥒', keywords: ['cucumber', '黄瓜'] }, { char: '🍄', keywords: ['mushroom', '蘑菇'] },
+    { char: '🥑', keywords: ['avocado', '牛油果'] },
   ]},
   { key: 'grains', emojis: [
     { char: '🍚', keywords: ['rice', '米饭'] }, { char: '🍞', keywords: ['bread', '面包'] },
     { char: '🥐', keywords: ['croissant', '可颂'] }, { char: '🍜', keywords: ['noodles', 'ramen', '面'] },
     { char: '🍝', keywords: ['pasta', 'spaghetti', '意面'] }, { char: '🥣', keywords: ['oatmeal', 'cereal', 'yogurt', '麦片'] },
-    { char: '🥖', keywords: ['baguette', '法棍'] }, { char: '🌾', keywords: ['grain', 'wheat', '谷物'] },
+    { char: '🥖', keywords: ['baguette', '法棍'] }, { char: '🥟', keywords: ['dumpling', '饺子'] },
+    { char: '🌾', keywords: ['grain', 'wheat', '谷物'] },
   ]},
   { key: 'protein', emojis: [
     { char: '🥩', keywords: ['steak', 'beef', 'meat', '牛肉', '肉'] }, { char: '🍗', keywords: ['chicken', 'poultry', '鸡'] },

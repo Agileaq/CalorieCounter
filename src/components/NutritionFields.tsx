@@ -24,6 +24,10 @@ export function NutritionFields({ nutrition, onChange }: { nutrition: Nutrition;
         <label>{t('foodForm.calories')}</label>
         <span data-testid="nutri-calories" style={{ width: 90, textAlign: 'end', fontWeight: 700 }}>{computedCalories(nutrition)}</span>
       </div>
+      <Field label={t('foodForm.carbs')} value={nutrition.carbs.total} testId="nutri-carbs" onChange={set((n, v) => ({ ...n, carbs: { ...n.carbs, total: v } }))} />
+      <Field indent label={t('foodForm.fiber')} value={nutrition.carbs.fiber} onChange={set((n, v) => ({ ...n, carbs: { ...n.carbs, fiber: v } }))} />
+      <Field indent label={t('foodForm.sugar')} value={nutrition.carbs.sugar} onChange={set((n, v) => ({ ...n, carbs: { ...n.carbs, sugar: v } }))} />
+      <Field label={t('foodForm.protein')} value={nutrition.protein} testId="nutri-protein" onChange={set((n, v) => ({ ...n, protein: v }))} />
       <Field label={t('foodForm.fat')} value={nutrition.fat.total} testId="nutri-fat" onChange={set((n, v) => ({ ...n, fat: { ...n.fat, total: v } }))} />
       <Field indent label={t('foodForm.mono')} value={nutrition.fat.mono} onChange={set((n, v) => ({ ...n, fat: { ...n.fat, mono: v } }))} />
       <Field indent label={t('foodForm.poly')} value={nutrition.fat.poly} onChange={set((n, v) => ({ ...n, fat: { ...n.fat, poly: v } }))} />
@@ -31,10 +35,6 @@ export function NutritionFields({ nutrition, onChange }: { nutrition: Nutrition;
       <Field indent label={t('foodForm.trans')} value={nutrition.fat.trans} onChange={set((n, v) => ({ ...n, fat: { ...n.fat, trans: v } }))} />
       <Field label={t('foodForm.cholesterol')} value={nutrition.cholesterol} onChange={set((n, v) => ({ ...n, cholesterol: v }))} />
       <Field label={t('foodForm.sodium')} value={nutrition.sodium} onChange={set((n, v) => ({ ...n, sodium: v }))} />
-      <Field label={t('foodForm.carbs')} value={nutrition.carbs.total} testId="nutri-carbs" onChange={set((n, v) => ({ ...n, carbs: { ...n.carbs, total: v } }))} />
-      <Field indent label={t('foodForm.fiber')} value={nutrition.carbs.fiber} onChange={set((n, v) => ({ ...n, carbs: { ...n.carbs, fiber: v } }))} />
-      <Field indent label={t('foodForm.sugar')} value={nutrition.carbs.sugar} onChange={set((n, v) => ({ ...n, carbs: { ...n.carbs, sugar: v } }))} />
-      <Field label={t('foodForm.protein')} value={nutrition.protein} testId="nutri-protein" onChange={set((n, v) => ({ ...n, protein: v }))} />
       <div className="muted" style={{ marginTop: 8 }}>{t('foodForm.vitamins')}</div>
       <Field indent label={t('foodForm.vitA')} value={nutrition.vitamins.a} onChange={set((n, v) => ({ ...n, vitamins: { ...n.vitamins, a: v } }))} />
       <Field indent label={t('foodForm.vitC')} value={nutrition.vitamins.c} onChange={set((n, v) => ({ ...n, vitamins: { ...n.vitamins, c: v } }))} />
