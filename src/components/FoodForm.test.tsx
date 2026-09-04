@@ -74,17 +74,18 @@ describe('FoodForm', () => {
     expect(saved.servings[0].amount).toBe(40)
     expect(saved.servings[0].isPrimary).toBe(true)
   })
-  it('starts a new food with an empty serving row (label/amount/unit) and shows hint placeholders', () => {
+  it('starts a new food with an empty label (hinted) but default amount 100 / unit g', () => {
     render(<FoodForm onSave={() => {}} onClose={() => {}} />)
     const label = screen.getByTestId('serving-label') as HTMLInputElement
     const amount = screen.getByTestId('serving-amount') as HTMLInputElement
     const unit = screen.getByTestId('serving-unit') as HTMLInputElement
     expect(label.value).toBe('')
     expect(label.placeholder).toBe('label')
-    // amount persists as 0 but renders empty so the placeholder shows through
-    expect(amount.value).toBe('')
+    // amount/unit keep the factory defaults (100 / g); their placeholders only
+    // surface once the user clears them
+    expect(amount.value).toBe('100')
     expect(amount.placeholder).toBe('amount')
-    expect(unit.value).toBe('')
+    expect(unit.value).toBe('g')
     expect(unit.placeholder).toBe('unit')
   })
   it('editing an existing food keeps its prefilled serving label/amount/unit', () => {

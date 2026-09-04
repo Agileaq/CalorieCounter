@@ -13,11 +13,12 @@ export function FoodForm({ initial, onSave, onClose }: { initial?: Food; onSave:
   const [food, setFood] = useState<Food>(() => {
     const base = initial ? JSON.parse(JSON.stringify(initial)) : newFood()
     const collapsed = collapseToPrimaryServing(base)
-    // For a brand-new food, start the serving row empty — label/amount/unit are
-    // all hinted via placeholders rather than prefilled with "Grams / 100 / g".
-    // Editing an existing food keeps its serving values as-is.
+    // For a brand-new food, start the serving label empty (hinted via its
+    // placeholder) instead of prefilled with "Grams". Amount/unit keep the
+    // factory defaults (100 / g); their placeholders only surface once the
+    // user clears them. Editing an existing food keeps its values as-is.
     if (!initial) {
-      collapsed.servings = collapsed.servings.map(s => ({ ...s, label: '', amount: 0, unit: '' }))
+      collapsed.servings = collapsed.servings.map(s => ({ ...s, label: '' }))
     }
     return collapsed
   })
