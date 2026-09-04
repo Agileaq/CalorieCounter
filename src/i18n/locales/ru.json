@@ -55,7 +55,8 @@
     "addFood": "Добавить еду",
     "proteinFiber": "{{p}}г белков · {{f}}г клетчатки",
     "macros": "{{c}}г у · {{p}}г б · {{f}}г ж · {{fi}}г к",
-    "clear": "Очистить приём пищи"
+    "clear": "Очистить приём пищи",
+    "entrySubtitle": "{{count}} порция · {{total}} {{unit}} · {{label}}"
   },
   "foodPicker": {
     "search": "Поиск",

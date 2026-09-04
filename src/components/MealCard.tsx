@@ -26,6 +26,11 @@ export function MealCard({ meal }: { meal: MealKey }) {
       {entries.map(e => {
         const ps = primaryServing(e.foodSnapshot)
         const en = entryNutrition(e)
+        // e.g. qty 1.5 × 100g → "1.5 份 · 150 g · Grams"; count servings keep
+        // the same template (per agreed single-format design), so a 1-item
+        // serving reads "1.5 份 · 1.5 item · Serving". total is rounded to one
+        // decimal to shed JS float tails (1.1×100 = 110.00000000000001).
+        const total = Math.round(e.quantity * ps.amount * 10) / 10
         return (
           <div key={e.id} className="row spread" style={{ padding: '8px 0' }}>
             <button type="button" data-testid="entry-edit" aria-label={t('common.edit')} onClick={() => setEditingId(e.id)}
@@ -34,7 +39,7 @@ export function MealCard({ meal }: { meal: MealKey }) {
               <div>
                 <div className="row" style={{ gap: 6, alignItems: 'baseline', fontSize: 13 }}>
                   <span>{e.foodSnapshot.name}</span>
-                  <span className="muted">{e.quantity} {ps.label}</span>
+                  <span className="muted" data-testid="entry-subtitle">{t('meal.entrySubtitle', { count: e.quantity, total, unit: ps.unit, label: ps.label })}</span>
                 </div>
                 <div className="muted" style={{ fontSize: 12 }} data-testid="entry-macros">{t('meal.macros', { c: Math.round(en.carbs.total), p: Math.round(en.protein), f: Math.round(en.fat.total), fi: Math.round(en.carbs.fiber) })}</div>
               </div>

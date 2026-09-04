@@ -55,7 +55,8 @@
     "addFood": "添加食物",
     "proteinFiber": "蛋白质 {{p}}g · 纤维 {{f}}g",
     "macros": "碳 {{c}}g · 蛋 {{p}}g · 脂 {{f}}g · 纤 {{fi}}g",
-    "clear": "清空此餐"
+    "clear": "清空此餐",
+    "entrySubtitle": "{{count}} 份 · {{total}} {{unit}} · {{label}}"
   },
   "foodPicker": {
     "search": "搜索",

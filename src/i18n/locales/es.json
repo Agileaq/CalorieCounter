@@ -55,7 +55,8 @@
     "addFood": "Añadir comida",
     "proteinFiber": "{{p}}g proteína · {{f}}g fibra",
     "macros": "{{c}}g c · {{p}}g p · {{f}}g g · {{fi}}g f",
-    "clear": "Vaciar comida"
+    "clear": "Vaciar comida",
+    "entrySubtitle": "{{count}} porción · {{total}} {{unit}} · {{label}}"
   },
   "foodPicker": {
     "search": "Buscar",

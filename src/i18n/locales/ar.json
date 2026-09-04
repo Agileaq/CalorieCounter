@@ -55,7 +55,8 @@
     "addFood": "إضافة طعام",
     "proteinFiber": "{{p}}غ بروتين · {{f}}غ ألياف",
     "macros": "{{c}}غ ك · {{p}}غ ب · {{f}}غ د · {{fi}}غ أ",
-    "clear": "تفريغ الوجبة"
+    "clear": "تفريغ الوجبة",
+    "entrySubtitle": "{{count}} حصة · {{total}} {{unit}} · {{label}}"
   },
   "foodPicker": {
     "search": "بحث",

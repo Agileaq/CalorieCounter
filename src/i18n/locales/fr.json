@@ -55,7 +55,8 @@
     "addFood": "Ajouter un aliment",
     "proteinFiber": "{{p}}g protéines · {{f}}g fibres",
     "macros": "{{c}}g g · {{p}}g p · {{f}}g l · {{fi}}g f",
-    "clear": "Vider le repas"
+    "clear": "Vider le repas",
+    "entrySubtitle": "{{count}} portion · {{total}} {{unit}} · {{label}}"
   },
   "foodPicker": {
     "search": "Rechercher",
