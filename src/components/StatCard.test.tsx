@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
 import '../i18n'
 import { StatCard } from './StatCard'
 
@@ -83,5 +83,16 @@ describe('StatCard', () => {
     // gaugeValue 300 = week max → ratio 1 → fill stops at the notch (80%)
     expect(screen.getByTestId('stat-ring-fill')).toBeInTheDocument()
     expect(screen.queryByTestId('stat-ring-over')).not.toBeInTheDocument()
+  })
+  it('clicking a bar calls onBarClick with that bar\'s date', () => {
+    const onBarClick = vi.fn()
+    render(
+      <StatCard title="Protein" gaugeValue={0} gaugeLabel="Under" ratio={0} color="var(--accent)" target={100}
+        bottomLeft="" bottomRight="" bars={bars} onBarClick={onBarClick} />,
+    )
+    const btns = screen.getAllByTestId('stat-bar-btn')
+    expect(btns).toHaveLength(7)
+    fireEvent.click(btns[2]) // bars[2].date === '2026-08-19'
+    expect(onBarClick).toHaveBeenCalledWith('2026-08-19')
   })
 })

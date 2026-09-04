@@ -12,6 +12,8 @@ interface Props {
   bottomLeft: string
   bottomRight: string
   bars: WeeklyBar[]
+  /** Click a bar's day to switch the selected date. Optional — cards without it render static bars. */
+  onBarClick?: (date: string) => void
 }
 
 // Mon..Sun — matches the order of WeeklyBar[] from weeklySeries()
@@ -23,7 +25,7 @@ const CAP = 96
 const UNDER = 82
 const OVER = 14
 
-export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, bottomLeft, bottomRight, bars }: Props) {
+export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, bottomLeft, bottomRight, bars, onBarClick }: Props) {
   const { t } = useTranslation()
   const max = Math.max(1, ...bars.map(b => b.value))
   const nf = (n: number) => Math.round(n).toLocaleString('en-US')
@@ -55,7 +57,16 @@ export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, 
         </HalfRing>
         <div className="row" style={{ flex: 1, gap: 6, alignItems: 'flex-end', justifyContent: 'space-between' }}>
           {bars.map((b, i) => (
-            <div key={b.date} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
+            <button key={b.date} type="button" data-testid="stat-bar-btn"
+              disabled={!onBarClick}
+              aria-label={b.date}
+              onClick={onBarClick ? () => onBarClick(b.date) : undefined}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1,
+                background: 'transparent', border: 'none', padding: 0, margin: 0,
+                font: 'inherit', color: 'inherit', textAlign: 'inherit',
+                cursor: onBarClick ? 'pointer' : 'default',
+              }}>
               <div data-testid="stat-bar" style={{
                 position: 'relative', width: '100%', maxWidth: 16, height: CAP,
                 margin: '0 auto', background: '#e5e5ea', borderRadius: 5, overflow: 'hidden',
@@ -81,7 +92,7 @@ export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, 
               <span className="muted" style={{ fontSize: 11, fontWeight: b.isToday ? 700 : 400, color: b.isToday ? 'inherit' : 'var(--muted)' }}>
                 {t(`calendar.${DOW[i]}`).slice(0, 2)}
               </span>
-            </div>
+            </button>
           ))}
         </div>
       </div>

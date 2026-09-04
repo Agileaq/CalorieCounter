@@ -36,8 +36,8 @@ export function CalendarModal({ onClose }: { onClose: () => void }) {
         </div>
         <div className="row spread" style={{ margin: '8px 0' }}>
           <div className="row" style={{ gap: 6 }}>
-            <button className="btn-ghost" aria-label={t('common.prevMonth')} onClick={() => shiftMonth(-1)}>‹</button>
-            <button className="btn-ghost" aria-label={t('common.nextMonth')} onClick={() => shiftMonth(1)}>›</button>
+            <button className="btn-ghost cal-nav-btn" aria-label={t('common.prevMonth')} onClick={() => shiftMonth(-1)}>‹</button>
+            <button className="btn-ghost cal-nav-btn" aria-label={t('common.nextMonth')} onClick={() => shiftMonth(1)}>›</button>
           </div>
           <button className="btn-ghost" onClick={goToday}>{t('common.today')}</button>
         </div>

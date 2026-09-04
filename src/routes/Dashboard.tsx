@@ -12,7 +12,7 @@ import type { DayLog } from '../types'
 
 export default function Dashboard() {
   const { t } = useTranslation()
-  const { day, days, selectedDate, settings } = useApp()
+  const { day, days, selectedDate, setSelectedDate, settings } = useApp()
   const [cal, setCal] = useState(false)
   const n = dayFoodNutrition(day)
   const mt = settings.macroTargets
@@ -27,7 +27,7 @@ export default function Dashboard() {
         gaugeValue={current} gaugeLabel={under >= 0 ? t('dashboard.under') : t('dashboard.over')}
         ratio={target > 0 ? current / target : 0} color={color} target={target}        bottomLeft={t('dashboard.of', { cur: nf(current), target: nf(target) })}
         bottomRight={t('dashboard.avgPrior', { n: nf(s.avgPrior) })}
-        bars={s.bars} />
+        bars={s.bars} onBarClick={setSelectedDate} />
     )
   }
 
@@ -50,7 +50,7 @@ export default function Dashboard() {
         target={settings.dailyBudget}
         bottomLeft={t('dashboard.ofCals', { cur: nf(food), target: nf(settings.dailyBudget) })}
         bottomRight={t('dashboard.avgPrior', { n: nf(calSeries.avgPrior) })}
-        bars={calSeries.bars} />
+        bars={calSeries.bars} onBarClick={setSelectedDate} />
 
       {macroCard(t('dashboard.carbs'), d => dayFoodNutrition(d).carbs.total, n.carbs.total, mt.carbs, 'var(--accent)')}
       {macroCard(t('dashboard.protein'), d => dayFoodNutrition(d).protein, n.protein, mt.protein, '#5b3df5')}

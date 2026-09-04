@@ -30,6 +30,13 @@ body {
 .muted { color: var(--muted); font-size: 13px; }
 .btn-accent { background: var(--accent); color: #fff; border: none; border-radius: 999px; padding: 8px 16px; font-weight: 600; }
 .btn-ghost { background: transparent; border: none; color: var(--accent); font-weight: 600; }
+/* Calendar month-switch ‹ ›: bigger tap target + glyph than bare .btn-ghost. */
+.cal-nav-btn {
+  width: 44px; height: 44px; font-size: 24px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 12px; cursor: pointer;
+}
+.cal-nav-btn:hover { background: var(--bg); }
 /* data import/export actions. Explicit font-size so <button> (UA default, not
    inherited) and <label> (inherits body 16px) render identically; bordered pill
    reads as a button rather than a bare text link. */
