@@ -40,4 +40,23 @@ describe('MealCard', () => {
     // the row now reflects the new quantity in the subtitle
     expect(screen.getByTestId('entry-subtitle')).toHaveTextContent('2.5 serving · 250 g · Grams')
   })
+
+  it('drops the trailing label segment when the serving label is blank', () => {
+    render(<AppProvider><MealCard meal="breakfast" /></AppProvider>)
+    // create a custom food with a blank serving label
+    fireEvent.click(screen.getByText(/Add Food/i))
+    fireEvent.click(screen.getByTestId('new-food'))
+    fireEvent.change(screen.getByTestId('food-name'), { target: { value: 'Plain Water' } })
+    fireEvent.change(screen.getByTestId('serving-label'), { target: { value: '' } })
+    fireEvent.change(screen.getByTestId('serving-amount'), { target: { value: '50' } })
+    fireEvent.change(screen.getByTestId('nutri-protein'), { target: { value: '4' } }) // calories derive from macros
+    fireEvent.click(screen.getByTestId('food-save'))
+    // the new custom food appears in the picker (All tab includes myFoods); find and add it
+    fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'plain water' } })
+    fireEvent.click(screen.getAllByTestId('food-detail-open')[0])
+    fireEvent.click(screen.getByTestId('food-detail-add'))
+    // subtitle omits the " · {label}" tail since the label is blank
+    // (test i18n = en): "1 serving · 50 g" — no trailing " · "
+    expect(screen.getByTestId('entry-subtitle')).toHaveTextContent('1 serving · 50 g')
+  })
 })

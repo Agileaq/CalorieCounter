@@ -56,7 +56,8 @@
     "proteinFiber": "{{p}}g proteína · {{f}}g fibra",
     "macros": "{{c}}g c · {{p}}g p · {{f}}g g · {{fi}}g f",
     "clear": "Vaciar comida",
-    "entrySubtitle": "{{count}} porción · {{total}} {{unit}} · {{label}}"
+    "entrySubtitle": "{{count}} porción · {{total}} {{unit}} · {{label}}",
+    "entrySubtitleNoLabel": "{{count}} porción · {{total}} {{unit}}"
   },
   "foodPicker": {
     "search": "Buscar",

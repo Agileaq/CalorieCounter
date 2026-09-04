@@ -56,7 +56,8 @@
     "proteinFiber": "{{p}}g protein · {{f}}g fiber",
     "macros": "{{c}}g c · {{p}}g p · {{f}}g ft · {{fi}}g fb",
     "clear": "Clear meal",
-    "entrySubtitle": "{{count}} serving · {{total}} {{unit}} · {{label}}"
+    "entrySubtitle": "{{count}} serving · {{total}} {{unit}} · {{label}}",
+    "entrySubtitleNoLabel": "{{count}} serving · {{total}} {{unit}}"
   },
   "foodPicker": {
     "search": "Search",
