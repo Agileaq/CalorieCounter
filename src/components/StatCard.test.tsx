@@ -50,6 +50,20 @@ describe('StatCard', () => {
     expect(overs[0].style.height).toBe('14px')
     expect(overs[0].style.background).toBe('var(--red)')
   })
+  it('an over-target bar keeps the card colour below the divider, even when not today', () => {
+    // bars[1] is 300 = 3x target, NOT today. Before the fix its under-zone was grey
+    // and only the over-cap was red, so an over-target day read as a grey bar with a
+    // red tip. Now the under-zone stays in the card colour so colour→red reads on
+    // every bar, matching the ring. bars[0] (100 = target, not today) stays grey.
+    render(
+      <StatCard title="Carbs" gaugeValue={0} gaugeLabel="Under" ratio={0} color="var(--accent)" target={100}
+        bottomLeft="" bottomRight="" bars={bars} />,
+    )
+    const fills = screen.getAllByTestId('stat-bar-fill')
+    expect(fills[1].style.background).toBe('var(--accent)') // over-target → card colour
+    expect(fills[0].style.background).toBe('rgb(199, 201, 209)') // at-target, not today → grey #c7c9d1
+    expect(fills[2].style.background).toBe('var(--accent)') // today → card colour
+  })
   it('the ring shows a target notch at 80% of the sweep', () => {
     render(
       <StatCard title="Protein" gaugeValue={50} gaugeLabel="Under" ratio={0.5} color="var(--accent)" target={100}

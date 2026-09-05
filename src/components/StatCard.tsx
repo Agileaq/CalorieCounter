@@ -75,7 +75,11 @@ export function StatCard({ title, gaugeValue, gaugeLabel, ratio, color, target, 
                   <div data-testid="stat-bar-fill" style={{
                     position: 'absolute', left: 0, right: 0, bottom: 0,
                     height: fillParts(b.value).under,
-                    background: b.isToday ? color : '#c7c9d1',
+                    // Under-target bars keep today's colour, others grey (matches the
+                    // ring's neutral history bars). Once a bar goes OVER target, the
+                    // under-target zone stays in the card colour so the colour→red
+                    // transition reads on every bar, not just the selected day.
+                    background: (b.isToday || fillParts(b.value).over > 0) ? color : '#c7c9d1',
                   }} />
                 )}
                 {fillParts(b.value).over > 0 && (
