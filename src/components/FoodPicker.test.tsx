@@ -51,12 +51,12 @@ describe('FoodPicker', () => {
     expect(screen.getByTestId('food-detail-cals')).toBeInTheDocument()
     expect(screen.getByTestId('food-detail-edit')).toBeInTheDocument()
   })
-  it('shows the serving subtitle in the meal-log format (1 serving · total unit · label)', () => {
-    // White Rice: label cleared in predefinedFoods, amount 100, unit g
-    // → no-label variant "1 serving · 100 g" (trailing " · {label}" dropped)
+  it('shows the serving subtitle in the meal-log format plus per-serving calories', () => {
+    // White Rice: label cleared in predefinedFoods, amount 100, unit g, 130 cal
+    // → no-label variant "1 serving · 100 g" + trailing " · 130 kcal"
     render(<AppProvider><FoodPicker onPick={() => {}} onClose={() => {}} /></AppProvider>)
     fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
-    expect(screen.getByTestId('food-subtitle')).toHaveTextContent('1 serving · 100 g')
+    expect(screen.getByTestId('food-subtitle')).toHaveTextContent('1 serving · 100 g · 130 kcal')
   })
   it('the details button opens the food detail (same as tapping the row)', () => {
     const onPick = vi.fn()

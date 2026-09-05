@@ -103,8 +103,9 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
   function renderRow(f: Food) {
     const ps = primaryServing(f)
     // Same subtitle format as the meal log: "1 份 · {total} {unit} · {label}"
-    // (or the no-label variant). quantity 1 = one primary serving.
-    const subtitle = servingSubtitle(t, 1, ps)
+    // (or the no-label variant), plus a trailing " · {cal} kcal" showing one
+    // serving's calories — the meal log shows calories on the right instead.
+    const subtitle = servingSubtitle(t, 1, ps, f.nutrition.calories)
     return (
       <div key={f.id} className="row spread card" style={{ padding: 10 }}>
         <button type="button" data-testid="food-row" className="row"

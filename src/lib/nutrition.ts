@@ -28,17 +28,26 @@ export function primaryServing(food: Food): Serving {
  * `t` is kept as a narrow callable so this pure-data module doesn't import
  * react-i18next; callers pass their hook's `t`. `total` is rounded to one
  * decimal to shed JS float tails (1.1×100 = 110.00000000000001).
+ *
+ * When `perServingCals` is provided (FoodPicker), a trailing " · {cal} kcal"
+ * segment is appended so each food row also shows one serving's calories —
+ * the meal log omits this because it already shows calories on the right.
+ * The calorie segment always uses the no-label form so a blank label doesn't
+ * collapse the spacing ("... · 100 g · 130 kcal", never "... · 130 kcal").
  */
 export function servingSubtitle(
   t: (key: string, opts?: Record<string, unknown>) => string,
   quantity: number,
   ps: Serving,
+  perServingCals?: number,
 ): string {
   const total = Math.round(quantity * ps.amount * 10) / 10
   const label = ps.label.trim()
-  return label
+  const base = label
     ? t('meal.entrySubtitle', { count: quantity, total, unit: ps.unit, label })
     : t('meal.entrySubtitleNoLabel', { count: quantity, total, unit: ps.unit })
+  if (perServingCals === undefined) return base
+  return `${base} · ${t('meal.cals', { n: Math.round(perServingCals) })}`
 }
 
 export function scaleNutrition(n: Nutrition, factor: number): Nutrition {
