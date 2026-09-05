@@ -37,7 +37,7 @@ describe('DaySummaryCard', () => {
   it('shows the fixed daily budget plus food and exercise totals', () => {
     seedDay(500, 140, 60, 30, 200)
     render(<AppProvider><DaySummaryCard /></AppProvider>)
-    expect(screen.getByTestId('summary-budget')).toHaveTextContent('Budget: 2,248 kcal to eat')
+    expect(screen.getByTestId('summary-budget')).toHaveTextContent('Budget: 2,248 kcal')
     expect(screen.getByText('Food')).toBeInTheDocument()
     expect(screen.getByTestId('summary-food')).toHaveTextContent('500')
     expect(screen.getByText('Exercise')).toBeInTheDocument()

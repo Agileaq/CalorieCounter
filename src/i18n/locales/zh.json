@@ -39,7 +39,7 @@
     "ofCals": "{{cur}} / {{target}} 千卡"
   },
   "log": {
-    "budget": "Budget: 可食 {{n}} kcal",
+    "budget": "Budget: {{n}} kcal",
     "grams": "{{cur}}/{{target}}g"
   },
   "exercise": {

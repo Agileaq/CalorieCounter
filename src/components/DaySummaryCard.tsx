@@ -25,10 +25,10 @@ export function DaySummaryCard() {
 
   return (
     <div className="card">
-      <div data-testid="summary-budget" className="muted" style={{ fontSize: 14 }}>
+      <div data-testid="summary-budget" style={{ fontSize: 14, fontWeight: 600 }}>
         {t('log.budget', { n: nf(settings.dailyBudget) })}
       </div>
-      <div className="row" style={{ justifyContent: 'center', alignItems: 'center', gap: 20, marginTop: 8 }}>
+      <div className="row" style={{ justifyContent: 'center', alignItems: 'center', gap: 44, marginTop: 8 }}>
         <div style={{ textAlign: 'center', minWidth: 64 }}>
           <div className="muted" style={{ fontSize: 12 }}>{t('dashboard.food')}</div>
           <div data-testid="summary-food" style={{ fontWeight: 700, fontSize: 20 }}>{nf(food)}</div>
@@ -48,7 +48,7 @@ export function DaySummaryCard() {
           <div data-testid="summary-exercise" style={{ fontWeight: 700, fontSize: 20 }}>{nf(burned)}</div>
         </div>
       </div>
-      <div className="row" style={{ justifyContent: 'center', gap: 20, marginTop: 12 }}>
+      <div className="row" style={{ justifyContent: 'center', gap: 40, marginTop: 12 }}>
         {MACROS.map(m => {
           const cur = m.key === 'carbs' ? n.carbs.total : m.key === 'protein' ? n.protein : n.fat.total
           const target = settings.macroTargets[m.key]

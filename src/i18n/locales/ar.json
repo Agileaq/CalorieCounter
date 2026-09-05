@@ -39,7 +39,7 @@
     "ofCals": "{{cur}} من {{target}} سعرة"
   },
   "log": {
-    "budget": "الميزانية: {{n}} سعرة يمكن تناولها",
+    "budget": "الميزانية: {{n}} سعرة",
     "grams": "{{cur}}/{{target}}g"
   },
   "exercise": {

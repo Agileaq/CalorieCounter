@@ -39,7 +39,7 @@
     "ofCals": "{{cur}} de {{target}} cal"
   },
   "log": {
-    "budget": "Presupuesto: {{n}} kcal por comer",
+    "budget": "Presupuesto: {{n}} kcal",
     "grams": "{{cur}}/{{target}}g"
   },
   "exercise": {

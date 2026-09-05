@@ -39,7 +39,7 @@
     "ofCals": "{{cur}} из {{target}} ккал"
   },
   "log": {
-    "budget": "Бюджет: {{n}} ккал можно съесть",
+    "budget": "Бюджет: {{n}} ккал",
     "grams": "{{cur}}/{{target}}g"
   },
   "exercise": {
