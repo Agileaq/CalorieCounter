@@ -41,6 +41,9 @@ body {
    label read clearly, and an explicit font-size so the <button> doesn't fall
    back to the UA default. */
 .cal-today-btn { font-size: 15px; padding: 6px 12px; border-radius: 999px; }
+/* Calendar ✕ close: same 15px scale as the Today button so the modal header's
+   text buttons read at one size. Square-ish padding around the single glyph. */
+.cal-close-btn { font-size: 15px; padding: 6px 10px; border-radius: 999px; }
 /* data import/export actions. Explicit font-size so <button> (UA default, not
    inherited) and <label> (inherits body 16px) render identically; bordered pill
    reads as a button rather than a bare text link. */
