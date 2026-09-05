@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FOOD_EMOJI_CATEGORIES } from '../data/foodEmojis'
 import { useApp } from '../state/useApp'
+import { SheetModal } from './SheetModal'
 
 export function IconPicker({ value, onChange, onClose }: { value: string; onChange: (c: string) => void; onClose: () => void }) {
   const { t } = useTranslation()
@@ -33,39 +34,38 @@ export function IconPicker({ value, onChange, onClose }: { value: string; onChan
     pick(ch)
   }
 
+  // Rendered directly into SheetModal (no nested scroll container) so the sheet
+  // itself is the sole scroll container — the same layout FoodPicker uses, which
+  // is what keeps SheetModal's pull-to-dismiss / overscroll handling correct.
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', maxHeight: '85vh' }}>
-        <div className="row spread">
-          <button className="icon-btn" aria-label={t('common.back')} onClick={onClose}>←</button>
-          <strong>{t('foodForm.icon')}</strong>
-          {/* right spacer keeps the title centered, mirroring FoodForm's header */}
-          <span style={{ width: 36 }} aria-hidden />
-        </div>
-        <input placeholder={t('foodPicker.search')} value={q} onChange={e => setQ(e.target.value)}
-          style={{ width: '100%', padding: 8, margin: '8px 0' }} />
-        <div style={{ flex: 1, minHeight: 360, overflowY: 'auto', paddingBottom: 8 }}>
-          {categories.map(c => (
-            <div key={c.key}>
-              <div className="muted" style={{ marginTop: 8 }}>{c.key}</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                {c.emojis.map(e => (
-                  <button key={e.char} aria-label={e.char} onClick={() => pick(e.char)}
-                    style={{ fontSize: 28, padding: 8, border: value === e.char ? '2px solid var(--accent)' : '1px solid var(--line)', borderRadius: 10, background: '#fff' }}>
-                    {e.char}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="row" style={{ marginTop: 10, gap: 8 }}>
-          <input data-testid="custom-emoji" placeholder="🙂" value={custom} onChange={e => setCustom(e.target.value)}
-            style={{ flex: 1, padding: 8, textAlign: 'center' }} />
-          <button className="btn-accent" data-testid="custom-emoji-apply"
-            onClick={() => addCustom(custom)}>{t('common.add')}</button>
-        </div>
+    <SheetModal onClose={onClose}>
+      <div className="row spread">
+        <button className="icon-btn" aria-label={t('common.back')} onClick={onClose}>←</button>
+        <strong>{t('foodForm.icon')}</strong>
+        {/* right spacer keeps the title centered, mirroring FoodForm's header */}
+        <span style={{ width: 36 }} aria-hidden />
       </div>
-    </div>
+      <input placeholder={t('foodPicker.search')} value={q} onChange={e => setQ(e.target.value)}
+        style={{ width: '100%', padding: 8, margin: '8px 0' }} />
+      {categories.map(c => (
+        <div key={c.key}>
+          <div className="muted" style={{ marginTop: 8 }}>{c.key}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
+            {c.emojis.map(e => (
+              <button key={e.char} aria-label={e.char} onClick={() => pick(e.char)}
+                style={{ fontSize: 28, padding: 8, border: value === e.char ? '2px solid var(--accent)' : '1px solid var(--line)', borderRadius: 10, background: '#fff' }}>
+                {e.char}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div className="row" style={{ marginTop: 10, gap: 8 }}>
+        <input data-testid="custom-emoji" placeholder="🙂" value={custom} onChange={e => setCustom(e.target.value)}
+          style={{ flex: 1, padding: 8, textAlign: 'center' }} />
+        <button className="btn-accent" data-testid="custom-emoji-apply"
+          onClick={() => addCustom(custom)}>{t('common.add')}</button>
+      </div>
+    </SheetModal>
   )
 }
