@@ -55,8 +55,12 @@ export function saveHiddenFoods(h: Record<string, true>): void { write(K.hiddenF
 
 // User-added food icons (unicode emoji / glyphs typed into the icon picker's
 // "custom" category). Stored as a list of chars so the picker can render a
-// "custom" category row. Absent in older installs → empty list.
-export function loadCustomIcons(): string[] { return read<string[]>(K.customIcons, []) }
+// "custom" category row. Absent in older installs (or a cleared store) seeds
+// a default '😄' so the custom category is never empty on a fresh install.
+export function loadCustomIcons(): string[] {
+  const stored = read<string[] | null>(K.customIcons, null)
+  return stored == null ? ['😄'] : stored
+}
 export function saveCustomIcons(c: string[]): void { write(K.customIcons, c) }
 
 export function loadDays(): Record<string, DayLog> { return read<Record<string, DayLog>>(K.days, {}) }

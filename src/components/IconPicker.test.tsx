@@ -40,11 +40,16 @@ describe('IconPicker', () => {
     fireEvent.click(screen.getByRole('button', { name: '🥥' }))
     expect(onChange).toHaveBeenNthCalledWith(2, '🥥')
   })
-  it('the custom category persists to cc.customIcons in storage', () => {
+  it('the custom category persists to cc.customIcons in storage, keeping the default 😄', () => {
     renderPicker()
     fireEvent.change(screen.getByTestId('custom-emoji'), { target: { value: '🥑' } })
     fireEvent.click(screen.getByTestId('custom-emoji-apply'))
-    expect(JSON.parse(localStorage.getItem('cc.customIcons')!)).toEqual(['🥑'])
+    expect(JSON.parse(localStorage.getItem('cc.customIcons')!)).toEqual(['😄', '🥑'])
+  })
+  it('seeds a default 😄 in the custom category on a fresh install', () => {
+    renderPicker()
+    expect(screen.getByText('custom')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '😄' })).toBeInTheDocument()
   })
   it('header has a left back-arrow and a centered title, no ✕ close button', () => {
     renderPicker()
