@@ -38,6 +38,10 @@
     "avgPrior": "{{n}}غ متوسط قبل اليوم",
     "ofCals": "{{cur}} من {{target}} سعرة"
   },
+  "log": {
+    "budget": "الميزانية: {{n}} سعرة يمكن تناولها",
+    "grams": "{{cur}}/{{target}}g"
+  },
   "exercise": {
     "strength": "تمارين القوة",
     "walking": "المشي",

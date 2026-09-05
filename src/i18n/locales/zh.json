@@ -38,6 +38,10 @@
     "avgPrior": "此前日均 {{n}}g",
     "ofCals": "{{cur}} / {{target}} 千卡"
   },
+  "log": {
+    "budget": "Budget: 可食 {{n}} kcal",
+    "grams": "{{cur}}/{{target}}g"
+  },
   "exercise": {
     "strength": "力量训练",
     "walking": "走路",

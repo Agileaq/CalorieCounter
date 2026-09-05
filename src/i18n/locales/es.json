@@ -38,6 +38,10 @@
     "avgPrior": "{{n}}g promedio antes de hoy",
     "ofCals": "{{cur}} de {{target}} cal"
   },
+  "log": {
+    "budget": "Presupuesto: {{n}} kcal por comer",
+    "grams": "{{cur}}/{{target}}g"
+  },
   "exercise": {
     "strength": "Entrenamiento de fuerza",
     "walking": "Caminar",

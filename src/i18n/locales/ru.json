@@ -38,6 +38,10 @@
     "avgPrior": "{{n}}г в среднем до сегодня",
     "ofCals": "{{cur}} из {{target}} ккал"
   },
+  "log": {
+    "budget": "Бюджет: {{n}} ккал можно съесть",
+    "grams": "{{cur}}/{{target}}g"
+  },
   "exercise": {
     "strength": "Силовая тренировка",
     "walking": "Ходьба",
