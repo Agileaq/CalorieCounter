@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import { DateHeader } from '../components/DateHeader'
-import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { StatCard } from '../components/StatCard'
 import { BuildInfo } from '../components/BuildInfo'
 import { CalendarModal } from '../components/CalendarModal'
@@ -38,9 +37,8 @@ export default function Dashboard() {
 
   return (
     <div className="screen">
-      <div className="row spread header-row">
+      <div className="header-row">
         <DateHeader onOpenCalendar={() => setCal(true)} />
-        <LanguageSwitcher />
       </div>
 
       <StatCard title={t('dashboard.calories')}
