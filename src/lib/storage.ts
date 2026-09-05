@@ -8,6 +8,7 @@ const K = {
   schemaVersion: 'cc.schemaVersion',
   foodOverrides: 'cc.foodOverrides',
   hiddenFoods: 'cc.hiddenFoods',
+  customIcons: 'cc.customIcons',
 } as const
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -51,6 +52,12 @@ export function saveFoodOverrides(o: Record<string, Food>): void { write(K.foodO
 // allFoods filters these ids out.
 export function loadHiddenFoods(): Record<string, true> { return read<Record<string, true>>(K.hiddenFoods, {}) }
 export function saveHiddenFoods(h: Record<string, true>): void { write(K.hiddenFoods, h) }
+
+// User-added food icons (unicode emoji / glyphs typed into the icon picker's
+// "custom" category). Stored as a list of chars so the picker can render a
+// "custom" category row. Absent in older installs → empty list.
+export function loadCustomIcons(): string[] { return read<string[]>(K.customIcons, []) }
+export function saveCustomIcons(c: string[]): void { write(K.customIcons, c) }
 
 export function loadDays(): Record<string, DayLog> { return read<Record<string, DayLog>>(K.days, {}) }
 export function saveDays(d: Record<string, DayLog>): void { write(K.days, d) }

@@ -313,5 +313,26 @@
       "minerals": { "calcium": 40, "iron": 0.1, "magnesium": 10, "phosphorus": 14, "potassium": 181, "zinc": 0.07 },
       "caffeine": 0
     }
+  },
+  {
+    "id": "pre-orange-juice",
+    "name": "Orange juice",
+    "icon": "🧃",
+    "source": "predefined",
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "servings": [
+      { "id": "pre-orange-juice-s1", "kind": "volume", "label": "mL", "amount": 240, "unit": "mL", "isPrimary": true }
+    ],
+    "nutrition": {
+      "calories": 45,
+      "fat": { "total": 0.2, "mono": 0.04, "poly": 0.05, "saturated": 0.02, "trans": 0 },
+      "cholesterol": 0,
+      "sodium": 1,
+      "carbs": { "total": 10.4, "fiber": 0.2, "sugar": 8.4 },
+      "protein": 0.7,
+      "vitamins": { "a": 10, "c": 50, "b1": 0.09, "b2": 0.03, "b3": 0.4, "b9": 30, "b6": 0.04, "b12": 0 },
+      "minerals": { "calcium": 11, "iron": 0.1, "magnesium": 11, "phosphorus": 17, "potassium": 200, "zinc": 0.05 },
+      "caffeine": 0
+    }
   }
 ]

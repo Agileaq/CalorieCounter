@@ -133,4 +133,10 @@ describe('importExport', () => {
     expect(merged.settings.dailyBudget).toBe(2500)
     expect(merged.settings.language).toBe('zh')
   })
+  it('mergeBackup unions customIcons, de-duped, order preserved', () => {
+    const ex = backup({ customIcons: ['🥥', '🥑'] })
+    const inc = backup({ customIcons: ['🥑', '🌶️'] })
+    const merged = mergeBackup(ex, inc)
+    expect(merged.customIcons).toEqual(['🥥', '🥑', '🌶️'])
+  })
 })

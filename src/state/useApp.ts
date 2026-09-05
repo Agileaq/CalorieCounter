@@ -14,6 +14,8 @@ export interface AppContextValue {
   predefined: Food[]
   foodOverrides: Record<string, Food>
   hiddenFoods: Record<string, true>
+  customIcons: string[]
+  setCustomIcons: (c: string[]) => void
   addMyFood: (f: Food) => void
   updateMyFood: (f: Food) => void
   deleteMyFood: (id: string) => void

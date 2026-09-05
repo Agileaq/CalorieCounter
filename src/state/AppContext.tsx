@@ -3,6 +3,7 @@ import type { DayLog, Food, Language, Settings } from '../types'
 import {
   loadSettings, saveSettings, loadMyFoods, saveMyFoods, loadDays, saveDays,
   loadFoodOverrides, saveFoodOverrides, loadHiddenFoods, saveHiddenFoods,
+  loadCustomIcons, saveCustomIcons,
   getDay, ensureSchema,
 } from '../lib/storage'
 import { mergeFoods, mergeBackup as mergeBackupData } from '../lib/importExport'
@@ -21,6 +22,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     Object.fromEntries(Object.entries(loadFoodOverrides()).map(([k, f]) => [k, collapseToPrimaryServing(f)]))
   )
   const [hidden, setHidden] = useState<Record<string, true>>(() => loadHiddenFoods())
+  const [customIcons, setCustomIcons] = useState<string[]>(() => loadCustomIcons())
   const [days, setDays] = useState<Record<string, DayLog>>(() => loadDays())
   const [selectedDate, setSelectedDate] = useState<string>(() => todayKey())
 
@@ -34,6 +36,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   function persistSettings(next: Settings) { setSettings(next); saveSettings(next) }
   function persistOverrides(next: Record<string, Food>) { setOverrides(next); saveFoodOverrides(next) }
   function persistHidden(next: Record<string, true>) { setHidden(next); saveHiddenFoods(next) }
+  function persistCustomIcons(next: string[]) { setCustomIcons(next); saveCustomIcons(next) }
 
   function mutateDay(fn: (d: DayLog) => DayLog) {
     const current = getDay(days, selectedDate)
@@ -51,6 +54,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     myFoods, predefined,
     foodOverrides: overrides,
     hiddenFoods: hidden,
+    customIcons,
+    setCustomIcons: persistCustomIcons,
     addMyFood: (f) => persistMyFoods([...myFoods, f]),
     updateMyFood: (f) => persistMyFoods(myFoods.map(x => x.id === f.id ? f : x)),
     deleteMyFood: (id) => persistMyFoods(myFoods.filter(x => x.id !== id)),
@@ -82,10 +87,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       persistSettings(data.settings)
       persistOverrides(Object.fromEntries(Object.entries(data.foodOverrides ?? {}).map(([k, f]) => [k, collapseToPrimaryServing(f)])))
       persistHidden(data.hiddenFoods ?? {})
+      persistCustomIcons(data.customIcons ?? [])
     },
     mergeBackup: (data) => {
       const merged = mergeBackupData(
-        { days, myFoods, settings, foodOverrides: overrides, hiddenFoods: hidden },
+        { days, myFoods, settings, foodOverrides: overrides, hiddenFoods: hidden, customIcons },
         data,
       )
       persistDays(merged.days)
@@ -93,6 +99,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       persistSettings(merged.settings)
       persistOverrides(Object.fromEntries(Object.entries(merged.foodOverrides ?? {}).map(([k, f]) => [k, collapseToPrimaryServing(f)])))
       persistHidden(merged.hiddenFoods ?? {})
+      persistCustomIcons(merged.customIcons ?? [])
     },
   }
 
