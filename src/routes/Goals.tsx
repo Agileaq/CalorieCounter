@@ -69,7 +69,7 @@ function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; to
 
 export default function Goals() {
   const { t } = useTranslation()
-  const { settings, updateSettings, myFoods, allFoods, foodOverrides, days, importFoods, replaceAll } = useApp()
+  const { settings, updateSettings, myFoods, allFoods, foodOverrides, days, importFoods, replaceAll, mergeBackup } = useApp()
   const [msg, setMsg] = useState('')
   const mt = settings.macroTargets
   const setMacro = (patch: Partial<typeof mt>) => updateSettings({ macroTargets: { ...mt, ...patch } })
@@ -97,6 +97,11 @@ export default function Goals() {
   async function onImportBackup(file?: File) {
     if (!file) return
     try { replaceAll(parseBackup(await readFileText(file))); setMsg(t('common.done')) }
+    catch (e) { setMsg(t('goals.importError', { msg: (e as Error).message })) }
+  }
+  async function onMergeBackup(file?: File) {
+    if (!file) return
+    try { mergeBackup(parseBackup(await readFileText(file))); setMsg(t('common.done')) }
     catch (e) { setMsg(t('goals.importError', { msg: (e as Error).message })) }
   }
 
@@ -135,7 +140,9 @@ export default function Goals() {
           <label className="btn-outline">{t('goals.importFoods')}
             <input type="file" accept="application/json" hidden onChange={e => onImportFoods(e.target.files?.[0] ?? undefined)} /></label>
           <button className="btn-outline" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings, foodOverrides }))}>{t('goals.exportBackup')}</button>
-          <label className="btn-outline">{t('goals.importBackup')}
+          <label className="btn-outline">{t('goals.mergeBackup')}
+            <input type="file" accept="application/json" hidden onChange={e => onMergeBackup(e.target.files?.[0] ?? undefined)} /></label>
+          <label className="btn-outline">{t('goals.replaceBackup')}
             <input type="file" accept="application/json" hidden onChange={e => onImportBackup(e.target.files?.[0] ?? undefined)} /></label>
         </div>
         {msg && <div className="muted" style={{ marginTop: 8 }}>{msg}</div>}

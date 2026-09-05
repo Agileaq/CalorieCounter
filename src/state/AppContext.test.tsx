@@ -4,6 +4,7 @@ import { AppProvider } from './AppContext'
 import { useApp } from './useApp'
 import { newFood, newServing } from '../lib/food'
 import { entryNutrition } from '../lib/nutrition'
+import { parseBackup } from '../lib/importExport'
 
 function Probe() {
   const app = useApp()
@@ -120,5 +121,52 @@ describe('AppContext hide', () => {
     // a fresh provider applies the stored hide on startup
     render(<AppProvider><HiddenProbe /></AppProvider>)
     expect(screen.getByTestId('riceHidden').textContent).toBe('yes')
+  })
+})
+
+// mergeBackup: importing a backup merges by stable ids instead of overwriting.
+function MergeProbe({ backup }: { backup: string }) {
+  const app = useApp()
+  return (
+    <div>
+      <span data-testid="dayCount">{Object.keys(app.days).length}</span>
+      <span data-testid="entryCount">{app.day.meals.breakfast.length + app.day.meals.lunch.length}</span>
+      <span data-testid="myFoodCount">{app.myFoods.length}</span>
+      <button onClick={() => app.mergeBackup(parseBackup(backup))}>merge</button>
+    </div>
+  )
+}
+
+describe('AppContext mergeBackup', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('merging a backup with an overlapping day dedupes entries by id instead of duplicating', () => {
+    // existing state: one day with a breakfast entry 'a'
+    localStorage.setItem('cc.days', JSON.stringify({
+      '2026-01-01': { date: '2026-01-01', meals: { breakfast: [
+        { id: 'a', foodSnapshot: newFood({ name: 'Rice' }), servingId: 's', quantity: 1 },
+      ], lunch: [], dinner: [], snacks: [] }, exercise: [] },
+    }))
+    render(<AppProvider><Probe /></AppProvider>)
+    act(() => { screen.getByText('log').click() }) // adds entry 'e1' to selectedDate (today) breakfast
+    const todayEntries = screen.getByTestId('dayCals').textContent
+    expect(todayEntries).toBe('260') // logged 2 servings of 130cal Rice
+
+    // incoming backup has the SAME 'a' on 2026-01-01 (should not dup) plus a new entry 'c'
+    const backup = JSON.stringify({
+      kind: 'backup', version: 1,
+      days: { '2026-01-01': { date: '2026-01-01', meals: { breakfast: [
+        { id: 'a', foodSnapshot: newFood({ name: 'Rice' }), servingId: 's', quantity: 1 },
+        { id: 'c', foodSnapshot: newFood({ name: 'Egg' }), servingId: 's', quantity: 1 },
+      ], lunch: [], dinner: [], snacks: [] }, exercise: [] } },
+      myFoods: [], settings: { dailyBudget: 2248, macroTargets: { carbs: 280, protein: 120, fat: 72, fiber: 30 }, language: 'en' },
+    })
+    const { unmount } = render(<AppProvider><MergeProbe backup={backup} /></AppProvider>)
+    act(() => { screen.getByText('merge').click() })
+    // 2026-01-01 breakfast: a + c (the incoming 'a' matched the existing 'a', no dup)
+    const stored = JSON.parse(localStorage.getItem('cc.days')!)
+    const breakfastIds = stored['2026-01-01'].meals.breakfast.map((e: any) => e.id).sort()
+    expect(breakfastIds).toEqual(['a', 'c'])
+    unmount()
   })
 })

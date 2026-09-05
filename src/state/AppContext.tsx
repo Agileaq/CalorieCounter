@@ -5,7 +5,7 @@ import {
   loadFoodOverrides, saveFoodOverrides, loadHiddenFoods, saveHiddenFoods,
   getDay, ensureSchema,
 } from '../lib/storage'
-import { mergeFoods } from '../lib/importExport'
+import { mergeFoods, mergeBackup as mergeBackupData } from '../lib/importExport'
 import predefinedRaw from '../data/predefinedFoods.json'
 import { collapseToPrimaryServing } from '../lib/food'
 import { setLanguage as applyI18nLanguage, applyDir } from '../i18n'
@@ -82,6 +82,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       persistSettings(data.settings)
       persistOverrides(Object.fromEntries(Object.entries(data.foodOverrides ?? {}).map(([k, f]) => [k, collapseToPrimaryServing(f)])))
       persistHidden(data.hiddenFoods ?? {})
+    },
+    mergeBackup: (data) => {
+      const merged = mergeBackupData(
+        { days, myFoods, settings, foodOverrides: overrides, hiddenFoods: hidden },
+        data,
+      )
+      persistDays(merged.days)
+      persistMyFoods(merged.myFoods.map(collapseToPrimaryServing))
+      persistSettings(merged.settings)
+      persistOverrides(Object.fromEntries(Object.entries(merged.foodOverrides ?? {}).map(([k, f]) => [k, collapseToPrimaryServing(f)])))
+      persistHidden(merged.hiddenFoods ?? {})
     },
   }
 

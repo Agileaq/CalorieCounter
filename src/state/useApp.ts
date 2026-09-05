@@ -29,6 +29,7 @@ export interface AppContextValue {
   setLanguage: (lang: Language) => void
   importFoods: (foods: Food[]) => number
   replaceAll: (data: BackupData) => void
+  mergeBackup: (data: BackupData) => void
 }
 
 export const AppContext = createContext<AppContextValue | null>(null)
