@@ -52,10 +52,11 @@ describe('FoodPicker', () => {
     expect(screen.getByTestId('food-detail-edit')).toBeInTheDocument()
   })
   it('shows the serving subtitle in the meal-log format (1 serving · total unit · label)', () => {
-    // White Rice: label Grams, amount 100, unit g → "1 serving · 100 g · Grams"
+    // White Rice: label cleared in predefinedFoods, amount 100, unit g
+    // → no-label variant "1 serving · 100 g" (trailing " · {label}" dropped)
     render(<AppProvider><FoodPicker onPick={() => {}} onClose={() => {}} /></AppProvider>)
     fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: 'rice' } })
-    expect(screen.getByTestId('food-subtitle')).toHaveTextContent('1 serving · 100 g · Grams')
+    expect(screen.getByTestId('food-subtitle')).toHaveTextContent('1 serving · 100 g')
   })
   it('the details button opens the food detail (same as tapping the row)', () => {
     const onPick = vi.fn()

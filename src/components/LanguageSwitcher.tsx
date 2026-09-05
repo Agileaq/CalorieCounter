@@ -9,8 +9,7 @@ export function LanguageSwitcher() {
   return (
     <>
       <button className="btn-ghost" data-testid="lang-button" onClick={() => setOpen(true)}>
-        <span aria-hidden="true">{LANGUAGE_FLAGS[settings.language]}</span>{' '}
-        <span>{LANGUAGE_NATIVE_NAMES[settings.language]}</span>
+        <span aria-hidden="true">{LANGUAGE_FLAGS[settings.language]}</span>
       </button>
       {open && (
         <div className="modal-backdrop" onClick={() => setOpen(false)}>

@@ -6,7 +6,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-white-rice-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-white-rice-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 130,
@@ -27,7 +27,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-chicken-breast-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-chicken-breast-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 165,
@@ -69,7 +69,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-banana-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-banana-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 89,
@@ -90,7 +90,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-apple-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-apple-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 52,
@@ -111,7 +111,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-bread-white-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-bread-white-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 265,
@@ -153,7 +153,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-broccoli-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-broccoli-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 35,
@@ -174,7 +174,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-salmon-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-salmon-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 208,
@@ -195,7 +195,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-beef-ground-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-beef-ground-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 250,
@@ -216,7 +216,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-pasta-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-pasta-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 158,
@@ -237,7 +237,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-oatmeal-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-oatmeal-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 71,
@@ -258,7 +258,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-greek-yogurt-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-greek-yogurt-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 59,
@@ -279,7 +279,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-almonds-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-almonds-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 579,
@@ -300,7 +300,7 @@
     "source": "predefined",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "servings": [
-      { "id": "pre-orange-s1", "kind": "weight", "label": "Grams", "amount": 100, "unit": "g", "isPrimary": true }
+      { "id": "pre-orange-s1", "kind": "weight", "label": "", "amount": 100, "unit": "g", "isPrimary": true }
     ],
     "nutrition": {
       "calories": 47,

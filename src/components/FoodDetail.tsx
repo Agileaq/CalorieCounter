@@ -90,7 +90,11 @@ export function FoodDetail({
           <div className="row" style={{ gap: 8, marginTop: 6 }}>
             <NumberInput testId="qty-input" value={qty} onChange={setQty} style={{ width: 100, padding: 8 }} />
             <span className="muted" style={{ alignSelf: 'center' }}>
-              {primaryServing(food).label} ({primaryServing(food).amount}{primaryServing(food).unit})
+              {(() => {
+                const ps = primaryServing(food)
+                const head = ps.label.trim()
+                return head ? `${head} (${ps.amount}${ps.unit})` : `${ps.amount}${ps.unit}`
+              })()}
             </span>
           </div>
           <div className="row spread" style={{ marginTop: 10 }}>

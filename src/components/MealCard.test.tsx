@@ -30,15 +30,16 @@ describe('MealCard', () => {
     const qty = screen.getByTestId('qty-input')
     expect(qty).toHaveValue(1)
     // before edit, subtitle shows the single-template serving line for Rice
-    // (predefined White Rice: label Grams, amount 100, unit g; test i18n = en)
-    expect(screen.getByTestId('entry-subtitle')).toHaveTextContent('1 serving · 100 g · Grams')
+    // (predefined White Rice: label cleared in predefinedFoods, amount 100, unit g;
+    // test i18n = en) → no-label variant drops the trailing " · {label}"
+    expect(screen.getByTestId('entry-subtitle')).toHaveTextContent('1 serving · 100 g')
     // bump to 2.5 and save
     fireEvent.change(qty, { target: { value: '2.5' } })
     fireEvent.click(screen.getByTestId('food-detail-save-entry'))
     // editor closes
     expect(screen.queryByTestId('food-detail-save-entry')).not.toBeInTheDocument()
     // the row now reflects the new quantity in the subtitle
-    expect(screen.getByTestId('entry-subtitle')).toHaveTextContent('2.5 serving · 250 g · Grams')
+    expect(screen.getByTestId('entry-subtitle')).toHaveTextContent('2.5 serving · 250 g')
   })
 
   it('drops the trailing label segment when the serving label is blank', () => {

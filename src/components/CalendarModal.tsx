@@ -22,6 +22,8 @@ export function CalendarModal({ onClose }: { onClose: () => void }) {
   }
   function goToday() {
     const tk = fromDateKey(todayKey()); setYear(tk.getFullYear()); setMonth0(tk.getMonth())
+    // also select the system's current date so the calendar reflects it
+    setSelectedDate(todayKey())
   }
   function selectDay(key: string) { setSelectedDate(key); onClose() }
 
@@ -39,7 +41,7 @@ export function CalendarModal({ onClose }: { onClose: () => void }) {
             <button className="btn-ghost cal-nav-btn" aria-label={t('common.prevMonth')} onClick={() => shiftMonth(-1)}>‹</button>
             <button className="btn-ghost cal-nav-btn" aria-label={t('common.nextMonth')} onClick={() => shiftMonth(1)}>›</button>
           </div>
-          <button className="btn-ghost" onClick={goToday}>{t('common.today')}</button>
+          <button className="btn-ghost cal-today-btn" onClick={goToday}>{t('common.today')}</button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr) 1.2fr', gap: 4, fontSize: 11 }}>
           {dow.map(d => <div key={d} className="muted" style={{ textAlign: 'center' }}>{t(`calendar.${d}`)}</div>)}

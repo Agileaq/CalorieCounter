@@ -37,6 +37,10 @@ body {
   border-radius: 12px; cursor: pointer;
 }
 .cal-nav-btn:hover { background: var(--bg); }
+/* Calendar "Today" button: bigger than a bare .btn-ghost so the tap target and
+   label read clearly, and an explicit font-size so the <button> doesn't fall
+   back to the UA default. */
+.cal-today-btn { font-size: 15px; padding: 6px 12px; border-radius: 999px; }
 /* data import/export actions. Explicit font-size so <button> (UA default, not
    inherited) and <label> (inherits body 16px) render identically; bordered pill
    reads as a button rather than a bare text link. */
