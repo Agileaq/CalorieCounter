@@ -8,7 +8,8 @@ export interface WeeklyStats { bars: WeeklyBar[]; avg: number | null; hitDays: n
 
 /**
  * Dashboard review stats for the week containing `selected`: the same Mon..Sun
- * `bars` as weeklySeries plus an avg and a days-on-target count for the
+ * `bars` shape as the dashboard bar charts plus an avg and a days-on-target
+ * count for the
  * conclusion lines. `avg` is the mean over days PRESENT in `days` (selected
  * day included; an opened-but-empty day is a real 0) — null when no day in the
  * week is present. `hitDays` counts present days meeting `target` (`dir='max'`:

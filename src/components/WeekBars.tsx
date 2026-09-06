@@ -19,7 +19,7 @@ interface Props {
   onBarClick?: (date: string) => void
 }
 
-// Mon..Sun — matches WeeklyBar[] order from weeklyStats/weeklySeries
+// Mon..Sun — matches WeeklyBar[] order from weeklyStats
 const DOW = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
 
 export function WeekBars({ bars, target, color, barHeight = 64, onBarClick }: Props) {

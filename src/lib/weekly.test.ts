@@ -52,7 +52,7 @@ function dayWithNutrition(key: string, macros: { calories?: number; carbs?: numb
 
 describe('weeklyStats', () => {
   // Week of Wed 2026-08-19 is Mon 2026-08-17 .. Sun 2026-08-23
-  it('returns the same Mon..Sun bars as weeklySeries', () => {
+  it('returns 7 Mon..Sun bars', () => {
     const days = { '2026-08-18': dayWithCalories('2026-08-18', 300) }
     const s = weeklyStats(days, '2026-08-19', metric, 2000, 'max')
     expect(s.bars).toHaveLength(7)

@@ -30,9 +30,11 @@ const DEF_ZERO = 228
 const DEF_HALF = 22
 const H = 272
 
-/** Signed kcal for the verdict line: U+2212 minus, + prefix for surplus, en-US grouping. */
-const signedKcal = (n: number) =>
-  (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(Math.round(n)).toLocaleString('en-US')
+/** Signed kcal for the verdict line: rounds first so "−0" is impossible; U+2212 minus, + for surplus, en-US grouping. */
+const signedKcal = (n: number) => {
+  const r = Math.round(n)
+  return (r > 0 ? '+' : r < 0 ? '−' : '') + Math.abs(r).toLocaleString('en-US')
+}
 
 export function WeightTrendChart() {
   const { t, i18n } = useTranslation()

@@ -35,7 +35,7 @@
     "carbs": "Glucides",
     "fat": "Lipides",
     "weekAvg": "Moyenne {{n}}/j",
-    "hit": "{{n}}/7 jours dans l'objectif",
+    "hit": "{{n}}/7 jours dans l’objectif",
     "remaining": "{{left}} / {{target}}g"
   },
   "weight": {
