@@ -61,7 +61,6 @@
     "empty1": "Enregistre encore quelques jours pour révéler la moyenne sur 7 jours.",
     "corridorNoGoal": "Définis un poids objectif pour voir le couloir sûr.",
     "corridorBadGoal": "Le poids objectif doit être inférieur à ta tendance de départ.",
-    "rateSub": "Variation hebdo",
     "deficitSub": "Bilan calorique quotidien"
   },
   "log": {

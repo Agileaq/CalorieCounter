@@ -11,11 +11,11 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import {
-  extractWeighIns, dailySeries, safeCorridor, weeklyRate, deficitSeries,
+  extractWeighIns, dailySeries, safeCorridor, deficitSeries,
   padBounds, symmetricBounds, round1,
   TAG_COLORS, type Range,
 } from '../lib/weight'
-import { addDays, daysBetween, fromDateKey } from '../lib/date'
+import { daysBetween, fromDateKey } from '../lib/date'
 
 const W = 360
 const PAD_L = 36
@@ -27,10 +27,7 @@ const LANE_CY = 210
 const DEF_LABEL_Y = 236
 const DEF_ZERO = 276
 const DEF_HALF = 28
-const RATE_LABEL_Y = 326
-const RATE_ZERO = 366
-const RATE_HALF = 28
-const H = 410
+const H = 320
 
 export function WeightTrendChart() {
   const { t, i18n } = useTranslation()
@@ -41,7 +38,6 @@ export function WeightTrendChart() {
   const weighIns = useMemo(() => extractWeighIns(days), [days])
   const s = useMemo(() => dailySeries(days, range), [days, range])
   const corr = useMemo(() => safeCorridor(weighIns, s, settings.goalWeightKg), [weighIns, s, settings.goalWeightKg])
-  const rates = useMemo(() => weeklyRate(s).filter(r => r.delta !== 0), [s])
   const deficits = useMemo(() => deficitSeries(days, s, settings.dailyBudget), [days, s, settings.dailyBudget])
 
   if (weighIns.length === 0) {
@@ -72,7 +68,6 @@ export function WeightTrendChart() {
   const yMain = (kg: number) => MAIN_BOT - ((kg - b.lo) / (b.hi - b.lo)) * (MAIN_BOT - MAIN_TOP)
 
   const bDef = symmetricBounds(deficits.map(p => p.deficit), 1)
-  const bRate = symmetricBounds(rates.map(r => r.delta), 0.5)
   const subBar = (v: number, zero: number, half: number, bound: { lo: number; hi: number }) => {
     const h = Math.min(Math.abs(v) / (-bound.lo), 1) * half
     return { y: v < 0 ? zero : zero - h, height: Math.max(h, 0.5) }
@@ -208,21 +203,6 @@ export function WeightTrendChart() {
               return <rect key={p.date} data-testid={`deficit-bar-${p.date}`} x={x(p.date) - (INNER / total) * 0.35}
                 width={(INNER / total) * 0.7} y={y} height={height}
                 fill={p.deficit < 0 ? 'var(--green)' : 'var(--red)'} />
-            })}
-          </>
-        )}
-
-        {/* weekly rate sub-chart */}
-        {showSubs && (
-          <>
-            <text x={2} y={RATE_LABEL_Y} fontSize={9} fill="var(--muted)">{t('weight.rateSub')}</text>
-            <line x1={PAD_L} x2={W - PAD_R} y1={RATE_ZERO} y2={RATE_ZERO} stroke="var(--line)" strokeWidth={0.5} />
-            {rates.map(r => {
-              const x1 = x(r.weekStart)
-              const width = Math.max(x(addDays(r.weekStart, 7)) - x1, 1)
-              const { y, height } = subBar(r.delta, RATE_ZERO, RATE_HALF, bRate)
-              return <rect key={r.weekStart} data-testid={`rate-bar-${r.weekStart}`} x={x1} width={width} y={y} height={height}
-                fill={r.delta < 0 ? 'var(--green)' : 'var(--red)'} opacity={0.85} />
             })}
           </>
         )}

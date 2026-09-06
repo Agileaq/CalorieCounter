@@ -6,7 +6,7 @@
  * injected parameter so tests are deterministic.
  */
 import type { DayLog, WeightTag } from '../types'
-import { addDays, daysBetween, todayKey, weekOf } from './date'
+import { addDays, daysBetween, todayKey } from './date'
 import { dayFoodNutrition, exerciseTotal } from './nutrition'
 
 export const LB_PER_KG = 2.2046226218
@@ -110,30 +110,6 @@ export function safeCorridor(weighIns: WeighIn[], s: Series, goalWeightKg: numbe
     return out
   }
   return { anchorDate, slow: rail(SLOW_RATE), fast: rail(FAST_RATE) }
-}
-
-export interface WeekRate { weekStart: string; delta: number }
-
-/**
- * Δ of the trend line per ISO week (Mon-based). Only weeks that have fully
- * ended (weekStart+7 ≤ today) are returned — an in-progress week understates
- * the rate. Δ spans the week's first..last defined trend days, so a mid-week
- * first weigh-in folds naturally; a week with a single flat value yields 0
- * and the chart skips zero bars.
- */
-export function weeklyRate(s: Series, today = todayKey()): WeekRate[] {
-  const first = s.points.find(p => p.trend !== undefined)
-  if (!first) return []
-  const out: WeekRate[] = []
-  let ws = weekOf(first.date)[0]
-  while (addDays(ws, 7) <= today) {
-    const defined = s.points.filter(p => p.date >= ws && p.date < addDays(ws, 7) && p.trend !== undefined)
-    if (defined.length >= 2) {
-      out.push({ weekStart: ws, delta: (defined[defined.length - 1].trend as number) - (defined[0].trend as number) })
-    }
-    ws = addDays(ws, 7)
-  }
-  return out
 }
 
 export interface DeficitPoint { date: string; deficit: number }

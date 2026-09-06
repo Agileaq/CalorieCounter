@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import type { DayLog, WeightTag } from '../types'
 import {
   LB_PER_KG, MAX_GAP_DAYS, dailySeries, extractWeighIns, kgToLb, lbToKg, round1,
-  safeCorridor, weeklyRate, deficitSeries, padBounds, symmetricBounds,
+  safeCorridor, deficitSeries, padBounds, symmetricBounds,
 } from './weight'
 import { emptyNutrition } from './nutrition'
 
@@ -129,25 +129,6 @@ describe('safeCorridor', () => {
     expect(safeCorridor(WI, s, null)).toBeNull()
     expect(safeCorridor(WI.slice(0, 2), s, 78)).toBeNull()
     expect(safeCorridor(WI, s, 90)).toBeNull()
-  })
-})
-
-describe('weeklyRate', () => {
-  it('completed weeks only; first mid-week folds to its defined trend span', () => {
-    const days = { ...D('2026-01-07', 80), ...D('2026-01-09', 79), ...D('2026-01-14', 78.2) }
-    const s = dailySeries(days, 'all', '2026-01-20')
-    const r = weeklyRate(s, '2026-01-20')
-    const trendOn = (date: string) => s.points.find(p => p.date === date)!.trend!
-    const w1 = r.find(x => x.weekStart === '2026-01-05')!
-    expect(w1.delta).toBeCloseTo(trendOn('2026-01-11') - trendOn('2026-01-07'), 5)
-    expect(r.find(x => x.weekStart === '2026-01-12')).toBeDefined()
-    // in-progress week (ends 01-25 > today) excluded
-    expect(r.find(x => x.weekStart === '2026-01-19')).toBeUndefined()
-  })
-  it('a single-weigh-in week yields delta 0 (chart skips it)', () => {
-    const s = dailySeries(D('2026-01-07', 80), 'all', '2026-01-20')
-    const r = weeklyRate(s, '2026-01-20')
-    expect(r.find(x => x.weekStart === '2026-01-05')!.delta).toBe(0)
   })
 })
 

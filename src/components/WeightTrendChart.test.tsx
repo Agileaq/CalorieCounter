@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
 import { WeightTrendChart } from './WeightTrendChart'
-import { addDays, todayKey, weekOf, daysBetween } from '../lib/date'
+import { addDays, todayKey, daysBetween } from '../lib/date'
 import { TAG_COLORS } from '../lib/weight'
 import { emptyNutrition } from '../lib/nutrition'
 import type { DayLog } from '../types'
@@ -126,18 +126,5 @@ describe('WeightTrendChart', () => {
     seedDays([weighDay(d, 79, undefined, 500, 200), ...threeWeighIns().slice(0, 3)])
     render(<AppProvider><WeightTrendChart /></AppProvider>)
     expect(screen.getByTestId(`deficit-bar-${d}`)).toHaveAttribute('fill', 'var(--green)')
-  })
-  it('rate bars cover exactly the completed week span', () => {
-    const ws = addDays(weekOf(today)[0], -7) // last completed week's Monday
-    seedDays([
-      weighDay(ws, 80),
-      weighDay(addDays(ws, 6), 79),
-      weighDay(today, 78.9),
-    ])
-    render(<AppProvider><WeightTrendChart /></AppProvider>)
-    const bar = screen.getByTestId(`rate-bar-${ws}`)
-    const total = daysBetween(ws, today)
-    expect(parseFloat(bar.getAttribute('width')!)).toBeCloseTo((7 / total) * (W - PAD_L - PAD_R), 0)
-    expect(screen.queryByTestId(`rate-bar-${weekOf(today)[0]}`)).toBeNull() // current week in progress
   })
 })

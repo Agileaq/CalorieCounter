@@ -61,7 +61,6 @@
     "empty1": "Registra unos días más para revelar la media de 7 días.",
     "corridorNoGoal": "Fija un peso objetivo para ver el corredor seguro.",
     "corridorBadGoal": "El peso objetivo debe estar por debajo de tu tendencia inicial.",
-    "rateSub": "Cambio semanal",
     "deficitSub": "Balance calórico diario"
   },
   "log": {

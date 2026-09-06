@@ -61,7 +61,6 @@
     "empty1": "Log a few more days to reveal the 7-day average.",
     "corridorNoGoal": "Set a goal weight to see the safe-loss corridor.",
     "corridorBadGoal": "Goal weight must be below your starting trend.",
-    "rateSub": "Weekly change",
     "deficitSub": "Daily calorie balance"
   },
   "log": {
