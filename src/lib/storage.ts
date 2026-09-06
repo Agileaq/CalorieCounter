@@ -15,7 +15,6 @@ export const DEFAULT_SETTINGS: Settings = {
   dailyBudget: 2248,
   macroTargets: { carbs: 280, protein: 120, fat: 72, fiber: 30 },
   language: 'en',
-  weightUnit: 'kg',
   goalWeightKg: null,
 }
 

@@ -11,10 +11,8 @@ describe('storage', () => {
   it('returns default settings when empty', () => {
     expect(loadSettings()).toEqual(DEFAULT_SETTINGS)
   })
-  it('defaults include weightUnit kg and null goal weight', () => {
-    const s = loadSettings()
-    expect(s.weightUnit).toBe('kg')
-    expect(s.goalWeightKg).toBeNull()
+  it('defaults include a null goal weight', () => {
+    expect(loadSettings().goalWeightKg).toBeNull()
   })
   it('round-trips settings', () => {
     saveSettings({ ...DEFAULT_SETTINGS, dailyBudget: 2012, language: 'zh' })

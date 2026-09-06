@@ -68,7 +68,6 @@ export interface Settings {
   dailyBudget: number
   macroTargets: { carbs: number; protein: number; fat: number; fiber: number }
   language: Language
-  weightUnit: 'kg' | 'lb'       // display only; storage is always kg
   goalWeightKg: number | null   // safe-loss corridor endpoint; null = not set
 }
 

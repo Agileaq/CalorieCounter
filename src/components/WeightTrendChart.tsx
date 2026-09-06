@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import {
   extractWeighIns, dailySeries, safeCorridor, weeklyRate, deficitSeries,
-  padBounds, symmetricBounds, kgToLb, round1,
+  padBounds, symmetricBounds, round1,
   TAG_COLORS, type Range,
 } from '../lib/weight'
 import { addDays, daysBetween, fromDateKey } from '../lib/date'
@@ -53,9 +53,8 @@ export function WeightTrendChart() {
     )
   }
 
-  const perLb = settings.weightUnit === 'lb'
-  const conv = (kg: number) => round1(perLb ? kgToLb(kg) : kg)
-  const unitLabel = perLb ? t('weight.lb') : t('weight.kg')
+  const conv = (kg: number) => round1(kg)
+  const unitLabel = t('weight.kg')
   const fmtDate = (date: string) =>
     Intl.DateTimeFormat(i18n.language, { month: 'numeric', day: 'numeric' }).format(fromDateKey(date))
   const total = Math.max(1, daysBetween(s.start, s.end))
