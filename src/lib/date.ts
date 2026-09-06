@@ -16,6 +16,11 @@ export function addDays(key: string, n: number): string {
   return toDateKey(d)
 }
 
+/** Whole days from a to b (b − a), via local-midnight math so DST shifts can't skew it. */
+export function daysBetween(a: string, b: string): number {
+  return Math.round((fromDateKey(b).getTime() - fromDateKey(a).getTime()) / 86400000)
+}
+
 export function todayKey(): string {
   return toDateKey(new Date())
 }

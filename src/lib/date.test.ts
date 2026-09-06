@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { toDateKey, fromDateKey, addDays, monthGrid, weekOf } from './date'
+import { toDateKey, fromDateKey, addDays, monthGrid, weekOf, daysBetween } from './date'
 
 describe('date utils', () => {
   it('toDateKey formats local date', () => {
@@ -23,5 +23,11 @@ describe('date utils', () => {
     expect(w).toHaveLength(7)
     expect(w[0]).toBe('2026-08-17') // Mon
     expect(w[6]).toBe('2026-08-23') // Sun
+  })
+  it('daysBetween is pure local calendar math across month/year boundaries', () => {
+    expect(daysBetween('2026-02-28', '2026-03-01')).toBe(1) // 2026 not leap
+    expect(daysBetween('2025-12-30', '2026-01-02')).toBe(3)
+    expect(daysBetween('2026-01-15', '2026-01-15')).toBe(0)
+    expect(daysBetween('2026-01-15', '2026-01-10')).toBe(-5)
   })
 })

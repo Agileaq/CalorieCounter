@@ -41,6 +41,8 @@ export interface Food {
 
 export type MealKey = 'breakfast' | 'lunch' | 'dinner' | 'snacks'
 
+export type WeightTag = 'cheat' | 'strength' | 'cardio' | 'stress' | 'period'
+
 export interface LogEntry {
   id: string
   foodSnapshot: Food
@@ -56,6 +58,8 @@ export interface DayLog {
   date: string          // "YYYY-MM-DD"
   meals: MealMap
   exercise: ExerciseEntry[]
+  weightKg?: number     // morning weigh-in, canonical kg, 0.1 precision; absent = no record
+  tags?: WeightTag[]    // preset event labels for the day, 0..n; absent when empty
 }
 
 export type Language = 'en' | 'zh' | 'es' | 'fr' | 'ar' | 'ru'
@@ -64,6 +68,8 @@ export interface Settings {
   dailyBudget: number
   macroTargets: { carbs: number; protein: number; fat: number; fiber: number }
   language: Language
+  weightUnit: 'kg' | 'lb'       // display only; storage is always kg
+  goalWeightKg: number | null   // safe-loss corridor endpoint; null = not set
 }
 
 export const MEAL_KEYS: MealKey[] = ['breakfast', 'lunch', 'dinner', 'snacks']

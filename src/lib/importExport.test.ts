@@ -22,7 +22,7 @@ function day(date: string, meals: Partial<Record<MealKey, LogEntry[]>> = {}, exe
   for (const k of MEAL_KEYS) m[k] = meals[k] ?? []
   return { date, meals: m, exercise }
 }
-const SET = { dailyBudget: 2000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const }
+const SET = { dailyBudget: 2000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const, weightUnit: 'kg' as const, goalWeightKg: null }
 
 describe('importExport', () => {
   it('exportFoods → parseFoodsImport round-trips names', () => {
@@ -50,7 +50,7 @@ describe('importExport', () => {
     expect(merged.map(x => x.name.toLowerCase()).sort()).toEqual(['bread', 'rice'])
   })
   it('backup round-trips', () => {
-    const data = { days: {}, myFoods: [f('Rice')], settings: { dailyBudget: 2012, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const } }
+    const data = { days: {}, myFoods: [f('Rice')], settings: { dailyBudget: 2012, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const, weightUnit: 'kg' as const, goalWeightKg: null } }
     const parsed = parseBackup(exportBackup(data))
     expect(parsed.settings.dailyBudget).toBe(2012)
     expect(parsed.myFoods).toHaveLength(1)
@@ -58,7 +58,7 @@ describe('importExport', () => {
   it('backup round-trips food overrides', () => {
     const data = {
       days: {}, myFoods: [], foodOverrides: { 'pre-x': f('Edited Rice') },
-      settings: { dailyBudget: 2000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const },
+      settings: { dailyBudget: 2000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const, weightUnit: 'kg' as const, goalWeightKg: null },
     }
     const parsed = parseBackup(exportBackup(data))
     expect(parsed.foodOverrides?.['pre-x'].name).toBe('Edited Rice')
@@ -127,8 +127,8 @@ describe('importExport', () => {
   })
 
   it('mergeBackup takes incoming settings', () => {
-    const ex = backup({ settings: { dailyBudget: 1000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' } })
-    const inc = backup({ settings: { dailyBudget: 2500, macroTargets: { carbs: 9, protein: 8, fat: 7, fiber: 6 }, language: 'zh' as const } })
+    const ex = backup({ settings: { dailyBudget: 1000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en', weightUnit: 'kg' as const, goalWeightKg: null } })
+    const inc = backup({ settings: { dailyBudget: 2500, macroTargets: { carbs: 9, protein: 8, fat: 7, fiber: 6 }, language: 'zh' as const, weightUnit: 'kg' as const, goalWeightKg: null } })
     const merged = mergeBackup(ex, inc)
     expect(merged.settings.dailyBudget).toBe(2500)
     expect(merged.settings.language).toBe('zh')
