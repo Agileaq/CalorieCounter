@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-06-dashboard-refocus-design.md` (read it first — it locks wording, colors, sign conventions, z-order and i18n degradation rules this plan implements).
 
+> **As-built note (post-execution):** this plan was executed to completion (commits `0254f6b..1137656`); three internal code/test contradictions were corrected during execution and the code blocks below now reflect the as-built state — Task 4's bold assertion targets the day-label span (the component bolds the span, not the button), and Task 5's Cell carries `valueColor` on the `macro-value-*` host span with `macro-minis-*` as MiniBars' flex root (testid prop) instead of a wrapper div. Task 7's `Dashboard.tsx` also shipped without the `useTranslation` import and its test without the unused `foodDay` helper (`noUnusedLocals`). The spec is unchanged.
+
 ## Global Constraints
 
 - Run tests with `npx vitest run`; typecheck with `npx tsc --noEmit`. Both must pass before every commit.
@@ -402,7 +404,7 @@ describe('WeekBars', () => {
     expect(btns).toHaveLength(7)
     fireEvent.click(btns[2])
     expect(onBarClick).toHaveBeenCalledWith('2026-08-19')
-    expect(btns[2]).toHaveStyle({ fontWeight: 700 })
+    expect(btns[2].querySelector('span')).toHaveStyle({ fontWeight: 700 })
   })
   it('without onBarClick the buttons are disabled', () => {
     render(<WeekBars bars={bars} target={100} color="var(--accent)" />)
@@ -690,12 +692,12 @@ const CELLS: CellConfig[] = [
 ]
 
 /** 7 axis-less mini bars, per-day state colouring, heights capped by the week max. */
-function MiniBars({ bars, target, color, miniColor }: {
-  bars: WeeklyBar[]; target: number; color: string; miniColor: CellConfig['miniColor']
+function MiniBars({ bars, target, color, miniColor, testId }: {
+  bars: WeeklyBar[]; target: number; color: string; miniColor: CellConfig['miniColor']; testId: string
 }) {
   const cellMax = Math.max(1, ...bars.map(b => b.value))
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 28, minWidth: 0 }}>
+    <div data-testid={testId} style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 28, minWidth: 0 }}>
       {bars.map(b => (
         <div key={b.date}
           style={{
@@ -717,21 +719,16 @@ function Cell({ cfg, selected }: { cfg: CellConfig; selected: string }) {
   const dayN = days[selected] != null ? cfg.metric(days[selected]) : null
 
   let value: React.ReactNode
+  let valueColor: string | undefined
   if (target <= 0) value = <span>—</span>
   else if (dayN == null) value = <span>— / {nf(target)}g</span>
   else if (cfg.key === 'fiber') {
-    value = (
-      <span style={{ color: dayN >= target ? 'var(--green)' : 'var(--muted)' }}>
-        {t('dashboard.remaining', { left: nf(dayN), target: nf(target) })}
-      </span>
-    )
+    valueColor = dayN >= target ? 'var(--green)' : 'var(--muted)'
+    value = <>{t('dashboard.remaining', { left: nf(dayN), target: nf(target) })}</>
   } else {
     const left = target - dayN
-    value = (
-      <span style={{ color: left < 0 ? 'var(--red)' : 'inherit' }}>
-        {t('dashboard.remaining', { left: (left < 0 ? '−' : '+') + nf(Math.abs(left)), target: nf(target) })}
-      </span>
-    )
+    valueColor = left < 0 ? 'var(--red)' : 'inherit'
+    value = <>{t('dashboard.remaining', { left: (left < 0 ? '−' : '+') + nf(Math.abs(left)), target: nf(target) })}</>
   }
 
   return (
@@ -740,14 +737,12 @@ function Cell({ cfg, selected }: { cfg: CellConfig; selected: string }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6, alignItems: 'baseline' }}>
         <strong style={{ fontSize: 13 }}>{t(cfg.label)}</strong>
         <span data-testid={`macro-value-${cfg.key}`}
-          style={{ fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          style={{ fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: valueColor }}>
           {value}
         </span>
       </div>
       <div style={{ marginTop: 6 }}>
-        <div data-testid={`macro-minis-${cfg.key}`}>
-          <MiniBars bars={stats.bars} target={target} color={cfg.color} miniColor={cfg.miniColor} />
-        </div>
+        <MiniBars bars={stats.bars} target={target} color={cfg.color} miniColor={cfg.miniColor} testId={`macro-minis-${cfg.key}`} />
       </div>
       <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
         {t('dashboard.weekAvg', { n: stats.avg == null ? '—' : nf(stats.avg) })}
