@@ -12,6 +12,13 @@ describe('Log', () => {
     }
     expect(screen.getByTestId('exercise-add')).toBeInTheDocument()
   })
+  it('renders the weight card after the exercise card', () => {
+    const { container } = render(<AppProvider><Log /></AppProvider>)
+    const add = screen.getByTestId('exercise-add')
+    const weight = screen.getByTestId('weight-input')
+    expect(add.compareDocumentPosition(weight) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(container).toBeTruthy()
+  })
   it('adds an exercise entry', () => {
     render(<AppProvider><Log /></AppProvider>)
     fireEvent.change(screen.getByTestId('exercise-name'), { target: { value: 'Run' } })

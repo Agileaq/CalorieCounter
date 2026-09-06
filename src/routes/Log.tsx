@@ -3,6 +3,7 @@ import { MEAL_KEYS } from '../types'
 import { DateHeader } from '../components/DateHeader'
 import { MealCard } from '../components/MealCard'
 import { ExerciseCard } from '../components/ExerciseCard'
+import { WeightCard } from '../components/WeightCard'
 import { CalendarModal } from '../components/CalendarModal'
 import { DaySummaryCard } from '../components/DaySummaryCard'
 
@@ -16,6 +17,7 @@ export default function Log() {
       <DaySummaryCard />
       {MEAL_KEYS.map(m => <MealCard key={m} meal={m} />)}
       <ExerciseCard />
+      <WeightCard />
       {cal && <CalendarModal onClose={() => setCal(false)} />}
     </div>
   )

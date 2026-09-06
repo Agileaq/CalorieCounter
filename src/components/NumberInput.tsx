@@ -11,6 +11,8 @@ interface Props {
    *  show through (used by the new-food serving row, where 0 means "unset").
    *  Defaults to false — NutritionFields keeps showing "0" as before. */
   hideZero?: boolean
+  /** Escape hatch for key handling on the raw input (e.g. Enter-to-commit). */
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
 /**
@@ -24,7 +26,7 @@ interface Props {
  * With `hideZero`, an external value of 0 is shown as "" (so a placeholder can
  * read through); the user's own in-progress 0 is still displayed as "0".
  */
-export function NumberInput({ value, onChange, integer, testId, style, placeholder, hideZero }: Props) {
+export function NumberInput({ value, onChange, integer, testId, style, placeholder, hideZero, onKeyDown }: Props) {
   const [text, setText] = useState(value === 0 && hideZero ? '' : String(value))
   const [focused, setFocused] = useState(false)
 
@@ -46,6 +48,7 @@ export function NumberInput({ value, onChange, integer, testId, style, placehold
       style={style}
       onFocus={e => { setFocused(true); setText(e.target.value) }}
       onChange={e => { setText(e.target.value); onChange(parse(e.target.value)) }}
+      onKeyDown={onKeyDown}
       onBlur={() => {
         setFocused(false)
         const n = parse(text)
