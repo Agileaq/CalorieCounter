@@ -5,7 +5,6 @@ import { exportFoods, parseFoodsImport, exportBackup, parseBackup } from '../lib
 import { download, readFileText } from '../lib/download'
 import { NumberInput } from '../components/NumberInput'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
-import { WeightTrendChart } from '../components/WeightTrendChart'
 import { distributeBudget } from '../lib/nutrition'
 
 /** Macros per kg of body weight for an advice card. calories = carbs*4 + protein*4 + fat*9. */
@@ -112,7 +111,6 @@ export default function Goals() {
         <h2 style={{ margin: 0 }}>{t('goals.title')}</h2>
         <LanguageSwitcher />
       </div>
-      <WeightTrendChart />
       <div className="card">
         <label className="row spread">{t('goals.dailyBudget')}
           <NumberInput testId="budget-input" integer value={settings.dailyBudget}

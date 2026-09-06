@@ -82,6 +82,12 @@ describe('Goals', () => {
     fireEvent.pointerDown(document.body)
     expect(screen.queryByText(/Quota \(daily intake per kg body weight\)/)).toBeNull()
   })
+  it('no longer renders the weight trend chart (it moved to the dashboard)', () => {
+    render(<AppProvider><Goals /></AppProvider>)
+    expect(screen.queryByText('Weight Trend')).toBeNull()
+    expect(screen.queryByTestId('weight-trend-svg')).toBeNull()
+    expect(screen.getByTestId('budget-input')).toBeInTheDocument()
+  })
 
   // Two-way macro auto-calc. Budget ↔ 3 macros (carbs/protein/fat) by the
   // 3.5:1.5:0.8 ratio; fiber is manual and never affects the budget.
