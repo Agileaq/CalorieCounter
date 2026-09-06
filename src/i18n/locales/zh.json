@@ -38,6 +38,33 @@
     "avgPrior": "此前日均 {{n}}g",
     "ofCals": "{{cur}} / {{target}} 千卡"
   },
+  "weight": {
+    "title": "体重",
+    "placeholder": "未记录",
+    "kg": "kg",
+    "lb": "磅",
+    "range30": "30天",
+    "range90": "90天",
+    "rangeAll": "全部",
+    "trendTitle": "体重趋势",
+    "legendDot": "打卡",
+    "legendTrend": "7天均值",
+    "legendCorridor": "安全通道",
+    "readoutWeight": "体重",
+    "readoutTrend": "均线",
+    "noData": "未记录",
+    "tagCheat": "放纵餐",
+    "tagStrength": "力量训练",
+    "tagCardio": "大体量有氧",
+    "tagStress": "熬夜/高压",
+    "tagPeriod": "生理期",
+    "empty0": "在 Log 页记录第一次体重后，这里会出现你的趋势图。",
+    "empty1": "再记录几天，7 天均线就会显现。",
+    "corridorNoGoal": "设置目标体重后显示安全减重通道。",
+    "corridorBadGoal": "目标体重需低于起始趋势。",
+    "rateSub": "每周变化",
+    "deficitSub": "每日热量差额"
+  },
   "log": {
     "budget": "Budget: {{n}} kcal",
     "grams": "{{cur}}/{{target}}g"
@@ -177,7 +204,8 @@
     "adviceProtein": "蛋",
     "adviceFat": "脂",
     "cutTooltip": "配额（每kg体重的日摄入量）\n减脂期\n碳水3.5g 蛋白质1.5g 脂肪0.8g（减脂期、有基础）\n体重下降后缓慢降低碳水配额（碳水不低于2.5g）",
-    "bulkTooltip": "配额（每kg体重的日摄入量）\n增肌期\n碳水4.0g 蛋白质2.0g 脂肪1.0g（增肌期、有基础）\n体重增长1-3斤/月 否则调整碳水 蛋白质脂肪不动"
+    "bulkTooltip": "配额（每kg体重的日摄入量）\n增肌期\n碳水4.0g 蛋白质2.0g 脂肪1.0g（增肌期、有基础）\n体重增长1-3斤/月 否则调整碳水 蛋白质脂肪不动",
+    "goalWeight": "目标体重"
   },
   "update": {
     "available": "有新版本可用",

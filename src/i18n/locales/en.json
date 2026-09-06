@@ -38,6 +38,33 @@
     "avgPrior": "{{n}}g avg prior to today",
     "ofCals": "{{cur}} of {{target}} kcal"
   },
+  "weight": {
+    "title": "Weight",
+    "placeholder": "Not recorded",
+    "kg": "kg",
+    "lb": "lb",
+    "range30": "30d",
+    "range90": "90d",
+    "rangeAll": "All",
+    "trendTitle": "Weight Trend",
+    "legendDot": "Weigh-in",
+    "legendTrend": "7-day average",
+    "legendCorridor": "Safe corridor",
+    "readoutWeight": "Weight",
+    "readoutTrend": "Trend",
+    "noData": "Not recorded",
+    "tagCheat": "Cheat meal",
+    "tagStrength": "Strength",
+    "tagCardio": "Cardio",
+    "tagStress": "Poor sleep/stress",
+    "tagPeriod": "Period",
+    "empty0": "Record your first weigh-in on the Log page to see your trend here.",
+    "empty1": "Log a few more days to reveal the 7-day average.",
+    "corridorNoGoal": "Set a goal weight to see the safe-loss corridor.",
+    "corridorBadGoal": "Goal weight must be below your starting trend.",
+    "rateSub": "Weekly change",
+    "deficitSub": "Daily calorie balance"
+  },
   "log": {
     "budget": "Budget: {{n}} kcal",
     "grams": "{{cur}}/{{target}}g"
@@ -177,7 +204,8 @@
     "adviceProtein": "Protein",
     "adviceFat": "Fat",
     "cutTooltip": "Quota (daily intake per kg body weight)\nFat-loss phase\nCarbs 3.5g  Protein 1.5g  Fat 0.8g (fat-loss, with a baseline)\nAfter weight drops, lower the carb quota gradually (carbs not below 2.5g)",
-    "bulkTooltip": "Quota (daily intake per kg body weight)\nMuscle-gain phase\nCarbs 4.0g  Protein 2.0g  Fat 1.0g (muscle-gain, with a baseline)\nGain 1-3 jin/month, otherwise adjust carbs; protein and fat stay fixed"
+    "bulkTooltip": "Quota (daily intake per kg body weight)\nMuscle-gain phase\nCarbs 4.0g  Protein 2.0g  Fat 1.0g (muscle-gain, with a baseline)\nGain 1-3 jin/month, otherwise adjust carbs; protein and fat stay fixed",
+    "goalWeight": "Goal weight"
   },
   "update": {
     "available": "New version available",
