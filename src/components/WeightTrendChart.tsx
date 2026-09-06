@@ -1,11 +1,11 @@
 /**
  * Goals-page weight trend chart: one LTR SVG holding three X-aligned sections
- * (main three-layer plot, event lane, deficit + weekly-rate sub-charts) under
- * a fixed readout row. Hit-testing maps client coords through the SVG's own
- * CTM (rect-ratio fallback) so an outer dir="rtl" can never mirror columns.
+ * (main three-layer plot, event lane, deficit sub-chart) under a fixed
+ * readout row. Hit-testing maps client coords through the SVG's own CTM
+ * (rect-ratio fallback) so an outer dir="rtl" can never mirror columns.
  * All math comes from the pure helpers in ../lib/weight; see the spec for the
  * locked semantics (7-day SMA with carry-forward fuse, funnel corridor,
- * completed-week rates, budget-based deficit).
+ * budget-based deficit).
  */
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -21,13 +21,13 @@ const W = 360
 const PAD_L = 36
 const PAD_R = 6
 const INNER = W - PAD_L - PAD_R
-const MAIN_TOP = 10
-const MAIN_BOT = 190
-const LANE_CY = 210
-const DEF_LABEL_Y = 236
-const DEF_ZERO = 276
-const DEF_HALF = 28
-const H = 320
+const MAIN_TOP = 8
+const MAIN_BOT = 152
+const LANE_CY = 168
+const DEF_LABEL_Y = 189
+const DEF_ZERO = 221
+const DEF_HALF = 22
+const H = 256
 
 export function WeightTrendChart() {
   const { t, i18n } = useTranslation()
