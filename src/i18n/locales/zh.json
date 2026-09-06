@@ -64,7 +64,7 @@
     "deficitSub": "每日热量差额"
   },
   "log": {
-    "budget": "Budget: {{n}} kcal",
+    "budget": "预算：{{n}} 千卡",
     "grams": "{{cur}}/{{target}}g"
   },
   "exercise": {
