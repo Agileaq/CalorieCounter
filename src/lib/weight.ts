@@ -30,8 +30,9 @@ export interface Series { start: string; end: string; points: DailyPoint[]; weig
 
 export const round1 = (x: number) => Math.round(x * 10) / 10
 export const kgToLb = (kg: number) => kg * LB_PER_KG
-/** lb → kg, kept at 2 decimals so an lb round-trip never visibly drifts. */
-export const lbToKg = (lb: number) => Math.round((lb / LB_PER_KG) * 100) / 100
+/** lb → kg, kept at 3 decimals so an lb round-trip never drifts at the 0.1 display
+ * precision (2 decimals made a typed 175.5 lb read back as 175.4). */
+export const lbToKg = (lb: number) => Math.round((lb / LB_PER_KG) * 1000) / 1000
 
 export function extractWeighIns(days: Record<string, DayLog>): WeighIn[] {
   return Object.entries(days)
@@ -89,24 +90,20 @@ export interface Corridor { anchorDate: string; slow: RailPoint[]; fast: RailPoi
 
 /**
  * Funnel rails from W₀ on the series' first day down to the goal weight.
- * W₀ is dynamic before the 3rd weigh-in (running mean of the weigh-ins so
- * far — each new point smooths single-day water noise), then locks
- * permanently to the 7-day SMA at the 3rd weigh-in (stored data can't
- * change it). Rails only ever descend: elapsed time is measured from the
- * funnel's start (the series' first day), never backwards into the past.
- * A rail stops at the first day it touches the goal, so the fast rail ends
- * sooner and the funnel visibly "closes". Null when there is no goal, no
- * weigh-ins, or the goal is not below W₀.
+ * Unlocks together with the 7-day SMA at the 3rd weigh-in — below that the
+ * trend (and therefore a stable baseline) does not exist, so no corridor is
+ * drawn. W₀ locks permanently to the 7-day SMA at the 3rd weigh-in (stored
+ * data can't change it). Rails only ever descend: elapsed time is measured
+ * from the funnel's start (the series' first day) and is always ≥ 0 — there
+ * is no backward rise into the past. A rail stops at the first day it
+ * touches the goal, so the fast rail ends sooner and the funnel visibly
+ * "closes". Null when there is no goal, fewer than 3 weigh-ins, or the goal
+ * is not below W₀.
  */
 export function safeCorridor(weighIns: WeighIn[], s: Series, goalWeightKg: number | null): Corridor | null {
-  if (goalWeightKg == null || weighIns.length === 0) return null
-  const anchored = weighIns.length >= 3
-  const anchorDate = anchored
-    ? (weighIns[2].date < s.start ? s.start : weighIns[2].date)
-    : weighIns[0].date
-  const w0 = anchored
-    ? s.points[daysBetween(s.start, anchorDate)]?.trend
-    : weighIns.reduce((sum, w) => sum + w.kg, 0) / weighIns.length
+  if (goalWeightKg == null || weighIns.length < 3) return null
+  const anchorDate = weighIns[2].date < s.start ? s.start : weighIns[2].date
+  const w0 = s.points[daysBetween(s.start, anchorDate)]?.trend
   if (w0 == null || goalWeightKg >= w0) return null
   const startDate = s.points[0].date
   const rail = (rate: number): RailPoint[] => {

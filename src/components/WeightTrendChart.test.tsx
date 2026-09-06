@@ -63,12 +63,12 @@ describe('WeightTrendChart', () => {
     expect(screen.queryByTestId('trend-line')).toBeNull()
     expect(screen.getByText('Log a few more days to reveal the 7-day average.')).toBeInTheDocument()
   })
-  it('corridor covers day 1: even a single weigh-in gets rails when a goal exists', () => {
+  it('single weigh-in with a goal: no corridor either — it unlocks with the SMA at ≥3', () => {
     seedDays([weighDay(addDays(today, -2), 80)], { goalWeightKg: 78 })
     render(<AppProvider><WeightTrendChart /></AppProvider>)
-    expect(screen.getByTestId('corridor-rail-slow')).toBeInTheDocument()
-    expect(screen.getByTestId('corridor-rail-fast')).toBeInTheDocument()
-    expect(screen.getByTestId('corridor-fill')).toBeInTheDocument()
+    expect(screen.queryByTestId('corridor-rail-slow')).toBeNull()
+    expect(screen.queryByTestId('corridor-fill')).toBeNull()
+    expect(screen.getByText('Log a few more days to reveal the 7-day average.')).toBeInTheDocument()
   })
   it('renders one dot per weigh-in and the trend line at ≥3 weigh-ins', () => {
     seedDays(threeWeighIns())

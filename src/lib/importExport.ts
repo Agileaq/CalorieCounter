@@ -58,6 +58,13 @@ export function parseBackup(text: string): BackupData {
   return { days: parsed.days, myFoods: parsed.myFoods, settings: parsed.settings, foodOverrides: parsed.foodOverrides, hiddenFoods: parsed.hiddenFoods, customIcons: parsed.customIcons }
 }
 
+/** Type convention: tags is absent (undefined) when empty — never []. Verbatim
+ * storage paths (merge's new-day fast path, replaceAll) must pass through this. */
+export function cleanDayTags(d: DayLog): DayLog {
+  const { tags, ...rest } = d
+  return tags?.length ? { ...rest, tags } : rest
+}
+
 /**
  * Merge an incoming backup into the existing state, keyed by stable ids so that
  * re-importing the same export does not create duplicates. This is the "merge"
@@ -76,7 +83,7 @@ export function mergeBackup(existing: BackupData, incoming: BackupData): BackupD
   const days: Record<string, DayLog> = { ...existing.days }
   for (const [key, inDay] of Object.entries(incoming.days)) {
     const exDay = days[key]
-    if (!exDay) { days[key] = inDay; continue }
+    if (!exDay) { days[key] = cleanDayTags(inDay); continue }
     const merged: DayLog = {
       date: key,
       meals: mergeMeals(exDay.meals, inDay.meals),

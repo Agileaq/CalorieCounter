@@ -6,7 +6,7 @@ import {
   loadCustomIcons, saveCustomIcons,
   getDay, ensureSchema,
 } from '../lib/storage'
-import { mergeFoods, mergeBackup as mergeBackupData } from '../lib/importExport'
+import { mergeFoods, mergeBackup as mergeBackupData, cleanDayTags } from '../lib/importExport'
 import predefinedRaw from '../data/predefinedFoods.json'
 import { collapseToPrimaryServing } from '../lib/food'
 import { setLanguage as applyI18nLanguage, applyDir } from '../i18n'
@@ -96,7 +96,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return foods.length
     },
     replaceAll: (data) => {
-      persistDays(data.days)
+      persistDays(Object.fromEntries(Object.entries(data.days).map(([k, d]) => [k, cleanDayTags(d)])))
       persistMyFoods(data.myFoods.map(collapseToPrimaryServing))
       persistSettings(data.settings)
       persistOverrides(Object.fromEntries(Object.entries(data.foodOverrides ?? {}).map(([k, f]) => [k, collapseToPrimaryServing(f)])))

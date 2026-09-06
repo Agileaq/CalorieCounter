@@ -1,6 +1,6 @@
 # 体重记录 + 科学减重趋势图 设计文档
 
-日期：2026-09-06 · 状态：设计已获用户逐段批准 · 路径：architectural
+日期：2026-09-06 · 状态：设计已获用户逐段批准 · 路径：architectural · **同日评审修订**：通道解锁门槛拉平（N≥3）、熔断索引规则显式化、lb 存储精度 2→3 位
 
 ## 1. 概述
 
@@ -55,7 +55,7 @@ export interface Settings {
 ## 3. 单位换算规则（锁定）
 
 - 内部恒定 kg；`1 lb = 0.45359237 kg`。
-- 卡片输入为 lb 时：显示 `kg × 2.2046226218`，用户输入的 lb 值存回时 ÷2.2046226218 并**保留 2 位小数**（防精度截断）。
+- 卡片输入为 lb 时：显示 `kg × 2.2046226218`，用户输入的 lb 值存回时 ÷2.2046226218 并**保留 3 位小数**。3 位是防回显抖动的最低精度：2 位时输入 175.5 lb 存 79.60，回显 `79.60 × 2.20462 = 175.4`——刚输完就跳数。
 - 所有显示（卡片、读数行、Y 轴标签）统一按当前 `settings.weightUnit` 换算后 `toFixed(1)`。
 - kg|lb 段选切换 = `updateSettings({ weightUnit })` **全局持久化**，图表/设置页/卡片时刻同步。
 
@@ -63,7 +63,7 @@ export interface Settings {
 
 - 标题「体重」（`weight.title`），`.card` 款式同现有卡片。
 - 第一行：`NumberInput`（小数，`hideZero`，占位符「未记录」）+ 右侧 kg|lb 双钮段选（选中 accent 填充）。切换单位时输入框立即按新单位显示当前存储值。
-- **受控草稿（锁定）**：复用 `NumberInput` 的局部字符串草稿机制（聚焦期间外部值不同步回输入框），lb 模式换算经 onChange 映射 kg↔lb（存 2 位小数）；失焦规范化，**Enter 键触发 blur 提交**——防止受控渲染的浮点回弹抖动。
+- **受控草稿（锁定）**：复用 `NumberInput` 的局部字符串草稿机制（聚焦期间外部值不同步回输入框），lb 模式换算经 onChange 映射 kg↔lb（存 3 位小数）；失焦规范化，**Enter 键触发 blur 提交**——防止受控渲染的浮点回弹抖动。
 - 第二行：5 个预设胶囊标签（tap-to-toggle 多选，无文本输入不唤起键盘），选中 accent 填充白字。
 - 数据按 `selectedDate` 独立存取；清空输入 = 删除当日体重。
 - testids：`weight-input`、`weight-unit-kg`、`weight-unit-lb`、`weight-tag-cheat|strength|cardio|stress|period`。
@@ -80,6 +80,7 @@ export interface Settings {
 ### 5.2 日序列与 carry-forward 熔断（锁定）
 
 - 当日有称重 → 当日值；否则沿用上一个值，**连续沿用超过 7 天即熔断**（`MAX_GAP_DAYS = 7`）：之后的序列值为 `undefined`，直到下一次称重。
+- **熔断索引规则（锁定，无歧义）**：设最后打卡日为 `D₀`，当前日 `D` 满足 `D − D₀ ≤ 7` → `kg[D] = kg[D₀]`；`D − D₀ > 7` → `kg[D] = undefined`。例：9/1 打卡 → 9/8 沿用（差 7 天）、9/9 熔断（差 8 天）。
 - 缺卡期趋势线断开成段；跨断档的周速率桶跳过。
 
 ### 5.3 7 天均线
@@ -89,7 +90,8 @@ export interface Settings {
 
 ### 5.4 目标通道（漏斗）
 
-- **锚点分级 + Day-1 覆盖（锁定）**：通道自序列起点（首次称重日）起画，保证首次使用即有完整视觉覆盖；锚点分级——前 1–2 次称重：W₀ = 当前已有称重的动态均值（随新数据逐点收敛、平滑单日水分噪声）；N≥3：W₀ 永久锁死为第 3 次称重日的 7 日均线值（存储不可变→基线稳定）。锚点前 rails 自然上翘（elapsed<0）。goal ≥ W₀ 或无 goal → 无通道。
+- **锚点与均线同步解锁 + Day-1 覆盖（锁定，2026-09-06 修订）**：通道与 7 日均线**同门槛解锁——称重 ≥ 3 次**。此前「1–2 次以动态均值画通道」的分级方案废除：3 次打卡前均线不成立，稳定基线无从谈起，画通道只会误导。解锁时 W₀ 永久锁死为第 3 次称重日的 7 日均线值（扩展窗口均值，当天即有定义；存储不可变→基线稳定）。
+- **时间基准（锁定）**：通道自序列起点（首次称重日）起画，`elapsedDays = daysBetween(序列首日, 当日) ≥ 0` 恒成立——**不存在负 elapsed，「锚点前 rails 上翘」语义已废除**（会向历史方向翘起，视觉误导）。W₀ 即首日的 rail 值，rail 单调下降：`v = W₀ − W₀ × rate × elapsedDays / 7`。goal ≥ W₀ 或无 goal → 无通道。
 - 上轨（慢）：`W₀ − W₀ × 0.005 × elapsedDays/7`；下轨（快）：`× 0.01`。
 - 每条虚线画到**首次触及 goalWeightKg 即收口**（漏斗尖），范围内未触及则画满。
 - `goalWeightKg == null` 或 `goal ≥ W₀` → 不画 + 对应提示（v1 不支持增重通道）。
@@ -166,17 +168,16 @@ export interface Settings {
 | 情况 | 行为 |
 |---|---|
 | 0 次称重 | 空态提示，无图 |
-| 1–2 次 | 散点 + 提示，无均线/通道/副图 |
-| <3 次 | 照常画通道：锚定首次称重，W₀ = 动态均值 |
-| goal 未设 / goal ≥ W₀ | 通道隐藏 + 对应提示 |
-| 缺卡 >7 天 | carry-forward 熔断：均线断段、跨断档周速率桶跳过 |
+| 1–2 次 | 散点 + 「再记录几天」提示，**无均线/通道/副图**（通道与均线同门槛解锁） |
+| goal 未设 / goal ≥ W₀ | 通道隐藏 + 对应提示（仅 N≥3 时评估） |
+| 缺卡 >7 天 | carry-forward 熔断（`D − D₀ ≤ 7` 沿用，`> 7` 断）：均线断段、跨断档周速率桶跳过 |
 | 历史预算 | 副图沿用当前 dailyBudget（已注明限制） |
 | RTL | SVG 内 LTR；CTM 命中映射；UI 逻辑属性 |
 
 ## 9. 测试策略（TDD，vitest + RTL）
 
-- **weight.test.ts**（大头）：carry-forward 与 7 天熔断、SMA 扩展窗口与 undefined 传播、通道锚点（分级 W₀、自首日起画、公式、收口于 goal）、周分桶 Δ 与完整周过滤、缺口序列（不存在日 vs 空记录日）、Y 轴 padding 保底、`daysBetween` 纯度（跨月/跨年）。
-- **WeightCard.test.tsx**：位于 ExerciseCard 之后渲染；lb 输入 → 存 kg 保留 2 位；单位切换持久化 + 显示换算 toFixed(1)；标签多选 toggle；清空删除体重。
+- **weight.test.ts**（大头）：carry-forward 与 7 天熔断（含 `D − D₀ = 7/8` 边界）、SMA 扩展窗口与 undefined 传播、通道锚点（N≥3 与均线同步解锁、自首日起画只降不升、公式、收口于 goal）、周分桶 Δ 与完整周过滤、缺口序列（不存在日 vs 空记录日）、Y 轴 padding 保底、`daysBetween` 纯度（跨月/跨年）、lb 存 3 位小数与回显零漂移。
+- **WeightCard.test.tsx**：位于 ExerciseCard 之后渲染；lb 输入 → 存 kg 保留 3 位；单位切换持久化 + 显示换算 toFixed(1)；标签多选 toggle；清空删除体重。
 - **WeightTrendChart.test.tsx**：散点数 = 范围内打卡数；均线/通道 path 三态；范围切换过滤；事件 lane 单点 vs 聚合「+」；点按日期读数行刷新；空态文案；目标体重行（Goals 增量）。
 - **importExport 增量**：mergeBackup 保留 weight/tags（incoming 覆盖语义）。
 - **Log.test.tsx** 无卡片数断言，不受影响（已验证）。

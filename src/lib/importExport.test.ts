@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { exportFoods, parseFoodsImport, mergeFoods, exportBackup, parseBackup, mergeBackup } from './importExport'
+import { exportFoods, parseFoodsImport, mergeFoods, exportBackup, parseBackup, mergeBackup, cleanDayTags } from './importExport'
 import type { BackupData } from './importExport'
 import type { Food, DayLog, LogEntry, MealKey } from '../types'
 import { MEAL_KEYS } from '../types'
@@ -47,6 +47,19 @@ describe('mergeBackup weight/tags', () => {
     const base = backup({ '2026-01-01': { ...day('2026-01-01'), weightKg: 80, tags: ['cheat'] } })
     const inc = backup({ '2026-01-01': { ...day('2026-01-01'), weightKg: 81, tags: [] } })
     expect('tags' in mergeBackup(base, inc).days['2026-01-01']).toBe(false)
+  })
+  it('incoming new day (no existing) never stores an empty tags array', () => {
+    const inc = backup({ '2026-02-01': { ...day('2026-02-01'), tags: [] } })
+    expect('tags' in mergeBackup(backup({}), inc).days['2026-02-01']).toBe(false)
+  })
+})
+
+describe('cleanDayTags', () => {
+  it('drops empty/absent tags entirely, preserves non-empty', () => {
+    expect('tags' in cleanDayTags({ ...day('2026-01-01'), tags: [] })).toBe(false)
+    expect('tags' in cleanDayTags(day('2026-01-01'))).toBe(false)
+    expect(cleanDayTags({ ...day('2026-01-01'), tags: ['cheat'] }).tags).toEqual(['cheat'])
+    expect('tags' in cleanDayTags({ ...day('2026-01-01'), weightKg: 80 })).toBe(false)
   })
 })
 

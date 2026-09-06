@@ -36,12 +36,16 @@ function dayWithCals(date: string, calories: number, burned = 0): DayLog {
 }
 
 describe('weight conversions', () => {
-  it('uses the locked lb/kg factor and precision', () => {
+  it('uses the locked lb/kg factor and 3-decimal lb storage precision', () => {
     expect(LB_PER_KG).toBeCloseTo(2.20462, 4)
     expect(MAX_GAP_DAYS).toBe(7)
-    expect(lbToKg(181.8)).toBeCloseTo(82.46, 2)
-    expect(kgToLb(82.46)).toBeCloseTo(181.8, 1)
+    expect(lbToKg(181.8)).toBe(82.463)
+    expect(kgToLb(82.463)).toBeCloseTo(181.8, 1)
     expect(round1(82.459)).toBe(82.5)
+  })
+  it('lb round-trip never drifts at display precision (2-decimal storage made 175.5 read back as 175.4)', () => {
+    expect(kgToLb(lbToKg(175.5)).toFixed(1)).toBe('175.5')
+    expect(kgToLb(lbToKg(180.3)).toFixed(1)).toBe('180.3')
   })
 })
 
@@ -132,19 +136,16 @@ describe('safeCorridor', () => {
     expect(c.slow[c.slow.length - 1].v).toBe(78)
     expect(c.fast.length).toBeLessThan(c.slow.length)
   })
-  it('day-1 coverage with <3 weigh-ins: anchored on the first, W₀ = running mean', () => {
+  it('stays null below 3 weigh-ins — corridor unlocks together with the SMA', () => {
     const s = dailySeries(days, 'all', '2026-02-15')
-    const c2 = safeCorridor(WI.slice(0, 2), s, 78)!
-    expect(c2.anchorDate).toBe('2026-01-01')
-    expect(c2.slow[0].v).toBeCloseTo(79.75, 5) // (80 + 79.5) / 2
-    const c1 = safeCorridor(WI.slice(0, 1), s, 78)!
-    expect(c1.slow[0].v).toBe(80)
+    expect(safeCorridor(WI.slice(0, 1), s, 78)).toBeNull()
+    expect(safeCorridor(WI.slice(0, 2), s, 78)).toBeNull()
   })
   it('is null without a goal, with no weigh-ins, or when goal ≥ W₀', () => {
     const s = dailySeries(days, 'all', '2026-02-15')
     expect(safeCorridor(WI, s, null)).toBeNull()
     expect(safeCorridor(WI, s, 90)).toBeNull()
-    expect(safeCorridor(WI.slice(0, 2), s, 80)).toBeNull() // 80 ≥ running mean 79.75
+    expect(safeCorridor(WI, s, 79.5)).toBeNull() // 79.5 ≥ W₀ (trend at the 3rd weigh-in)
   })
 })
 
