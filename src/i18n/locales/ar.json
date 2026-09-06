@@ -36,10 +36,7 @@
     "fat": "الدهون",
     "weekAvg": "المتوسط {{n}}/يوم",
     "hit": "{{n}}/7 أيام ضمن الهدف",
-    "remaining": "{{left}} / {{target}}g",
-    "of": "{{cur}} من {{target}}غ",
-    "avgPrior": "{{n}}غ متوسط قبل اليوم",
-    "ofCals": "{{cur}} من {{target}} سعرة"
+    "remaining": "{{left}} / {{target}}g"
   },
   "weight": {
     "title": "الوزن",

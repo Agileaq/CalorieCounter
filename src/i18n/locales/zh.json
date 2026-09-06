@@ -36,10 +36,7 @@
     "fat": "脂肪",
     "weekAvg": "周日均 {{n}}",
     "hit": "达标 {{n}}/7 天",
-    "remaining": "{{left}} / {{target}}g",
-    "of": "{{cur}} / {{target}}g",
-    "avgPrior": "此前日均 {{n}}g",
-    "ofCals": "{{cur}} / {{target}} 千卡"
+    "remaining": "{{left}} / {{target}}g"
   },
   "weight": {
     "title": "体重",

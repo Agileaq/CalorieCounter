@@ -1,36 +1,45 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
 import Dashboard from './Dashboard'
 import { todayKey, weekOf, formatHeader } from '../lib/date'
+import { emptyDay } from '../lib/storage'
+import type { DayLog } from '../types'
+
+function weighDay(key: string): DayLog {
+  return { ...emptyDay(key), weightKg: 80 }
+}
+
+beforeEach(() => localStorage.clear())
 
 describe('Dashboard', () => {
-  it('renders the five stat cards and a version badge', () => {
+  it('renders the three review modules and the version badge', () => {
+    localStorage.setItem('cc.days', JSON.stringify({ [todayKey()]: weighDay(todayKey()) }))
     render(<AppProvider><Dashboard /></AppProvider>)
-    for (const title of ['Calories', 'Carbohydrates', 'Protein', 'Fat', 'Fiber']) {
-      expect(screen.getByText(title)).toBeInTheDocument()
+    expect(screen.getByText('Weight Trend')).toBeInTheDocument()
+    expect(screen.getByText('Calories')).toBeInTheDocument()
+    expect(screen.getByTestId('calorie-week-avg')).toBeInTheDocument()
+    expect(screen.getAllByTestId('week-bar')).toHaveLength(7)
+    for (const k of ['carbs', 'protein', 'fat', 'fiber']) {
+      expect(screen.getByTestId(`macro-cell-${k}`)).toBeInTheDocument()
     }
-    // one half-ring gauge value per card
-    expect(screen.getAllByTestId('stat-gauge-value')).toHaveLength(5)
-    // 5 cards × 7 weekday bars
-    expect(screen.getAllByTestId('stat-bar')).toHaveLength(35)
     expect(screen.getByTestId('build-info').textContent).toMatch(/^v/)
   })
-  it('clicking a weekly bar switches the selected date', () => {
+  it('no single-day gauges or old stat cards remain', () => {
     render(<AppProvider><Dashboard /></AppProvider>)
-    const today = todayKey()
+    expect(screen.queryByTestId('stat-gauge-value')).toBeNull()
+    expect(screen.queryByTestId('stat-bar')).toBeNull()
+    expect(screen.queryByTestId('stat-bar-btn')).toBeNull()
+  })
+  it('clicking a weekly calorie bar switches the selected date', () => {
+    localStorage.setItem('cc.days', JSON.stringify({ [todayKey()]: weighDay(todayKey()) }))
+    render(<AppProvider><Dashboard /></AppProvider>)
     const header = screen.getByTestId('date-center')
-    // header initially reflects today
+    const today = todayKey()
     expect(header).toHaveTextContent(formatHeader(today, 'en'))
-    // pick a different day in the same week and click its bar
-    // (5 cards × 7 bars share each date's aria-label; click the first match)
     const target = weekOf(today).find(k => k !== today)!
     fireEvent.click(screen.getAllByLabelText(target)[0])
-    // header now reflects the clicked date
     expect(header).toHaveTextContent(formatHeader(target, 'en'))
-    // the today bar (the previous selected date) should no longer read as selected
-    // — its gauge value comes from a different day now; assert header changed at minimum
-    expect(header).not.toHaveTextContent(formatHeader(today, 'en'))
   })
 })

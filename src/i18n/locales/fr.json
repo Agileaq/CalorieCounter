@@ -36,10 +36,7 @@
     "fat": "Lipides",
     "weekAvg": "Moyenne {{n}}/j",
     "hit": "{{n}}/7 jours dans l'objectif",
-    "remaining": "{{left}} / {{target}}g",
-    "of": "{{cur}} sur {{target}}g",
-    "avgPrior": "{{n}}g en moyenne avant aujourd’hui",
-    "ofCals": "{{cur}} sur {{target}} kcal"
+    "remaining": "{{left}} / {{target}}g"
   },
   "weight": {
     "title": "Poids",

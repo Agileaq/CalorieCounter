@@ -36,10 +36,7 @@
     "fat": "Grasa",
     "weekAvg": "Media {{n}}/día",
     "hit": "{{n}}/7 días en objetivo",
-    "remaining": "{{left}} / {{target}}g",
-    "of": "{{cur}} de {{target}}g",
-    "avgPrior": "{{n}}g promedio antes de hoy",
-    "ofCals": "{{cur}} de {{target}} cal"
+    "remaining": "{{left}} / {{target}}g"
   },
   "weight": {
     "title": "Peso",

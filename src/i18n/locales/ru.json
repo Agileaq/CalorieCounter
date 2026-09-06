@@ -36,10 +36,7 @@
     "fat": "Жиры",
     "weekAvg": "В среднем {{n}}/день",
     "hit": "{{n}}/7 дней в норме",
-    "remaining": "{{left}} / {{target}}g",
-    "of": "{{cur}} из {{target}}г",
-    "avgPrior": "{{n}}г в среднем до сегодня",
-    "ofCals": "{{cur}} из {{target}} ккал"
+    "remaining": "{{left}} / {{target}}g"
   },
   "weight": {
     "title": "Вес",

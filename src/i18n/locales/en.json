@@ -36,10 +36,7 @@
     "fat": "Fat",
     "weekAvg": "Avg {{n}}/day",
     "hit": "{{n}}/7 days on target",
-    "remaining": "{{left}} / {{target}}g",
-    "of": "{{cur}} of {{target}}g",
-    "avgPrior": "{{n}}g avg prior to today",
-    "ofCals": "{{cur}} of {{target}} kcal"
+    "remaining": "{{left}} / {{target}}g"
   },
   "weight": {
     "title": "Weight",
