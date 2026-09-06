@@ -215,7 +215,7 @@ export function WeightTrendChart() {
       </div>
 
       {weighIns.length < 3 && <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>{t('weight.empty1')}</div>}
-      {!corr && weighIns.length >= 3 && (
+      {!corr && (
         <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
           {settings.goalWeightKg == null ? t('weight.corridorNoGoal') : t('weight.corridorBadGoal')}
         </div>

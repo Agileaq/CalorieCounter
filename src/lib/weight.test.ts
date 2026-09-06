@@ -111,24 +111,34 @@ describe('safeCorridor', () => {
   ]
   const days = { ...D('2026-01-01', 80), ...D('2026-01-02', 79.5), ...D('2026-01-03', 79) }
 
-  it('anchors at the 3rd weigh-in with 0.5%/1% weekly rails, clamped at goal', () => {
+  it('locks to the 3rd weigh-in trend, extends back to day 1, clamped at goal', () => {
     const s = dailySeries(days, 'all', '2026-02-15')
     const c = safeCorridor(WI, s, 78)!
     expect(c.anchorDate).toBe('2026-01-03')
     const w0 = s.points[2].trend! // (80 + 79.5 + 79) / 3 = 79.5
     expect(w0).toBeCloseTo(79.5, 5)
-    expect(c.slow[0].v).toBeCloseTo(w0, 5)
-    expect(c.slow[7].v).toBeCloseTo(w0 * 0.995, 5)  // 01-10, one week down
+    // day-1 coverage: rails start at the first weigh-in, rising above W₀ pre-anchor
+    expect(c.slow[0].date).toBe('2026-01-01')
+    expect(c.slow[0].v).toBeGreaterThan(w0)
+    expect(c.slow.find(p => p.date === '2026-01-10')!.v).toBeCloseTo(w0 * 0.995, 5) // one week down
     // fast rail reaches the goal first; both rails end clamped at the goal
     expect(c.fast[c.fast.length - 1].v).toBe(78)
     expect(c.slow[c.slow.length - 1].v).toBe(78)
     expect(c.fast.length).toBeLessThan(c.slow.length)
   })
-  it('is null without a goal, with <3 weigh-ins, or when goal ≥ W₀', () => {
+  it('day-1 coverage with <3 weigh-ins: anchored on the first, W₀ = running mean', () => {
+    const s = dailySeries(days, 'all', '2026-02-15')
+    const c2 = safeCorridor(WI.slice(0, 2), s, 78)!
+    expect(c2.anchorDate).toBe('2026-01-01')
+    expect(c2.slow[0].v).toBeCloseTo(79.75, 5) // (80 + 79.5) / 2
+    const c1 = safeCorridor(WI.slice(0, 1), s, 78)!
+    expect(c1.slow[0].v).toBe(80)
+  })
+  it('is null without a goal, with no weigh-ins, or when goal ≥ W₀', () => {
     const s = dailySeries(days, 'all', '2026-02-15')
     expect(safeCorridor(WI, s, null)).toBeNull()
-    expect(safeCorridor(WI.slice(0, 2), s, 78)).toBeNull()
     expect(safeCorridor(WI, s, 90)).toBeNull()
+    expect(safeCorridor(WI.slice(0, 2), s, 80)).toBeNull() // 80 ≥ running mean 79.75
   })
 })
 

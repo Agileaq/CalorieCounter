@@ -89,7 +89,7 @@ export interface Settings {
 
 ### 5.4 目标通道（漏斗）
 
-- **锚点抗噪（锁定）**：`W₀ = 第一个「累计称重 ≥3 次」日期上的 trend 值`，通道自该日期起画——首日单点脱水/潴留带不偏整条通道。总称重 <3 次 → 无通道。
+- **锚点分级 + Day-1 覆盖（锁定）**：通道自序列起点（首次称重日）起画，保证首次使用即有完整视觉覆盖；锚点分级——前 1–2 次称重：W₀ = 当前已有称重的动态均值（随新数据逐点收敛、平滑单日水分噪声）；N≥3：W₀ 永久锁死为第 3 次称重日的 7 日均线值（存储不可变→基线稳定）。锚点前 rails 自然上翘（elapsed<0）。goal ≥ W₀ 或无 goal → 无通道。
 - 上轨（慢）：`W₀ − W₀ × 0.005 × elapsedDays/7`；下轨（快）：`× 0.01`。
 - 每条虚线画到**首次触及 goalWeightKg 即收口**（漏斗尖），范围内未触及则画满。
 - `goalWeightKg == null` 或 `goal ≥ W₀` → 不画 + 对应提示（v1 不支持增重通道）。
@@ -167,7 +167,7 @@ export interface Settings {
 |---|---|
 | 0 次称重 | 空态提示，无图 |
 | 1–2 次 | 散点 + 提示，无均线/通道/副图 |
-| <3 次 | 无通道（锚点需 ≥3 次） |
+| <3 次 | 照常画通道：锚定首次称重，W₀ = 动态均值 |
 | goal 未设 / goal ≥ W₀ | 通道隐藏 + 对应提示 |
 | 缺卡 >7 天 | carry-forward 熔断：均线断段、跨断档周速率桶跳过 |
 | 历史预算 | 副图沿用当前 dailyBudget（已注明限制） |
@@ -175,7 +175,7 @@ export interface Settings {
 
 ## 9. 测试策略（TDD，vitest + RTL）
 
-- **weight.test.ts**（大头）：carry-forward 与 7 天熔断、SMA 扩展窗口与 undefined 传播、通道锚点（≥3 次才出现、公式、收口于 goal）、周分桶 Δ 与完整周过滤、缺口序列（不存在日 vs 空记录日）、Y 轴 padding 保底、`daysBetween` 纯度（跨月/跨年）。
+- **weight.test.ts**（大头）：carry-forward 与 7 天熔断、SMA 扩展窗口与 undefined 传播、通道锚点（分级 W₀、自首日起画、公式、收口于 goal）、周分桶 Δ 与完整周过滤、缺口序列（不存在日 vs 空记录日）、Y 轴 padding 保底、`daysBetween` 纯度（跨月/跨年）。
 - **WeightCard.test.tsx**：位于 ExerciseCard 之后渲染；lb 输入 → 存 kg 保留 2 位；单位切换持久化 + 显示换算 toFixed(1)；标签多选 toggle；清空删除体重。
 - **WeightTrendChart.test.tsx**：散点数 = 范围内打卡数；均线/通道 path 三态；范围切换过滤；事件 lane 单点 vs 聚合「+」；点按日期读数行刷新；空态文案；目标体重行（Goals 增量）。
 - **importExport 增量**：mergeBackup 保留 weight/tags（incoming 覆盖语义）。
