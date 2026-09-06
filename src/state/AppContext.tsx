@@ -68,6 +68,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clearMeal: (meal) => mutateDay(d => ({ ...d, meals: { ...d.meals, [meal]: [] } })),
     addExercise: (e) => mutateDay(d => ({ ...d, exercise: [...d.exercise, e] })),
     deleteExercise: (id) => mutateDay(d => ({ ...d, exercise: d.exercise.filter(e => e.id !== id) })),
+    setDayWeight: (kg) => mutateDay(d => {
+      const next = { ...d }
+      if (kg != null && kg > 0) next.weightKg = kg
+      else delete next.weightKg
+      return next
+    }),
+    toggleDayTag: (tag) => mutateDay(d => {
+      const cur = d.tags ?? []
+      const next = cur.includes(tag) ? cur.filter(t => t !== tag) : [...cur, tag]
+      const out = { ...d }
+      if (next.length) out.tags = next
+      else delete out.tags
+      return out
+    }),
     setLanguage: (lang: Language) => persistSettings({ ...settings, language: lang }),
     importFoods: (foods) => {
       const collapsed = foods.map(collapseToPrimaryServing)

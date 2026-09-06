@@ -170,3 +170,46 @@ describe('AppContext mergeBackup', () => {
     unmount()
   })
 })
+
+function WeightProbe() {
+  const app = useApp()
+  return (
+    <div>
+      <span data-testid="weight">{String(app.day.weightKg)}</span>
+      <span data-testid="tags">{JSON.stringify(app.day.tags ?? null)}</span>
+      <button onClick={() => app.setDayWeight(82.5)}>set</button>
+      <button onClick={() => app.setDayWeight(null)}>clear</button>
+      <button onClick={() => app.toggleDayTag('cheat')}>cheat</button>
+      <button onClick={() => app.toggleDayTag('strength')}>strength</button>
+    </div>
+  )
+}
+
+describe('AppContext weight', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('setDayWeight persists per selected date and null deletes the field', () => {
+    render(<AppProvider><WeightProbe /></AppProvider>)
+    expect(screen.getByTestId('weight').textContent).toBe('undefined')
+    act(() => { screen.getByText('set').click() })
+    expect(screen.getByTestId('weight').textContent).toBe('82.5')
+    const days = JSON.parse(localStorage.getItem('cc.days')!)
+    expect(days[Object.keys(days)[0]].weightKg).toBe(82.5)
+    act(() => { screen.getByText('clear').click() })
+    const after = JSON.parse(localStorage.getItem('cc.days')!)
+    expect('weightKg' in after[Object.keys(after)[0]]).toBe(false)
+  })
+
+  it('toggleDayTag adds, removes, and drops the field when empty', () => {
+    render(<AppProvider><WeightProbe /></AppProvider>)
+    act(() => { screen.getByText('cheat').click() })
+    act(() => { screen.getByText('strength').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('["cheat","strength"]')
+    act(() => { screen.getByText('cheat').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('["strength"]')
+    act(() => { screen.getByText('strength').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('null')
+    const after = JSON.parse(localStorage.getItem('cc.days')!)
+    expect('tags' in after[Object.keys(after)[0]]).toBe(false)
+  })
+})

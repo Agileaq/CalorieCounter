@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { DayLog, ExerciseEntry, Food, Language, LogEntry, MealKey, Settings } from '../types'
+import type { DayLog, ExerciseEntry, Food, Language, LogEntry, MealKey, Settings, WeightTag } from '../types'
 import type { BackupData } from '../lib/importExport'
 
 export interface AppContextValue {
@@ -28,6 +28,8 @@ export interface AppContextValue {
   clearMeal: (meal: MealKey) => void
   addExercise: (e: ExerciseEntry) => void
   deleteExercise: (id: string) => void
+  setDayWeight: (kg: number | null) => void
+  toggleDayTag: (tag: WeightTag) => void
   setLanguage: (lang: Language) => void
   importFoods: (foods: Food[]) => number
   replaceAll: (data: BackupData) => void
