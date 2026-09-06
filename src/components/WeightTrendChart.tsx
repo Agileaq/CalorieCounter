@@ -1,5 +1,5 @@
 /**
- * Goals-page weight trend chart: one LTR SVG holding three X-aligned sections
+ * Dashboard-top weight trend chart (moved from Goals): one LTR SVG holding three X-aligned sections
  * (main three-layer plot, event lane, deficit sub-chart) under a fixed
  * readout row. Hit-testing maps client coords through the SVG's own CTM
  * (rect-ratio fallback) so an outer dir="rtl" can never mirror columns.
@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import {
   extractWeighIns, dailySeries, safeCorridor, deficitSeries,
+  deficitWeekSummary, trendDirection,
   padBounds, symmetricBounds, round1,
   TAG_COLORS, type Range,
 } from '../lib/weight'
@@ -29,9 +30,13 @@ const DEF_ZERO = 228
 const DEF_HALF = 22
 const H = 272
 
+/** Signed kcal for the verdict line: U+2212 minus, + prefix for surplus, en-US grouping. */
+const signedKcal = (n: number) =>
+  (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(Math.round(n)).toLocaleString('en-US')
+
 export function WeightTrendChart() {
   const { t, i18n } = useTranslation()
-  const { days, settings } = useApp()
+  const { days, settings, selectedDate } = useApp()
   const [range, setRange] = useState<Range>(90)
   const [sel, setSel] = useState<string | null>(null)
 
@@ -39,6 +44,11 @@ export function WeightTrendChart() {
   const s = useMemo(() => dailySeries(days, range), [days, range])
   const corr = useMemo(() => safeCorridor(weighIns, s, settings.goalWeightKg), [weighIns, s, settings.goalWeightKg])
   const deficits = useMemo(() => deficitSeries(days, s, settings.dailyBudget), [days, s, settings.dailyBudget])
+  const deficitWeek = useMemo(
+    () => deficitWeekSummary(days, selectedDate, settings.dailyBudget),
+    [days, selectedDate, settings.dailyBudget],
+  )
+  const dir = useMemo(() => trendDirection(s, selectedDate), [s, selectedDate])
 
   if (weighIns.length === 0) {
     return (
@@ -226,6 +236,17 @@ export function WeightTrendChart() {
         <span style={{ color: 'var(--accent)' }}>— {t('weight.legendTrend')}</span>
         <span>╌ {t('weight.legendCorridor')}</span>
       </div>
+
+      {showSubs && deficitWeek.hasData && (
+        <div data-testid="trend-verdict" className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+          {dir
+            ? t('weight.weekReview', {
+                kcal: signedKcal(deficitWeek.totalKcal),
+                dir: t(`weight.trend${dir[0].toUpperCase()}${dir.slice(1)}`),
+              })
+            : t('weight.weekReviewDeficitOnly', { kcal: signedKcal(deficitWeek.totalKcal) })}
+        </div>
+      )}
 
       {weighIns.length < 3 && <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>{t('weight.empty1')}</div>}
       {weighIns.length >= 3 && !corr && (
