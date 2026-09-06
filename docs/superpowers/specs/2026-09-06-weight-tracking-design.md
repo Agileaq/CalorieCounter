@@ -63,6 +63,7 @@ export interface Settings {
 
 - 标题「体重」（`weight.title`），`.card` 款式同现有卡片。
 - 第一行：`NumberInput`（小数，`hideZero`，占位符「未记录」）+ 右侧 kg|lb 双钮段选（选中 accent 填充）。切换单位时输入框立即按新单位显示当前存储值。
+- **受控草稿（锁定）**：复用 `NumberInput` 的局部字符串草稿机制（聚焦期间外部值不同步回输入框），lb 模式换算经 onChange 映射 kg↔lb（存 2 位小数）；失焦规范化，**Enter 键触发 blur 提交**——防止受控渲染的浮点回弹抖动。
 - 第二行：5 个预设胶囊标签（tap-to-toggle 多选，无文本输入不唤起键盘），选中 accent 填充白字。
 - 数据按 `selectedDate` 独立存取；清空输入 = 删除当日体重。
 - testids：`weight-input`、`weight-unit-kg`、`weight-unit-lb`、`weight-tag-cheat|strength|cardio|stress|period`。
@@ -83,8 +84,8 @@ export interface Settings {
 
 ### 5.3 7 天均线
 
-- `trend[i] = mean(series[i-6..i])`，前 6 天扩展窗口；**窗口内任一值 undefined 则 trend[i] undefined**。
-- 从第一次称重当天就有值（无空白期）。
+- `trend[i] = mean(series[i-6..i])`，前 6 天扩展窗口；从第一次称重当天就有值（无空白期）。
+- **熔断与恢复（锁定）**：`trend[i]` 与 `kg[i]` 同生共死——`kg[i]` undefined（熔断区间）则 `trend[i]` undefined；否则取**窗口内非 undefined 值的均值**。效果：断档时线在第 7 天止步；重新打卡当天均线即接续（恢复日窗口内有效值 = 新称重值本身），不会因窗口内残留 undefined 而再断一周。
 
 ### 5.4 目标通道（漏斗）
 
@@ -95,8 +96,9 @@ export interface Settings {
 
 ### 5.5 周速率副图
 
-- `weekOf`（周一起始 ISO 周）分桶；**只画已结束的完整周**（周日 < 今天；进行中的周 Δ 偏小会误导）。
-- `Δ = trend(周日) − trend(周一)`（用均线抗噪）；两端任一 undefined → 该桶跳过。
+- `weekOf`（周一起始 ISO 周）分桶；**只画已结束的周**（`weekStart+7 ≤ today`；进行中的周 Δ 偏小会误导）。
+- `Δ = trend(该周最后一个有定义 trend 的日期) − trend(该周第一个有定义 trend 的日期)`（用均线抗噪）。
+- **首周策略（锁定）**：首周（首个含称重的自然周，即使从周中开始）同样按上式折算——周内不足 2 个有定义 trend 的日期则跳过该桶；仅 1 次称重时首尾同日 → Δ=0，按「0 不画」规则自然不渲染。测试按此断言。
 - 柱几何（锁定）：`x = x(weekStart)`，`width = x(weekStart+7) − x(weekStart)`，即整周跨度、几何中心自然落在周四，与共享时间比例尺物理对齐。
 - Δ<0 绿（掉秤）、Δ>0 红（涨）、0 不画。
 
