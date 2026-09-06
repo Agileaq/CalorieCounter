@@ -24,10 +24,10 @@ const INNER = W - PAD_L - PAD_R
 const MAIN_TOP = 8
 const MAIN_BOT = 152
 const LANE_CY = 168
-const DEF_LABEL_Y = 189
-const DEF_ZERO = 221
+const DEF_LABEL_Y = 194
+const DEF_ZERO = 228
 const DEF_HALF = 22
-const H = 256
+const H = 272
 
 export function WeightTrendChart() {
   const { t, i18n } = useTranslation()
@@ -82,8 +82,10 @@ export function WeightTrendChart() {
     pen = true
   }
 
-  // readout: tapped column wins, else the latest in-range weigh-in
+  // readout: tapped column wins, else the latest in-range weigh-in; the
+  // crosshair + highlighted dot track the same effective selection
   const latest = [...weighIns].reverse().find(w => w.date >= s.start && w.date <= s.end)
+  const selDate = (sel && s.points.some(p => p.date === sel)) ? sel : latest?.date
   const ro = (sel && s.points.find(p => p.date === sel))
     || (latest ? s.points.find(p => p.date === latest.date) : undefined)
   const tagLabel = (tag: string) => t(`weight.tag${tag.charAt(0).toUpperCase()}${tag.slice(1)}`)
@@ -128,8 +130,8 @@ export function WeightTrendChart() {
       <div data-testid="trend-readout" className="muted" style={{ fontSize: 12, marginTop: 6, minHeight: 18 }}>
         {ro && ro.kg != null ? (
           <>
-            {fmtDate(ro.date)} · {t('weight.readoutWeight')} {conv(ro.kg)} {unitLabel}
-            {ro.trend != null && <> · {t('weight.readoutTrend')} {conv(ro.trend)}</>}
+            {fmtDate(ro.date)} · {t('weight.readoutWeight')} {conv(ro.kg).toFixed(1)} {unitLabel}
+            {ro.trend != null && <> · {t('weight.readoutTrend')} {conv(ro.trend).toFixed(1)}</>}
             {(ro.date === days[ro.date]?.date && (days[ro.date]?.tags ?? []).length > 0)
               && <> · {(days[ro.date].tags as string[]).map(tagLabel).join(' · ')}</>}
           </>
@@ -161,11 +163,19 @@ export function WeightTrendChart() {
           </g>
         ))}
 
-        {/* raw weigh-in dots */}
-        {inRange.map(w => (
-          <circle key={w.date} data-testid={`trend-dot-${w.date}`} cx={x(w.date)} cy={yMain(w.kg)} r={3}
-            fill="#b0b0b5" opacity={0.55} />
-        ))}
+        {/* raw weigh-in dots; the effective selection is highlighted */}
+        {inRange.map(w => {
+          const active = w.date === selDate
+          return (
+            <circle key={w.date} data-testid={`trend-dot-${w.date}`} cx={x(w.date)} cy={yMain(w.kg)}
+              r={active ? 4 : 3} fill={active ? 'var(--accent)' : '#b0b0b5'} opacity={active ? 1 : 0.55} />
+          )
+        })}
+
+        {/* crosshair at the readout's date */}
+        {selDate && (
+          <line x1={x(selDate)} x2={x(selDate)} y1={MAIN_TOP} y2={MAIN_BOT} stroke="var(--accent)" strokeWidth={1} opacity={0.45} />
+        )}
 
         {/* 7-day average line */}
         {showTrend && (
@@ -179,7 +189,10 @@ export function WeightTrendChart() {
           </text>
         ))}
 
-        {/* event lane */}
+        {/* event lane: faint guide ties each tagged day to its date column */}
+        {inRange.filter(w => (days[w.date]?.tags ?? []).length > 0).map(w => (
+          <line key={w.date} x1={x(w.date)} x2={x(w.date)} y1={MAIN_BOT} y2={LANE_CY - 6} stroke="var(--line)" strokeWidth={1} />
+        ))}
         {inRange.filter(w => (days[w.date]?.tags ?? []).length > 0).map(w => {
           const tags = days[w.date].tags as string[]
           return tags.length === 1 ? (

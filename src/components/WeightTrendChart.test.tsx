@@ -118,15 +118,17 @@ describe('WeightTrendChart', () => {
     render(<AppProvider><WeightTrendChart /></AppProvider>)
     const readout = screen.getByTestId('trend-readout')
     expect(readout.textContent).toContain('78.9')
-    // tap the column of the weigh-in 8 days ago (index 8 of 10): x = PAD_L + 8/10 × innerW
+    // tap the weigh-in 8 days ago (series index 2 of 10): x = PAD_L + 2/10 × innerW
     const svg = screen.getByTestId('weight-trend-svg')
     const total = daysBetween(addDays(today, -10), today)
     fireEvent(svg, new MouseEvent('pointerdown', {
       bubbles: true,
-      clientX: PAD_L + (8 / total) * (W - PAD_L - PAD_R),
+      clientX: PAD_L + (2 / total) * (W - PAD_L - PAD_R),
       clientY: 100,
     }))
-    expect(readout.textContent).toContain('79')
+    expect(readout.textContent).toContain('79.0')
+    // the tapped column is crosshair-ed and its weigh-in dot highlighted
+    expect(screen.getByTestId(`trend-dot-${addDays(today, -8)}`)).toHaveAttribute('fill', 'var(--accent)')
   })
   it('deficit bars render for existing day keys, green when under budget', () => {
     const d = addDays(today, -8)

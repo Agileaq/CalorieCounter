@@ -88,6 +88,12 @@ describe('dailySeries', () => {
     expect(s.points[8].trend).toBeUndefined()
     expect(s.points).toHaveLength(15) // 01-01..01-15 inclusive
   })
+  it('warm-up is an expanding window: trend[0] equals the first weigh-in exactly', () => {
+    const s = dailySeries({ ...D('2026-01-01', 91), ...D('2026-01-02', 92.5), ...D('2026-01-03', 92.5) }, 'all', '2026-01-03')
+    expect(s.points[0].trend).toBe(91)
+    expect(s.points[1].trend).toBeCloseTo(91.75, 5)
+    expect(s.points[2].trend).toBeCloseTo(92, 5)
+  })
   it('30-day window: pre-window weigh-in beyond the fuse does not carry', () => {
     const days = { ...D('2025-12-01', 80), ...D('2026-01-15', 79) }
     const s = dailySeries(days, 30, '2026-01-15')
