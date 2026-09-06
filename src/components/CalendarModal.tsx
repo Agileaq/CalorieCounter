@@ -22,8 +22,10 @@ export function CalendarModal({ onClose }: { onClose: () => void }) {
   }
   function goToday() {
     const tk = fromDateKey(todayKey()); setYear(tk.getFullYear()); setMonth0(tk.getMonth())
-    // also select the system's current date so the calendar reflects it
+    // also select the system's current date so the calendar reflects it,
+    // then dismiss — Today is a "jump home and close" action, same as picking a day
     setSelectedDate(todayKey())
+    onClose()
   }
   function selectDay(key: string) { setSelectedDate(key); onClose() }
 

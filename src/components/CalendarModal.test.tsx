@@ -25,20 +25,23 @@ describe('CalendarModal', () => {
     render(<AppProvider><CalendarModal onClose={() => {}} /></AppProvider>)
     expect(screen.getAllByTestId('week-badge').length).toBeGreaterThanOrEqual(4)
   })
-  it('the Today button selects the system current date but keeps the calendar open', () => {
+  it('the Today button selects the system current date and closes the calendar', () => {
     const ref = { current: '' }
+    const onClose = vi.fn()
     render(
       <AppProvider>
         <SelectedProbe into={ref} />
-        <CalendarModal onClose={() => {}} />
+        <CalendarModal onClose={onClose} />
       </AppProvider>,
     )
     // move the selection off today by picking an arbitrary grid day
     fireEvent.click(screen.getAllByTestId('cal-day')[0])
+    // clear the close fired by that day-cell selection so the Today click is isolated
+    onClose.mockClear()
     // it may or may not equal today; regardless, Today must (re)select todayKey
     fireEvent.click(screen.getByText(/today/i))
     expect(ref.current).toBe(todayKey())
-    // calendar stays open (the grid is still mounted)
-    expect(screen.getAllByTestId('cal-day').length).toBeGreaterThan(0)
+    // and dismiss the modal, matching day-cell selection behaviour
+    expect(onClose).toHaveBeenCalled()
   })
 })
