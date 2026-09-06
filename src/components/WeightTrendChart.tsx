@@ -228,8 +228,8 @@ export function WeightTrendChart() {
         )}
       </svg>
 
-      <div className="muted" style={{ fontSize: 11, display: 'flex', gap: 12, marginTop: 6, justifyContent: 'center' }}>
-        <span>● {t('weight.legendDot')}</span>
+      <div className="muted" style={{ fontSize: 11, display: 'flex', gap: 32, marginTop: 6, justifyContent: 'center' }}>
+        <span style={{ color: '#b0b0b5' }}>● {t('weight.legendDot')}</span>
         <span style={{ color: 'var(--accent)' }}>— {t('weight.legendTrend')}</span>
         <span>╌ {t('weight.legendCorridor')}</span>
       </div>
