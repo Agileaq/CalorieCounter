@@ -2,13 +2,36 @@ import { describe, it, expect } from 'vitest'
 import type { DayLog, WeightTag } from '../types'
 import {
   LB_PER_KG, MAX_GAP_DAYS, dailySeries, extractWeighIns, kgToLb, lbToKg, round1,
+  safeCorridor, weeklyRate, deficitSeries, padBounds, symmetricBounds,
 } from './weight'
+import { emptyNutrition } from './nutrition'
 
 function D(date: string, kg: number, tags?: WeightTag[]): Record<string, DayLog> {
   return {
     [date]: {
       date, meals: { breakfast: [], lunch: [], dinner: [], snacks: [] }, exercise: [], weightKg: kg, tags,
     },
+  }
+}
+
+function dayWithCals(date: string, calories: number, burned = 0): DayLog {
+  const base = emptyNutrition()
+  return {
+    date,
+    meals: {
+      breakfast: calories
+        ? [{
+            id: 'e1', servingId: 's', quantity: 1,
+            foodSnapshot: {
+              id: 'f1', name: 'Rice', icon: '🍚', source: 'custom', createdAt: '',
+              servings: [{ id: 's', kind: 'weight', label: 'Grams', amount: 100, unit: 'g', isPrimary: true }],
+              nutrition: { ...base, calories },
+            },
+          }]
+        : [],
+      lunch: [], dinner: [], snacks: [],
+    },
+    exercise: burned ? [{ id: 'x1', name: 'Run', caloriesBurned: burned }] : [],
   }
 }
 
@@ -77,5 +100,79 @@ describe('dailySeries', () => {
     const s = dailySeries(days, 'all', '2026-01-15')
     expect(s.start).toBe('2025-12-01')
     expect(s.points[0].kg).toBe(80)
+  })
+})
+
+describe('safeCorridor', () => {
+  const WI = [
+    { date: '2026-01-01', kg: 80 },
+    { date: '2026-01-02', kg: 79.5 },
+    { date: '2026-01-03', kg: 79 },
+  ]
+  const days = { ...D('2026-01-01', 80), ...D('2026-01-02', 79.5), ...D('2026-01-03', 79) }
+
+  it('anchors at the 3rd weigh-in with 0.5%/1% weekly rails, clamped at goal', () => {
+    const s = dailySeries(days, 'all', '2026-02-15')
+    const c = safeCorridor(WI, s, 78)!
+    expect(c.anchorDate).toBe('2026-01-03')
+    const w0 = s.points[2].trend! // (80 + 79.5 + 79) / 3 = 79.5
+    expect(w0).toBeCloseTo(79.5, 5)
+    expect(c.slow[0].v).toBeCloseTo(w0, 5)
+    expect(c.slow[7].v).toBeCloseTo(w0 * 0.995, 5)  // 01-10, one week down
+    // fast rail reaches the goal first; both rails end clamped at the goal
+    expect(c.fast[c.fast.length - 1].v).toBe(78)
+    expect(c.slow[c.slow.length - 1].v).toBe(78)
+    expect(c.fast.length).toBeLessThan(c.slow.length)
+  })
+  it('is null without a goal, with <3 weigh-ins, or when goal ≥ W₀', () => {
+    const s = dailySeries(days, 'all', '2026-02-15')
+    expect(safeCorridor(WI, s, null)).toBeNull()
+    expect(safeCorridor(WI.slice(0, 2), s, 78)).toBeNull()
+    expect(safeCorridor(WI, s, 90)).toBeNull()
+  })
+})
+
+describe('weeklyRate', () => {
+  it('completed weeks only; first mid-week folds to its defined trend span', () => {
+    const days = { ...D('2026-01-07', 80), ...D('2026-01-09', 79), ...D('2026-01-14', 78.2) }
+    const s = dailySeries(days, 'all', '2026-01-20')
+    const r = weeklyRate(s, '2026-01-20')
+    const trendOn = (date: string) => s.points.find(p => p.date === date)!.trend!
+    const w1 = r.find(x => x.weekStart === '2026-01-05')!
+    expect(w1.delta).toBeCloseTo(trendOn('2026-01-11') - trendOn('2026-01-07'), 5)
+    expect(r.find(x => x.weekStart === '2026-01-12')).toBeDefined()
+    // in-progress week (ends 01-25 > today) excluded
+    expect(r.find(x => x.weekStart === '2026-01-19')).toBeUndefined()
+  })
+  it('a single-weigh-in week yields delta 0 (chart skips it)', () => {
+    const s = dailySeries(D('2026-01-07', 80), 'all', '2026-01-20')
+    const r = weeklyRate(s, '2026-01-20')
+    expect(r.find(x => x.weekStart === '2026-01-05')!.delta).toBe(0)
+  })
+})
+
+describe('deficitSeries', () => {
+  it('only existing day keys; deficit = (food − exercise) − budget', () => {
+    const days: Record<string, DayLog> = {
+      '2026-01-01': { ...dayWithCals('2026-01-01', 500, 200), weightKg: 80 },
+      '2026-01-02': { ...dayWithCals('2026-01-02', 0), weightKg: 80 }, // exists but nothing eaten
+    }
+    const s = dailySeries(days, 'all', '2026-01-03')
+    const d = deficitSeries(days, s, 2248)
+    expect(d.find(p => p.date === '2026-01-01')!.deficit).toBe(-1948)
+    expect(d.find(p => p.date === '2026-01-02')!.deficit).toBe(-2248)
+    expect(d.find(p => p.date === '2026-01-03')).toBeUndefined() // day key absent
+  })
+})
+
+describe('bounds', () => {
+  it('pad is 20% of range with a 0.5 floor per side', () => {
+    expect(padBounds(80, 85)).toEqual({ lo: 79, hi: 86 })
+    expect(padBounds(80, 80.05)).toEqual({ lo: 79.5, hi: 80.55 })
+    expect(padBounds(80, 80)).toEqual({ lo: 79.5, hi: 80.5 })
+  })
+  it('symmetric bounds are ±max(|v|, floor) × 1.2', () => {
+    expect(symmetricBounds([1948, -500], 1)).toEqual({ lo: -2337.6, hi: 2337.6 })
+    expect(symmetricBounds([], 0.5)).toEqual({ lo: -0.6, hi: 0.6 })
   })
 })
