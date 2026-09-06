@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import type { DayLog, WeightTag } from '../types'
 import {
   LB_PER_KG, MAX_GAP_DAYS, dailySeries, extractWeighIns, kgToLb, lbToKg, round1,
-  safeCorridor, deficitSeries, padBounds, symmetricBounds,
+  safeCorridor, deficitSeries, padBounds, symmetricBounds, deficitWeekSummary, trendDirection,
 } from './weight'
 import { emptyNutrition } from './nutrition'
 
@@ -172,5 +172,54 @@ describe('bounds', () => {
   it('symmetric bounds are ±max(|v|, floor) × 1.2', () => {
     expect(symmetricBounds([1948, -500], 1)).toEqual({ lo: -2337.6, hi: 2337.6 })
     expect(symmetricBounds([], 0.5)).toEqual({ lo: -0.6, hi: 0.6 })
+  })
+})
+
+describe('deficitWeekSummary', () => {
+  it('sums (food − exercise) − budget over the 7 days ending at selected, present days only', () => {
+    const days: Record<string, DayLog> = {
+      '2026-01-01': { ...dayWithCals('2026-01-01', 500, 200), weightKg: 80 }, // −1948
+      '2026-01-02': { ...dayWithCals('2026-01-02', 0), weightKg: 80 },        // −2248 (opened, real zero)
+      // 01-03..01-05 absent → skipped
+    }
+    days['2026-01-06'] = { ...dayWithCals('2026-01-06', 3000), weightKg: 80 } // +752
+    const r = deficitWeekSummary(days, '2026-01-07', 2248)
+    expect(r.hasData).toBe(true)
+    expect(r.totalKcal).toBe(-1948 - 2248 + 752)
+  })
+  it('window edges: selected−6 counts, selected−7 does not', () => {
+    const days: Record<string, DayLog> = {
+      '2025-12-30': { ...dayWithCals('2025-12-30', 4248), weightKg: 80 }, // selected − 7 → excluded
+      '2025-12-31': { ...dayWithCals('2025-12-31', 2248), weightKg: 80 }, // selected − 6 → (2248) − 2248 = 0
+    }
+    const r = deficitWeekSummary(days, '2026-01-06', 2248)
+    expect(r.hasData).toBe(true)
+    expect(r.totalKcal).toBe(0)
+  })
+  it('no present days in the window → hasData=false, total 0', () => {
+    expect(deficitWeekSummary({}, '2026-01-07', 2248)).toEqual({ totalKcal: 0, hasData: false })
+  })
+})
+
+describe('trendDirection', () => {
+  const days = {
+    ...D('2026-01-01', 80), ...D('2026-01-08', 78), ...D('2026-01-15', 76), ...D('2026-01-22', 74),
+  }
+  const s = dailySeries(days, 'all', '2026-01-22')
+  it('falls on a steep decline (Δ ≤ −0.15)', () => {
+    // trend(01-22) = 76 (carry window), trend(01-15) = (6×78 + 76)/7 ≈ 77.71 → Δ ≈ −1.71
+    expect(trendDirection(s, '2026-01-22')).toBe('down')
+  })
+  it('is stable within the 0.15 kg threshold', () => {
+    const flat = dailySeries({ ...D('2026-01-01', 80), ...D('2026-01-08', 79.9), ...D('2026-01-15', 79.8) }, 'all', '2026-01-15')
+    expect(trendDirection(flat, '2026-01-15')).toBe('stable')
+  })
+  it('rises', () => {
+    const up = dailySeries({ ...D('2026-01-01', 80), ...D('2026-01-08', 81), ...D('2026-01-15', 82) }, 'all', '2026-01-15')
+    expect(trendDirection(up, '2026-01-15')).toBe('up')
+  })
+  it('is null when either endpoint lacks a trend', () => {
+    expect(trendDirection(s, '2026-01-01')).toBeNull()  // no trend 7 days earlier
+    expect(trendDirection(s, '2025-12-25')).toBeNull()  // date outside the series
   })
 })

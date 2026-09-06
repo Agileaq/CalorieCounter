@@ -149,3 +149,41 @@ export function symmetricBounds(values: number[], floor: number): { lo: number; 
   const m = Math.max(0, ...values.map(v => Math.abs(v)), floor)
   return { lo: -m * 1.2, hi: m * 1.2 }
 }
+
+export interface DeficitWeek { totalKcal: number; hasData: boolean }
+
+/**
+ * Sum of the food-budget deficit — the same numbers the trend chart's deficit
+ * sub-chart draws — over the 7-day window ending at `selected`, so the verdict
+ * line always equals the sum of the visible bars. Only day keys present in
+ * `days` count (an opened-but-empty day is a real zero). Window keys come from
+ * the pure local-calendar helpers, never `new Date("YYYY-MM-DD")`.
+ */
+export function deficitWeekSummary(days: Record<string, DayLog>, selected: string, budget: number): DeficitWeek {
+  const keys = Array.from({ length: 7 }, (_, i) => addDays(selected, i - 6))
+  const present = keys.filter(k => days[k] != null)
+  if (present.length === 0) return { totalKcal: 0, hasData: false }
+  const totalKcal = present.reduce((sum, k) => {
+    const d = days[k]
+    return sum + (dayFoodNutrition(d).calories - exerciseTotal(d)) - budget
+  }, 0)
+  return { totalKcal, hasData: true }
+}
+
+export type TrendDir = 'down' | 'stable' | 'up'
+
+/**
+ * Direction of the 7-day SMA at `date` vs 7 days earlier, read off the series'
+ * points. Either endpoint undefined (or outside the series) → null.
+ * |Δ| < 0.15 kg counts as stable.
+ */
+export function trendDirection(s: Series, date: string): TrendDir | null {
+  const i0 = daysBetween(s.start, date)
+  const i1 = daysBetween(s.start, addDays(date, -7))
+  const a = s.points[i0]?.trend
+  const b = s.points[i1]?.trend
+  if (a == null || b == null) return null
+  const delta = a - b
+  if (Math.abs(delta) < 0.15) return 'stable'
+  return delta < 0 ? 'down' : 'up'
+}
