@@ -10,6 +10,25 @@ describe('Goals', () => {
     fireEvent.change(screen.getByTestId('budget-input'), { target: { value: '2012' } })
     expect(JSON.parse(localStorage.getItem('cc.settings')!).dailyBudget).toBe(2012)
   })
+  it('goal weight input stores kg, converts from lb, and clears to null', () => {
+    localStorage.setItem('cc.settings', JSON.stringify({ weightUnit: 'kg' }))
+    render(<AppProvider><Goals /></AppProvider>)
+    fireEvent.change(screen.getByTestId('goal-weight'), { target: { value: '80' } })
+    expect(JSON.parse(localStorage.getItem('cc.settings')!).goalWeightKg).toBe(80)
+  })
+  it('goal weight converts lb input to kg at 2 decimals', () => {
+    localStorage.setItem('cc.settings', JSON.stringify({ weightUnit: 'lb' }))
+    render(<AppProvider><Goals /></AppProvider>)
+    fireEvent.change(screen.getByTestId('goal-weight'), { target: { value: '176.37' } })
+    expect(JSON.parse(localStorage.getItem('cc.settings')!).goalWeightKg).toBeCloseTo(80.0, 1)
+  })
+  it('clearing the goal weight stores null', () => {
+    localStorage.setItem('cc.settings', JSON.stringify({ weightUnit: 'kg', goalWeightKg: 80 }))
+    render(<AppProvider><Goals /></AppProvider>)
+    fireEvent.change(screen.getByTestId('goal-weight'), { target: { value: '' } })
+    fireEvent.blur(screen.getByTestId('goal-weight'))
+    expect(JSON.parse(localStorage.getItem('cc.settings')!).goalWeightKg).toBeNull()
+  })
   it('edits carbs and fat targets and persists them', () => {
     render(<AppProvider><Goals /></AppProvider>)
     fireEvent.change(screen.getByTestId('carbs-target'), { target: { value: '300' } })

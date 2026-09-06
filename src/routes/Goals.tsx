@@ -6,6 +6,7 @@ import { download, readFileText } from '../lib/download'
 import { NumberInput } from '../components/NumberInput'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { distributeBudget } from '../lib/nutrition'
+import { kgToLb, lbToKg, round1 } from '../lib/weight'
 
 /** Macros per kg of body weight for an advice card. calories = carbs*4 + protein*4 + fat*9. */
 interface Quota { carbs: number; protein: number; fat: number }
@@ -127,6 +128,12 @@ export default function Goals() {
         <label className="row spread">{t('goals.fiberTarget')}
           <NumberInput testId="fiber-target" integer value={mt.fiber}
             onChange={v => setMacro({ fiber: v })} style={{ width: 100, textAlign: 'end' }} /></label>
+        <label className="row spread">{t('goals.goalWeight')}
+          <NumberInput testId="goal-weight" value={settings.goalWeightKg == null ? 0
+            : round1(settings.weightUnit === 'kg' ? settings.goalWeightKg : kgToLb(settings.goalWeightKg))}
+            hideZero
+            onChange={v => updateSettings({ goalWeightKg: v > 0 ? (settings.weightUnit === 'kg' ? Math.round(v * 100) / 100 : lbToKg(v)) : null })}
+            style={{ width: 100, textAlign: 'end' }} /></label>
       </div>
 
       <AdviceCard title={t('goals.cutTitle')} tooltip={t('goals.cutTooltip')} quota={CUT} weightTestId="cut-weight" />
