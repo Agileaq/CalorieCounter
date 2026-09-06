@@ -1,7 +1,7 @@
 # 仪表盘重构：复盘看板化（Dashboard Refocus）— 设计
 
 - 日期：2026-09-06
-- 状态：已与用户逐节确认（结构/数据/组件/边界/i18n 全部批准，含两条视觉防御细则）
+- 状态：已与用户逐节确认（结构/数据/组件/边界/i18n 全部批准，含两条视觉防御细则）；**二轮修订已并入**：i18n 降级模板拆分、窗口日期纯数学、纤维余量口径
 - 前置 spec：`2026-09-06-weight-tracking-design.md`（WeightTrendChart 语义，本设计沿用其锁定的口径）
 
 ## 1. 背景与目标
@@ -23,10 +23,10 @@
 - 组件自 Goals 迁入 Dashboard，**组件本体除新增结论行外零改动**：范围切换器、readout、打卡散点、7 日均线、安全通道、事件泳道、缺口副图、图例、CTM 防镜像命中全部保留。
 - **缺口副图口径维持食物推导**（`deficitSeries`：`(摄入 − 运动) − 当前预算`；负=低于预算=绿柱，正=超标=红柱）。用户已确认：结论数字必须等于可见柱子的加总，副图承担「因」的呈现，紧贴体重「果」，构成因果对齐。
 - **新增结论行**（图例下方，`data-testid="trend-verdict"`）：
-  - 文案：`本周累计热量差额 {±X,XXX} kcal · 体重{下降|平稳|上升}`
+  - 文案（**双模板，杜绝残缺插值**）：默认走 `weight.weekReview` = `本周累计热量差额 {{kcal}} kcal · 体重{{dir}}`；`trendDirection=null`（均线方向不可判）时切换降级键 `weight.weekReviewDeficitOnly` = `本周累计热量差额 {{kcal}} kcal`——独立成句，**不渲染「· 体重」悬空分隔符**（不在单句模板里留空插值）。
   - 措辞用「热量差额」不用「缺口」：与柱色语义严格对齐（负=赤字绿），避免符号歧义；差额带符号显示（`−2,100` / `+1,300`），分组沿用 `en-US` 逗号。
   - 数据：`deficitWeekSummary`（以选中日为终点的 7 天窗口求和）+ `trendDirection`（均线方向）。
-  - 显隐：`hasData=false`（窗口内无已记录天）或副图未展示（打卡 < 3）时整行隐藏；`trendDirection=null` 时只显示差额段。
+  - 显隐：`hasData=false`（窗口内无已记录天）或副图未展示（打卡 < 3）时整行隐藏；`trendDirection=null` 时整行保留但走降级模板（见上）。
 
 ### 2.2 中层：CalorieWeekCard（新）
 
@@ -47,7 +47,10 @@ CSS Grid `2×2`，配置驱动：
 
 每格内部（自上而下）：
 
-1. **标题 + 带符号余量**：`{±n} / {target}g`，其中余量 = `target − 选中日摄入`。正 → `+22 / 128g`（默认色）；负 → `−15 / 250g` **红色**；纤维：选中日达标 → **绿色**，不足 → 浅警色（`var(--muted)`）；选中日无记录 → `— / {target}g`；`target ≤ 0` → `—`。
+1. **标题 + 余量/进度（按指标心智分口径）**：
+   - 三大宏量（碳水/蛋白/脂肪）：带符号余量 `{{left}} / {{target}}g`，`left = target − 选中日摄入`。正 → `+22 / 128g`（默认色；碳水/脂肪=还剩额度，蛋白=还差多少），负 → `−15 / 250g` **红色**；选中日无记录 → `— / {{target}}g`。
+   - 纤维（控下限，保底心智）：**不显示带符号余量**——不足时 `+18` 会被误读为「盈余」。改用已摄入口径 `{{intake}} / {{target}}g`（如 `12 / 30g`），达标 → **绿色**（如 `32 / 30g`），不足 → 浅警色（`var(--muted)`）；选中日无记录 → `— / {{target}}g`。
+   - `target ≤ 0` → 两口径均显示 `—`。
 2. **MiniBars 微型图**：7 根无坐标轴微型柱（规格见 §5.1），**逐日状态配色**——宏量当日超标 → 红，否则格色；纤维当日达标 → 绿，不足 → 浅色；`target ≤ 0` 时全部用格色（无逐日判定）。柱高 = `value / cellMax × 28px`（cellMax = 本周最大值，下限 1），0 值不渲染填充。**不可点选**（目标太小防误触，用户已确认）。
 3. **底部结论行**（单行小字）：`周日均 {round(avg)}g · 达标 {hitDays}/7 天`；`avg=null` 或 `hitDays=null` 的段落显示 `—`。
 
@@ -66,6 +69,7 @@ CSS Grid `2×2`，配置驱动：
 
 - `deficitWeekSummary(days, selected, budget)` → `{ totalKcal: number; hasData: boolean }`
   - 窗口 = `[selected − 6, selected]` 闭区间 7 天；仅累加 `days` 中存在的日子（复用 `deficitSeries` 的逐日算法口径，窗口过滤）；无存在天 → `hasData=false, totalKcal=0`。
+  - **日期纯数学（锁定）**：窗口日期键一律 `addDays(fromDateKey(selected), -i)`（i = 0..6）生成，与 weight.ts 顶部约定一致；**严禁 `new Date("YYYY-MM-DD")` 单参字符串构造**（UTC 隐式偏移/时区坑）。
 - `trendDirection(s: Series, date: string)` → `'down' | 'stable' | 'up' | null`
   - 取该日 trend 与 7 天前 trend（`dailySeries.points` 按 `daysBetween` 定位）；任一缺失 → `null`；`Δ = trend(date) − trend(date−7)`；`|Δ| < 0.15` → `'stable'`，`Δ < 0` → `'down'`，否则 `'up'`。
 
@@ -116,6 +120,7 @@ Grid 布局 + §2.3 配置数组；内部含 `MiniBars` 私有子组件（不导
 ## 7. 边界与错误处理
 
 - 打卡 < 3（副图未展示）→ WeightTrendChart 现有空状态/精简态照旧；结论行隐藏（与 §2.1 显隐规则一致）。
+- 均线方向不可判（trend 数据不足）→ 结论行保留，走 `weekReviewDeficitOnly` 降级模板（§2.1/§8），绝不出残缺句。
 - 窗口/周内无已记录天 → 结论行隐藏；`avg/hitDays = null` → `—`。
 - `target ≤ 0` → 无虚线、无判定色、`hitDays=null`。
 - 打开过但没吃的天 = 真实 0，计入 avg 与达标统计（沿用 `deficitSeries` 口径）。
@@ -125,23 +130,24 @@ Grid 布局 + §2.3 配置数组；内部含 `MiniBars` 私有子组件（不导
 
 新增键：
 
-- `weight.weekReview`：`本周累计热量差额 {{kcal}} kcal · 体重{{dir}}`
+- `weight.weekReview`：`本周累计热量差额 {{kcal}} kcal · 体重{{dir}}`（trendDirection 可判时）
+- `weight.weekReviewDeficitOnly`：`本周累计热量差额 {{kcal}} kcal`（**降级模板**：trendDirection=null 时整句切换到此键，不渲染悬空的「· 体重」分隔符——不允许在单句模板里留空插值）
 - `weight.trendDown` / `weight.trendStable` / `weight.trendUp`：下降 / 平稳 / 上升
 - `dashboard.weekAvg`：`周日均 {{n}}`
 - `dashboard.hit`：`达标 {{n}}/7 天`
-- `dashboard.remaining`：`{{left}} / {{target}}g`
+- `dashboard.remaining`：`{{left}} / {{target}}g`（模板两处复用：宏量传带符号余量 `+22`/`−15`；纤维传已摄入克数 `12`，**无符号**）
 
 复用：`dashboard.calories/carbs/protein/fat/fiber`。删除：`dashboard.of`、`dashboard.ofCals`、`dashboard.avgPrior`（StatCard 专属；`under/over` 保留，DaySummaryCard 在用）。
 
 ## 9. 测试计划
 
 - `weekly.test.ts`：weeklyStats——avg 含选中日/排除未打开天/无记录天→null、hitDays 双方向与 target=0→null、bars Mon–Sun 顺序。
-- `weight.test.ts`：deficitWeekSummary——7 天窗口边界（selected−6 起点）、仅计存在天、hasData 翻转；trendDirection——下降/上升/平稳（0.15 阈值边界）、trend 缺失→null。
+- `weight.test.ts`：deficitWeekSummary——7 天窗口边界（selected−6 起点）、仅计存在天、hasData 翻转、跨月窗口日期键正确性（`addDays(fromDateKey(selected), -i)` 路径，如 selected=2026-03-01 → 窗口含 2026-02-23）；trendDirection——下降/上升/平稳（0.15 阈值边界）、trend 缺失→null。
 - `WeekBars.test.tsx`（新）：填充高度、超标红帽、虚线存在性与位置、点选回调、今日加粗、target=0 无虚线。
-- `MacroMatrix.test.tsx`（新）：四格顺序与标题、余量正负号与颜色（超标红/纤维绿/警色）、MiniBars 逐日配色、结论行文本、target=0 显示 —。
+- `MacroMatrix.test.tsx`（新）：四格顺序与标题、宏量余量正负号与颜色（超标红）、**纤维已摄入口径无符号**（不足警色/达标绿）、MiniBars 逐日配色、结论行文本、target=0 显示 —。
 - `Dashboard.test.tsx`：三模块齐活（trend svg、calorie 柱、矩阵四格、结论行）、无 StatCard 残留、点柱换日期仍生效。
 - `Goals.test.tsx`：趋势图不再渲染、budget-input 等配置项完好。
-- `WeightTrendChart.test.tsx`：结论行渲染（有数据）与隐藏（hasData=false）。
+- `WeightTrendChart.test.tsx`：结论行渲染（有数据）、隐藏（hasData=false）、**trendDirection=null 时走 `weekReviewDeficitOnly` 降级键且不含「体重」段**。
 - 删除 `StatCard.test.tsx`。
 
 ## 10. 文件清单
