@@ -88,15 +88,15 @@ export interface RailPoint { date: string; v: number }
 export interface Corridor { anchorDate: string; slow: RailPoint[]; fast: RailPoint[] }
 
 /**
- * Funnel rails through the anchor point (anchorDate, W₀) down to the goal
- * weight, drawn from the series start for day-1 coverage. W₀ is dynamic
- * before the 3rd weigh-in (running mean of the weigh-ins so far — each new
- * point smooths single-day water noise), then locks permanently to the 7-day
- * SMA at the 3rd weigh-in (stored data can't change it). Each rail is
- * w0 − w0·rate·weeks elapsed since the anchor; before the anchor the rails
- * simply rise (elapsed < 0). It stops at the first day it touches the goal,
- * so the fast rail ends sooner and the funnel visibly "closes". Null when
- * there is no goal, no weigh-ins, or the goal is not below W₀.
+ * Funnel rails from W₀ on the series' first day down to the goal weight.
+ * W₀ is dynamic before the 3rd weigh-in (running mean of the weigh-ins so
+ * far — each new point smooths single-day water noise), then locks
+ * permanently to the 7-day SMA at the 3rd weigh-in (stored data can't
+ * change it). Rails only ever descend: elapsed time is measured from the
+ * funnel's start (the series' first day), never backwards into the past.
+ * A rail stops at the first day it touches the goal, so the fast rail ends
+ * sooner and the funnel visibly "closes". Null when there is no goal, no
+ * weigh-ins, or the goal is not below W₀.
  */
 export function safeCorridor(weighIns: WeighIn[], s: Series, goalWeightKg: number | null): Corridor | null {
   if (goalWeightKg == null || weighIns.length === 0) return null
@@ -108,10 +108,11 @@ export function safeCorridor(weighIns: WeighIn[], s: Series, goalWeightKg: numbe
     ? s.points[daysBetween(s.start, anchorDate)]?.trend
     : weighIns.reduce((sum, w) => sum + w.kg, 0) / weighIns.length
   if (w0 == null || goalWeightKg >= w0) return null
+  const startDate = s.points[0].date
   const rail = (rate: number): RailPoint[] => {
     const out: RailPoint[] = []
     for (let i = 0; i < s.points.length; i++) {
-      const v = w0! - w0! * rate * (daysBetween(anchorDate, s.points[i].date) / 7)
+      const v = w0! - w0! * rate * (daysBetween(startDate, s.points[i].date) / 7)
       if (v <= goalWeightKg) { out.push({ date: s.points[i].date, v: goalWeightKg }); break }
       out.push({ date: s.points[i].date, v })
     }

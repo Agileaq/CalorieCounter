@@ -117,16 +117,16 @@ describe('safeCorridor', () => {
   ]
   const days = { ...D('2026-01-01', 80), ...D('2026-01-02', 79.5), ...D('2026-01-03', 79) }
 
-  it('locks to the 3rd weigh-in trend, extends back to day 1, clamped at goal', () => {
+  it('starts at W₀ on day 1 and only descends, clamped at goal', () => {
     const s = dailySeries(days, 'all', '2026-02-15')
     const c = safeCorridor(WI, s, 78)!
     expect(c.anchorDate).toBe('2026-01-03')
     const w0 = s.points[2].trend! // (80 + 79.5 + 79) / 3 = 79.5
     expect(w0).toBeCloseTo(79.5, 5)
-    // day-1 coverage: rails start at the first weigh-in, rising above W₀ pre-anchor
+    // day-1 coverage: rails start at W₀ on the first weigh-in and never rise back
     expect(c.slow[0].date).toBe('2026-01-01')
-    expect(c.slow[0].v).toBeGreaterThan(w0)
-    expect(c.slow.find(p => p.date === '2026-01-10')!.v).toBeCloseTo(w0 * 0.995, 5) // one week down
+    expect(c.slow[0].v).toBeCloseTo(w0, 5)
+    expect(c.slow.find(p => p.date === '2026-01-08')!.v).toBeCloseTo(w0 * 0.995, 5) // one week down
     // fast rail reaches the goal first; both rails end clamped at the goal
     expect(c.fast[c.fast.length - 1].v).toBe(78)
     expect(c.slow[c.slow.length - 1].v).toBe(78)
