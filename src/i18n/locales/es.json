@@ -34,6 +34,9 @@
     "calories": "Calorías",
     "carbs": "Carbohidratos",
     "fat": "Grasa",
+    "weekAvg": "Media {{n}}/día",
+    "hit": "{{n}}/7 días en objetivo",
+    "remaining": "{{left}} / {{target}}g",
     "of": "{{cur}} de {{target}}g",
     "avgPrior": "{{n}}g promedio antes de hoy",
     "ofCals": "{{cur}} de {{target}} cal"
@@ -61,7 +64,12 @@
     "empty1": "Registra unos días más para revelar la media de 7 días.",
     "corridorNoGoal": "Fija un peso objetivo para ver el corredor seguro.",
     "corridorBadGoal": "El peso objetivo debe estar por debajo de tu tendencia inicial.",
-    "deficitSub": "Balance calórico diario"
+    "deficitSub": "Balance calórico diario",
+    "weekReview": "Balance calórico semanal {{kcal}} kcal · peso {{dir}}",
+    "weekReviewDeficitOnly": "Balance calórico semanal {{kcal}} kcal",
+    "trendDown": "bajando",
+    "trendStable": "estable",
+    "trendUp": "subiendo"
   },
   "log": {
     "budget": "Presupuesto: {{n}} kcal",

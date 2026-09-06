@@ -34,6 +34,9 @@
     "calories": "Calories",
     "carbs": "Carbohydrates",
     "fat": "Fat",
+    "weekAvg": "Avg {{n}}/day",
+    "hit": "{{n}}/7 days on target",
+    "remaining": "{{left}} / {{target}}g",
     "of": "{{cur}} of {{target}}g",
     "avgPrior": "{{n}}g avg prior to today",
     "ofCals": "{{cur}} of {{target}} kcal"
@@ -61,7 +64,12 @@
     "empty1": "Log a few more days to reveal the 7-day average.",
     "corridorNoGoal": "Set a goal weight to see the safe-loss corridor.",
     "corridorBadGoal": "Goal weight must be below your starting trend.",
-    "deficitSub": "Daily calorie balance"
+    "deficitSub": "Daily calorie balance",
+    "weekReview": "This week's calorie balance {{kcal}} kcal · weight {{dir}}",
+    "weekReviewDeficitOnly": "This week's calorie balance {{kcal}} kcal",
+    "trendDown": "down",
+    "trendStable": "stable",
+    "trendUp": "up"
   },
   "log": {
     "budget": "Budget: {{n}} kcal",
