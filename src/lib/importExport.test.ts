@@ -24,6 +24,32 @@ function day(date: string, meals: Partial<Record<MealKey, LogEntry[]>> = {}, exe
 }
 const SET = { dailyBudget: 2000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, language: 'en' as const, weightUnit: 'kg' as const, goalWeightKg: null }
 
+function backup(days: Record<string, DayLog>): BackupData {
+  return { days, myFoods: [], settings: SET }
+}
+
+describe('mergeBackup weight/tags', () => {
+  it('incoming weight and tags win; tags replace wholesale, no union', () => {
+    const base = backup({ '2026-01-01': { ...day('2026-01-01'), weightKg: 80, tags: ['cheat'] } })
+    const inc = backup({ '2026-01-01': { ...day('2026-01-01'), weightKg: 81, tags: ['strength'] } })
+    const m = mergeBackup(base, inc).days['2026-01-01']
+    expect(m.weightKg).toBe(81)
+    expect(m.tags).toEqual(['strength'])
+  })
+  it('incoming without fields keeps existing values', () => {
+    const base = backup({ '2026-01-01': { ...day('2026-01-01'), weightKg: 80, tags: ['cheat'] } })
+    const inc = backup({ '2026-01-01': day('2026-01-01') })
+    const m = mergeBackup(base, inc).days['2026-01-01']
+    expect(m.weightKg).toBe(80)
+    expect(m.tags).toEqual(['cheat'])
+  })
+  it('incoming empty tags array clears the tags', () => {
+    const base = backup({ '2026-01-01': { ...day('2026-01-01'), weightKg: 80, tags: ['cheat'] } })
+    const inc = backup({ '2026-01-01': { ...day('2026-01-01'), weightKg: 81, tags: [] } })
+    expect('tags' in mergeBackup(base, inc).days['2026-01-01']).toBe(false)
+  })
+})
+
 describe('importExport', () => {
   it('exportFoods → parseFoodsImport round-trips names', () => {
     const out = parseFoodsImport(exportFoods([f('Rice'), f('Bread')]))

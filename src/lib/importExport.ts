@@ -77,11 +77,17 @@ export function mergeBackup(existing: BackupData, incoming: BackupData): BackupD
   for (const [key, inDay] of Object.entries(incoming.days)) {
     const exDay = days[key]
     if (!exDay) { days[key] = inDay; continue }
-    days[key] = {
+    const merged: DayLog = {
       date: key,
       meals: mergeMeals(exDay.meals, inDay.meals),
       exercise: mergeById(exDay.exercise, inDay.exercise),
     }
+    // weight/tags: incoming wins when present (even an empty tags array means
+    // "cleared on the other device"); absent fields keep the existing values.
+    if (inDay.weightKg != null || exDay.weightKg != null) merged.weightKg = inDay.weightKg ?? exDay.weightKg
+    const tags = inDay.tags ?? exDay.tags
+    if (tags && tags.length) merged.tags = tags
+    days[key] = merged
   }
 
   // — myFoods (id first, name|brand fallback so two exports of the same custom
