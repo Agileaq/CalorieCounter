@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
 import Goals from './Goals'
@@ -87,6 +88,38 @@ describe('Goals', () => {
     expect(screen.queryByText('Weight Trend')).toBeNull()
     expect(screen.queryByTestId('weight-trend-svg')).toBeNull()
     expect(screen.getByTestId('budget-input')).toBeInTheDocument()
+  })
+  it('offers settings export/import buttons in the data card', () => {
+    render(<AppProvider><Goals /></AppProvider>)
+    expect(screen.getByTestId('export-settings')).toBeInTheDocument()
+    expect(screen.getByTestId('import-settings')).toBeInTheDocument()
+  })
+  it('importing a hand-edited settings file replaces the stored blob', async () => {
+    // stored legacy value 1.2 — the import must override it wholesale
+    localStorage.setItem('cc.settings', JSON.stringify({ macroRanges: { protein: { min: 1.2, max: 2.2 } } }))
+    render(<AppProvider><Goals /></AppProvider>)
+    const input = screen.getByTestId('import-settings').querySelector('input')!
+    const file = new File(
+      [JSON.stringify({ macroRanges: { protein: { min: 1.0, max: 2.2 } } })],
+      'settings.json', { type: 'application/json' },
+    )
+    await userEvent.upload(input, file)
+    await waitFor(() => {
+      const s = JSON.parse(localStorage.getItem('cc.settings')!)
+      expect(s.macroRanges.protein).toEqual({ min: 1.0, max: 2.2 }) // overridden
+    })
+    const s = JSON.parse(localStorage.getItem('cc.settings')!)
+    expect(s.macroRanges.carbs).toEqual({ min: 2.5, max: 4 }) // backfilled
+    expect(s.dailyBudget).toBe(2248) // default kept
+  })
+  it('importing a malformed settings file shows the error message and stores nothing', async () => {
+    localStorage.setItem('cc.settings', JSON.stringify({ macroRanges: { protein: { min: 1.2, max: 2.2 } } }))
+    render(<AppProvider><Goals /></AppProvider>)
+    const input = screen.getByTestId('import-settings').querySelector('input')!
+    await userEvent.upload(input, new File(['nope'], 'settings.json', { type: 'application/json' }))
+    await waitFor(() => expect(screen.getByText(/Import failed/)).toBeInTheDocument())
+    const s = JSON.parse(localStorage.getItem('cc.settings')!)
+    expect(s.macroRanges.protein.min).toBe(1.2) // untouched by the failed import
   })
 
   // Two-way macro auto-calc. Budget ↔ 3 macros (carbs/protein/fat) by the

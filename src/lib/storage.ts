@@ -37,11 +37,7 @@ function write(key: string, value: unknown): void {
   localStorage.setItem(key, JSON.stringify(value))
 }
 
-export function loadSettings(): Settings {
-  const stored = read<Partial<Settings>>(K.settings, {})
-  // Deep-merge macroTargets so older blobs missing carbs/fat get the defaults,
-  // and macroRanges the same way per macro so legacy blobs (and partial edits)
-  // never end up with half-defined review ranges.
+function normalizeSettings(stored: Partial<Settings>): Settings {
   const dr = DEFAULT_MACRO_RANGES
   const sr = stored.macroRanges ?? ({} as Partial<Settings['macroRanges']>)
   const range = (k: 'carbs' | 'protein' | 'fat' | 'fiber'): MacroRange => ({ ...dr[k], ...sr[k] })
@@ -51,6 +47,22 @@ export function loadSettings(): Settings {
     macroTargets: { ...DEFAULT_SETTINGS.macroTargets, ...stored.macroTargets },
     macroRanges: { carbs: range('carbs'), protein: range('protein'), fat: range('fat'), fiber: range('fiber') },
   }
+}
+
+export function loadSettings(): Settings {
+  return normalizeSettings(read<Partial<Settings>>(K.settings, {}))
+}
+
+/**
+ * Parse a hand-edited settings file (the Goals page's settings export format):
+ * same normalization as loadSettings — keys present in the blob override the
+ * stored values, missing keys backfill from the defaults.
+ */
+export function parseSettingsBlob(text: string): Settings {
+  let data: unknown
+  try { data = JSON.parse(text) } catch { throw new Error('Invalid settings file') }
+  if (data == null || typeof data !== 'object' || Array.isArray(data)) throw new Error('Invalid settings file')
+  return normalizeSettings(data as Partial<Settings>)
 }
 export function saveSettings(s: Settings): void { write(K.settings, s) }
 

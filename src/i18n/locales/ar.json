@@ -192,6 +192,8 @@
     "exportBackup": "تصدير نسخة احتياطية",
     "mergeBackup": "دمج نسخة احتياطية",
     "replaceBackup": "استبدال نسخة احتياطية",
+    "exportSettings": "تصدير الإعدادات",
+    "importSettings": "استيراد الإعدادات",
     "backupNote": "صدّر بانتظام — قد يتم مسح تخزين الجهاز.",
     "checkUpdates": "التحقق من التحديثات",
     "importFoodsDone": "تم استيراد {{n}} من الأطعمة",

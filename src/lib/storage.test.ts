@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
   DEFAULT_SETTINGS, loadSettings, saveSettings, loadMyFoods, saveMyFoods,
-  loadDays, saveDays, getDay, emptyDay, ensureSchema, hasExplicitRecords,
+  loadDays, saveDays, getDay, emptyDay, ensureSchema, hasExplicitRecords, parseSettingsBlob,
   loadHiddenFoods, saveHiddenFoods,
 } from './storage'
 
@@ -68,6 +68,27 @@ describe('storage', () => {
   it('round-trips hiddenFoods', () => {
     saveHiddenFoods({ 'pre-white-rice': true, 'pre-egg': true })
     expect(loadHiddenFoods()).toEqual({ 'pre-white-rice': true, 'pre-egg': true })
+  })
+})
+
+describe('parseSettingsBlob', () => {
+  it('normalizes a hand-edited blob: present keys override, missing backfill defaults', () => {
+    const s = parseSettingsBlob(JSON.stringify({
+      dailyBudget: 2000,
+      macroRanges: { protein: { min: 1.0, max: 2.2 } },
+    }))
+    expect(s.dailyBudget).toBe(2000)
+    expect(s.macroRanges.protein).toEqual({ min: 1.0, max: 2.2 }) // overridden
+    expect(s.macroRanges.carbs).toEqual({ min: 2.5, max: 4 })     // backfilled
+    expect(s.macroRanges.fiber).toEqual({ min: 20, max: 40 })     // backfilled
+    expect(s.macroTargets).toEqual(DEFAULT_SETTINGS.macroTargets)
+    expect(s.language).toBe('en')
+    expect(s.goalWeightKg).toBeNull()
+  })
+  it('throws on malformed JSON or non-object payloads', () => {
+    expect(() => parseSettingsBlob('nope')).toThrow('Invalid settings file')
+    expect(() => parseSettingsBlob('[1,2]')).toThrow('Invalid settings file')
+    expect(() => parseSettingsBlob('42')).toThrow('Invalid settings file')
   })
 })
 

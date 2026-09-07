@@ -192,6 +192,8 @@
     "exportBackup": "Exporter la sauvegarde",
     "mergeBackup": "Fusionner la sauvegarde",
     "replaceBackup": "Remplacer la sauvegarde",
+    "exportSettings": "Exporter les réglages",
+    "importSettings": "Importer les réglages",
     "backupNote": "Exportez régulièrement : le stockage de l'appareil peut être effacé.",
     "checkUpdates": "Vérifier les mises à jour",
     "importFoodsDone": "{{n}} aliments importés",

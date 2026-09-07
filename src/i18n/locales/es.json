@@ -192,6 +192,8 @@
     "exportBackup": "Exportar copia",
     "mergeBackup": "Fusionar copia",
     "replaceBackup": "Reemplazar copia",
+    "exportSettings": "Exportar ajustes",
+    "importSettings": "Importar ajustes",
     "backupNote": "Exporta regularmente: el almacenamiento del dispositivo puede borrarse.",
     "checkUpdates": "Buscar actualizaciones",
     "importFoodsDone": "{{n}} comidas importadas",

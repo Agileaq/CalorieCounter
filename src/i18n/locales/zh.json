@@ -192,6 +192,8 @@
     "exportBackup": "导出备份",
     "mergeBackup": "合并备份",
     "replaceBackup": "替换备份",
+    "exportSettings": "导出设置",
+    "importSettings": "导入设置",
     "backupNote": "请定期导出——设备存储可能被清空。",
     "checkUpdates": "检查更新",
     "importFoodsDone": "已导入 {{n}} 种食物",

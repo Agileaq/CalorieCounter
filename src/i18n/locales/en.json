@@ -192,6 +192,8 @@
     "exportBackup": "Export Backup",
     "mergeBackup": "Merge Backup",
     "replaceBackup": "Replace Backup",
+    "exportSettings": "Export Settings",
+    "importSettings": "Import Settings",
     "backupNote": "Export regularly — device storage can be cleared.",
     "checkUpdates": "Check for updates",
     "importFoodsDone": "Imported {{n}} foods",

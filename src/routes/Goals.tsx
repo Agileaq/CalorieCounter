@@ -6,6 +6,7 @@ import { download, readFileText } from '../lib/download'
 import { NumberInput } from '../components/NumberInput'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { distributeBudget } from '../lib/nutrition'
+import { parseSettingsBlob } from '../lib/storage'
 
 /** Macros per kg of body weight for an advice card. calories = carbs*4 + protein*4 + fat*9. */
 interface Quota { carbs: number; protein: number; fat: number }
@@ -104,6 +105,11 @@ export default function Goals() {
     try { mergeBackup(parseBackup(await readFileText(file))); setMsg(t('common.done')) }
     catch (e) { setMsg(t('goals.importError', { msg: (e as Error).message })) }
   }
+  async function onImportSettings(file?: File) {
+    if (!file) return
+    try { updateSettings(parseSettingsBlob(await readFileText(file))); setMsg(t('common.done')) }
+    catch (e) { setMsg(t('goals.importError', { msg: (e as Error).message })) }
+  }
 
   return (
     <div className="screen">
@@ -140,14 +146,18 @@ export default function Goals() {
         <strong>{t('goals.data')}</strong>
         <div className="muted">{t('goals.backupNote')}</div>
         <div className="row" style={{ gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-          <button className="btn-outline" onClick={() => download('foods.json', exportFoods(allFoods))}>{t('goals.exportFoods')}</button>
-          <label className="btn-outline">{t('goals.importFoods')}
-            <input type="file" accept="application/json" hidden onChange={e => onImportFoods(e.target.files?.[0] ?? undefined)} /></label>
-          <button className="btn-outline" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings, foodOverrides, customIcons }))}>{t('goals.exportBackup')}</button>
-          <label className="btn-outline">{t('goals.mergeBackup')}
-            <input type="file" accept="application/json" hidden onChange={e => onMergeBackup(e.target.files?.[0] ?? undefined)} /></label>
-          <label className="btn-outline">{t('goals.replaceBackup')}
-            <input type="file" accept="application/json" hidden onChange={e => onImportBackup(e.target.files?.[0] ?? undefined)} /></label>
+        <button className="btn-outline" onClick={() => download('foods.json', exportFoods(allFoods))}>{t('goals.exportFoods')}</button>
+        <label className="btn-outline">{t('goals.importFoods')}
+          <input type="file" accept="application/json" hidden onChange={e => onImportFoods(e.target.files?.[0] ?? undefined)} /></label>
+        <button className="btn-outline" onClick={() => download('backup.json', exportBackup({ days, myFoods, settings, foodOverrides, customIcons }))}>{t('goals.exportBackup')}</button>
+        <label className="btn-outline">{t('goals.mergeBackup')}
+          <input type="file" accept="application/json" hidden onChange={e => onMergeBackup(e.target.files?.[0] ?? undefined)} /></label>
+        <label className="btn-outline">{t('goals.replaceBackup')}
+          <input type="file" accept="application/json" hidden onChange={e => onImportBackup(e.target.files?.[0] ?? undefined)} /></label>
+        <button className="btn-outline" data-testid="export-settings"
+          onClick={() => download('settings.json', JSON.stringify(settings, null, 2))}>{t('goals.exportSettings')}</button>
+        <label className="btn-outline" data-testid="import-settings">{t('goals.importSettings')}
+          <input type="file" accept="application/json" hidden onChange={e => onImportSettings(e.target.files?.[0] ?? undefined)} /></label>
         </div>
         {msg && <div className="muted" style={{ marginTop: 8 }}>{msg}</div>}
       </div>
