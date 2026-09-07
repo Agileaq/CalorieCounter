@@ -7,7 +7,7 @@
  * locked semantics (7-day SMA with carry-forward fuse, funnel corridor,
  * budget-based deficit).
  */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import {
@@ -52,6 +52,11 @@ export function WeightTrendChart() {
   )
   const dir = useMemo(() => trendDirection(s, selectedDate), [s, selectedDate])
 
+  // header navigation re-syncs the chart focus: the readout + crosshair follow
+  // the selected date (three-way lockstep with the date header and the calorie
+  // bars' today highlight); a stale tap must never survive the switch
+  useEffect(() => { setSel(null) }, [selectedDate])
+
   if (weighIns.length === 0) {
     return (
       <div className="card">
@@ -94,12 +99,14 @@ export function WeightTrendChart() {
     pen = true
   }
 
-  // readout: tapped column wins, else the latest in-range weigh-in; the
-  // crosshair + highlighted dot track the same effective selection
-  const latest = [...weighIns].reverse().find(w => w.date >= s.start && w.date <= s.end)
-  const selDate = (sel && s.points.some(p => p.date === sel)) ? sel : latest?.date
-  const ro = (sel && s.points.find(p => p.date === sel))
-    || (latest ? s.points.find(p => p.date === latest.date) : undefined)
+  // Focus chain: a tapped column wins; otherwise the header's selected date —
+  // clamped into the visible window — drives the readout, crosshair and dot
+  // highlight. No "latest weigh-in" anchor: on a date past the 7-day carry
+  // fuse the readout honestly reports no data.
+  const focusDate = sel && s.points.some(p => p.date === sel)
+    ? sel
+    : s.end < selectedDate ? s.end : selectedDate < s.start ? s.start : selectedDate
+  const ro = s.points.find(p => p.date === focusDate)
   const tagLabel = (tag: string) => t(`weight.tag${tag.charAt(0).toUpperCase()}${tag.slice(1)}`)
 
   function onPick(e: React.PointerEvent<SVGSVGElement>) {
@@ -175,9 +182,9 @@ export function WeightTrendChart() {
           </g>
         ))}
 
-        {/* raw weigh-in dots; the effective selection is highlighted */}
+        {/* raw weigh-in dots; the effective focus is highlighted */}
         {inRange.map(w => {
-          const active = w.date === selDate
+          const active = w.date === focusDate
           return (
             <circle key={w.date} data-testid={`trend-dot-${w.date}`} cx={x(w.date)} cy={yMain(w.kg)}
               r={active ? 4 : 3} fill={active ? 'var(--accent)' : '#b0b0b5'} opacity={active ? 1 : 0.55} />
@@ -185,8 +192,8 @@ export function WeightTrendChart() {
         })}
 
         {/* crosshair at the readout's date */}
-        {selDate && (
-          <line x1={x(selDate)} x2={x(selDate)} y1={MAIN_TOP} y2={MAIN_BOT} stroke="var(--accent)" strokeWidth={1} opacity={0.45} />
+        {focusDate && (
+          <line x1={x(focusDate)} x2={x(focusDate)} y1={MAIN_TOP} y2={MAIN_BOT} stroke="var(--accent)" strokeWidth={1} opacity={0.45} />
         )}
 
         {/* 7-day average line */}

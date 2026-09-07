@@ -62,7 +62,7 @@ describe('MacroMatrix', () => {
     const fiberNum = screen.getByTestId('macro-num-fiber')
     expect(fiberNum).toHaveTextContent('12')
     expect(fiberNum.textContent).not.toMatch(/^[+−]/)
-    expect(fiberNum).toHaveStyle({ color: 'var(--muted)' })
+    expect(fiberNum).toHaveStyle({ color: 'var(--muted)', fontWeight: 700 }) // same rhythm as the macro numbers
     expect(screen.getByTestId('macro-value-fiber')).toHaveTextContent('12 / 30g')
   })
   it('fiber met turns green', () => {

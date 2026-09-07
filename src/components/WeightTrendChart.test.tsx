@@ -3,8 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
+import { useApp } from '../state/useApp'
 import { WeightTrendChart } from './WeightTrendChart'
-import { addDays, todayKey, daysBetween, weekOf } from '../lib/date'
+import { addDays, fromDateKey, todayKey, daysBetween, weekOf } from '../lib/date'
 import { TAG_COLORS } from '../lib/weight'
 import { emptyNutrition } from '../lib/nutrition'
 import type { DayLog } from '../types'
@@ -46,6 +47,14 @@ const threeWeighIns = () => [
   weighDay(addDays(today, -8), 79),
   weighDay(today, 78.9),
 ]
+
+// same M/D formatting the component uses for readout dates
+const fmt = (k: string) => Intl.DateTimeFormat('en', { month: 'numeric', day: 'numeric' }).format(fromDateKey(k))
+
+function DateFlipper({ to }: { to: string }) {
+  const { setSelectedDate } = useApp()
+  return <button type="button" data-testid="flip-date" onClick={() => setSelectedDate(to)}>flip</button>
+}
 
 beforeEach(() => localStorage.clear())
 
@@ -113,7 +122,7 @@ describe('WeightTrendChart', () => {
     expect(screen.getByTestId(`event-dot-${d1}`)).toHaveAttribute('fill', TAG_COLORS.cheat)
     expect(screen.getByTestId(`event-multi-${d2}`)).toBeInTheDocument()
   })
-  it('readout defaults to the latest in-range weigh-in and updates on tap', () => {
+  it('readout defaults to the selected date and updates on tap', () => {
     seedDays(threeWeighIns())
     render(<AppProvider><WeightTrendChart /></AppProvider>)
     const readout = screen.getByTestId('trend-readout')
@@ -129,6 +138,34 @@ describe('WeightTrendChart', () => {
     expect(readout.textContent).toContain('79.0')
     // the tapped column is crosshair-ed and its weigh-in dot highlighted
     expect(screen.getByTestId(`trend-dot-${addDays(today, -8)}`)).toHaveAttribute('fill', 'var(--accent)')
+  })
+  it('readout defaults to the selected date (carry-forward kg), not the latest weigh-in', () => {
+    // last weigh-in 3 days ago; the header's selected date (today) wins → the
+    // readout anchors on today with the carried-forward kg, not on 9/(today−3)
+    seedDays([weighDay(addDays(today, -3), 79)])
+    render(<AppProvider><WeightTrendChart /></AppProvider>)
+    const readout = screen.getByTestId('trend-readout')
+    expect(readout.textContent).toContain(fmt(today))
+    expect(readout.textContent).toContain('79.0')
+    expect(readout.textContent).not.toContain(fmt(addDays(today, -3)))
+  })
+  it('switching the selected date re-syncs the focus after a tap', () => {
+    seedDays(threeWeighIns())
+    render(<AppProvider><DateFlipper to={addDays(today, -2)} /><WeightTrendChart /></AppProvider>)
+    const readout = screen.getByTestId('trend-readout')
+    // tap the today−8 column (series index 2)
+    const svg = screen.getByTestId('weight-trend-svg')
+    const total = daysBetween(addDays(today, -10), today)
+    fireEvent(svg, new MouseEvent('pointerdown', {
+      bubbles: true,
+      clientX: PAD_L + (2 / total) * (W - PAD_L - PAD_R),
+      clientY: 100,
+    }))
+    expect(readout.textContent).toContain(fmt(addDays(today, -8)))
+    // header navigation resets the tap override → focus lands on the new date
+    fireEvent.click(screen.getByTestId('flip-date'))
+    expect(readout.textContent).toContain(fmt(addDays(today, -2)))
+    expect(readout.textContent).not.toContain(fmt(addDays(today, -8)))
   })
   it('deficit bars render for recorded day keys, green when under budget', () => {
     const d = addDays(today, -5) // distinct from the threeWeighIns dates (−10/−9/−8)
