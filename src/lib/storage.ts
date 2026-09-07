@@ -14,7 +14,7 @@ const K = {
 /** Dashboard review ranges: macros per kg of body weight, fiber absolute grams. */
 export const DEFAULT_MACRO_RANGES: Record<'carbs' | 'protein' | 'fat' | 'fiber', MacroRange> = {
   carbs: { min: 2.5, max: 4 },
-  protein: { min: 1.2, max: 2.2 },
+  protein: { min: 1.0, max: 2.2 },
   fat: { min: 0.5, max: 1.2 },
   fiber: { min: 20, max: 40 },
 }

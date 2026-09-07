@@ -46,7 +46,7 @@ describe('storage', () => {
   it('macroRanges default to the per-kg review standard', () => {
     expect(loadSettings().macroRanges).toEqual({
       carbs: { min: 2.5, max: 4 },
-      protein: { min: 1.2, max: 2.2 },
+      protein: { min: 1.0, max: 2.2 },
       fat: { min: 0.5, max: 1.2 },
       fiber: { min: 20, max: 40 },
     })

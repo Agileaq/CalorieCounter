@@ -51,12 +51,12 @@ describe('MacroMatrix', () => {
     expect(carbsNum).toHaveTextContent('150')
     expect(carbsNum).toHaveStyle({ color: 'var(--muted)', fontWeight: 700 })
     expect(screen.getByTestId('macro-value-carbs')).toHaveTextContent('150 / 200–320g')
-    // protein 150 within 96–176 → inherits the text colour
+    // protein 150 within 80–176 → inherits the text colour
     const proteinNum = screen.getByTestId('macro-num-protein')
     expect(proteinNum).toHaveTextContent('150')
     expect(proteinNum.style.color).toBe('inherit')
     expect(proteinNum).toHaveStyle({ fontWeight: 700 })
-    expect(screen.getByTestId('macro-value-protein')).toHaveTextContent('150 / 96–176g')
+    expect(screen.getByTestId('macro-value-protein')).toHaveTextContent('150 / 80–176g')
     // fat 40 sits exactly on the range floor → within
     expect(screen.getByTestId('macro-num-fat')).toHaveTextContent('40')
     expect(screen.getByTestId('macro-value-fat')).toHaveTextContent('40 / 40–96g')
