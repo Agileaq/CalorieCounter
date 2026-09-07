@@ -106,4 +106,18 @@ describe('weeklyStats', () => {
     const days = { '2026-08-19': dayWithCalories('2026-08-19', 500) }
     expect(weeklyStats(days, '2026-08-19', metric, 0, 'max').hitDays).toBeNull()
   })
+  it('range mode: hitDays counts values inside [min, max], ignoring the one-sided target', () => {
+    const days = {
+      '2026-08-17': dayWithCalories('2026-08-17', 100), // < 120 → short
+      '2026-08-18': dayWithCalories('2026-08-18', 300), // > 280 → over
+      '2026-08-19': dayWithCalories('2026-08-19', 280), // within → hit
+    }
+    expect(weeklyStats(days, '2026-08-19', metric, 0, 'max', { min: 120, max: 280 }).hitDays).toBe(1)
+    // boundary values count as hits on both ends
+    const edges = {
+      '2026-08-17': dayWithCalories('2026-08-17', 120),
+      '2026-08-19': dayWithCalories('2026-08-19', 280),
+    }
+    expect(weeklyStats(edges, '2026-08-19', metric, 0, 'max', { min: 120, max: 280 }).hitDays).toBe(2)
+  })
 })

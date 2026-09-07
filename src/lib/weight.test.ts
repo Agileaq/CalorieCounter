@@ -3,6 +3,7 @@ import type { DayLog, WeightTag } from '../types'
 import {
   LB_PER_KG, MAX_GAP_DAYS, dailySeries, extractWeighIns, kgToLb, lbToKg, round1,
   safeCorridor, deficitSeries, padBounds, symmetricBounds, deficitWeekSummary, trendDirection,
+  resolveReviewWeightKg,
 } from './weight'
 import { emptyNutrition } from './nutrition'
 
@@ -56,6 +57,19 @@ describe('extractWeighIns', () => {
       { date: '2026-01-01', kg: 80 },
       { date: '2026-01-03', kg: 79 },
     ])
+  })
+})
+
+describe('resolveReviewWeightKg', () => {
+  it('uses the latest weigh-in, whatever its date', () => {
+    const days = { ...D('2026-01-01', 80), ...D('2026-01-10', 82.4) }
+    expect(resolveReviewWeightKg(days, 75)).toBe(82.4)
+  })
+  it('falls back to the goal weight when nothing was ever weighed', () => {
+    expect(resolveReviewWeightKg({}, 75.5)).toBe(75.5)
+  })
+  it('falls back to the 80 kg base when there is no weigh-in and no goal', () => {
+    expect(resolveReviewWeightKg({}, null)).toBe(80)
   })
 })
 

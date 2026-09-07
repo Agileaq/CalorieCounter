@@ -1,56 +1,51 @@
 /**
  * Dashboard's 2×2 nutrient review matrix: carbs / protein / fat / fiber.
- * The three macros show a signed remaining ("+22", red when negative) beside
- * a de-emphasised "/ 128g"; fiber is a floor metric and shows plain intake —
- * a signed "+" there would read as surplus. Cells are inline-styled
- * mini-cards (no .card class: its margin-block would fight the grid gap).
- * Narrow-screen defense: MiniBars use gap 2 / max-width 8 / min-width 6
- * inside minWidth:0 cells.
+ * The review standard is a RANGE from settings.macroRanges — macros scaled by
+ * the ruler weight (resolveReviewWeightKg: latest weigh-in → goal → 80kg),
+ * fiber absolute grams. Each cell shows the day's intake over "min–maxg":
+ * red over max, muted under min, cell colour (macros) or green (fiber) within.
+ * Cells are inline-styled mini-cards (no .card class: its margin-block would
+ * fight the grid gap). Narrow-screen defense: MiniBars use gap 2 / max-width 8
+ * / min-width 6 inside minWidth:0 cells.
  */
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import { weeklyStats, type WeeklyBar } from '../lib/weekly'
 import { dayFoodNutrition } from '../lib/nutrition'
-import type { DayLog } from '../types'
+import { resolveReviewWeightKg } from '../lib/weight'
+import type { DayLog, MacroRange } from '../types'
 
 const nf = (n: number) => Math.round(n).toLocaleString('en-US')
 
 interface CellConfig {
   key: 'carbs' | 'protein' | 'fat' | 'fiber'
   label: string
-  color: string
-  dir: 'max' | 'min'
+  /** fill/number colour while the value sits inside the range (fiber is green, not its blue accent) */
+  withinColor: string
   metric: (d: DayLog) => number
-  /** per-day MiniBars colour: macros red on over-target days, fiber green met / light short */
-  miniColor: (v: number, target: number, color: string) => string
 }
 
-const macroMini = (v: number, target: number, color: string) =>
-  target > 0 && v > target ? 'var(--red)' : color
-const fiberMini = (v: number, target: number, color: string) =>
-  target > 0 ? (v >= target ? 'var(--green)' : 'var(--muted)') : color
-
 const CELLS: CellConfig[] = [
-  { key: 'carbs', label: 'dashboard.carbs', color: 'var(--accent)', dir: 'max',
-    metric: d => dayFoodNutrition(d).carbs.total, miniColor: macroMini },
-  { key: 'protein', label: 'dashboard.protein', color: '#5b3df5', dir: 'min',
-    metric: d => dayFoodNutrition(d).protein, miniColor: macroMini },
-  { key: 'fat', label: 'dashboard.fat', color: '#f5a623', dir: 'max',
-    metric: d => dayFoodNutrition(d).fat.total, miniColor: macroMini },
-  { key: 'fiber', label: 'dashboard.fiber', color: '#34c0eb', dir: 'min',
-    metric: d => dayFoodNutrition(d).carbs.fiber, miniColor: fiberMini },
+  { key: 'carbs', label: 'dashboard.carbs', withinColor: 'var(--accent)',
+    metric: d => dayFoodNutrition(d).carbs.total },
+  { key: 'protein', label: 'dashboard.protein', withinColor: '#5b3df5',
+    metric: d => dayFoodNutrition(d).protein },
+  { key: 'fat', label: 'dashboard.fat', withinColor: '#f5a623',
+    metric: d => dayFoodNutrition(d).fat.total },
+  { key: 'fiber', label: 'dashboard.fiber', withinColor: 'var(--green)',
+    metric: d => dayFoodNutrition(d).carbs.fiber },
 ]
 
 /**
  * 7 axis-less mini bars over always-visible grey track slots (same track+fill
- * layering as WeekBars): per-day state colouring, heights capped by the week
- * max. Empty days keep their slot so the 7-day shape always reads — a single
- * Monday bar must not look like a colour swatch.
+ * layering as WeekBars): tri-state range colouring, heights capped by the week
+ * max. Empty days keep their slot so the 7-day shape always reads.
  */
-function MiniBars({ bars, target, color, miniColor, testId }: {
-  bars: WeeklyBar[]; target: number; color: string; miniColor: CellConfig['miniColor']; testId: string
+function MiniBars({ bars, range, withinColor, testId }: {
+  bars: WeeklyBar[]; range: MacroRange; withinColor: string; testId: string
 }) {
   const cellMax = Math.max(1, ...bars.map(b => b.value))
+  const fill = (v: number) => (v > range.max ? 'var(--red)' : v < range.min ? 'var(--muted)' : withinColor)
   return (
     <div data-testid={testId} style={{ display: 'flex', gap: 2, height: 28, minWidth: 0 }}>
       {bars.map(b => (
@@ -62,7 +57,7 @@ function MiniBars({ bars, target, color, miniColor, testId }: {
             <div style={{
               position: 'absolute', left: 0, right: 0, bottom: 0, borderRadius: 2,
               height: Math.max((b.value / cellMax) * 28, 2),
-              background: miniColor(b.value, target, color),
+              background: fill(b.value),
             }} />
           )}
         </div>
@@ -71,29 +66,30 @@ function MiniBars({ bars, target, color, miniColor, testId }: {
   )
 }
 
-function Cell({ cfg, selected }: { cfg: CellConfig; selected: string }) {
+function Cell({ cfg, selected, kg }: { cfg: CellConfig; selected: string; kg: number }) {
   const { t } = useTranslation()
   const { days, settings } = useApp()
-  const target = settings.macroTargets[cfg.key]
-  const stats = weeklyStats(days, selected, cfg.metric, target, cfg.dir)
+  const perKg = settings.macroRanges[cfg.key]
+  // macros scale with the ruler weight; fiber's range is already absolute
+  const range: MacroRange = cfg.key === 'fiber' ? perKg : { min: kg * perKg.min, max: kg * perKg.max }
+  const stats = weeklyStats(days, selected, cfg.metric, 0, 'max', range)
   const dayN = days[selected] != null ? cfg.metric(days[selected]) : null
 
-  // Value hierarchy: the day's number jumps out (17px bold, state colour),
-  // the "/ targetg" part is de-emphasised small and grey — numbers first.
+  // Value hierarchy: the day's intake jumps out (17px bold, tri-state colour),
+  // the "/ min–maxg" part is de-emphasised small and grey — numbers first.
   const num = (text: string, color?: string): React.ReactNode => (
     <span data-testid={`macro-num-${cfg.key}`}
       style={{ fontSize: 17, fontWeight: 700, color: color ?? 'inherit' }}>{text}</span>
   )
-  const unit = <span style={{ fontSize: 11, color: 'var(--muted)' }}> / {nf(target)}g</span>
+  const unit = <span style={{ fontSize: 11, color: 'var(--muted)' }}> / {nf(range.min)}–{nf(range.max)}g</span>
+  const stateColor = (v: number) => (v > range.max ? 'var(--red)' : v < range.min ? 'var(--muted)' : undefined)
 
   let value: React.ReactNode
-  if (target <= 0) value = num('—', 'var(--muted)')
-  else if (dayN == null) value = <>{num('—', 'var(--muted)')}{unit}</>
-  else if (cfg.key === 'fiber') {
-    value = <>{num(nf(dayN), dayN >= target ? 'var(--green)' : 'var(--muted)')}{unit}</>
-  } else {
-    const left = target - dayN
-    value = <>{num((left < 0 ? '−' : '+') + nf(Math.abs(left)), left < 0 ? 'var(--red)' : undefined)}{unit}</>
+  if (dayN == null) value = <>{num('—', 'var(--muted)')}{unit}</>
+  else {
+    // number: inherit (macros) / green (fiber) inside the range; minibars use the cell colour
+    const color = stateColor(dayN) ?? (cfg.key === 'fiber' ? 'var(--green)' : undefined)
+    value = <>{num(nf(dayN), color)}{unit}</>
   }
 
   return (
@@ -107,7 +103,7 @@ function Cell({ cfg, selected }: { cfg: CellConfig; selected: string }) {
         </span>
       </div>
       <div style={{ marginTop: 6 }}>
-        <MiniBars bars={stats.bars} target={target} color={cfg.color} miniColor={cfg.miniColor} testId={`macro-minis-${cfg.key}`} />
+        <MiniBars bars={stats.bars} range={range} withinColor={cfg.withinColor} testId={`macro-minis-${cfg.key}`} />
       </div>
       <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
         {t('dashboard.weekAvg', { n: stats.avg == null ? '—' : nf(stats.avg) })}
@@ -119,10 +115,11 @@ function Cell({ cfg, selected }: { cfg: CellConfig; selected: string }) {
 }
 
 export function MacroMatrix() {
-  const { selectedDate } = useApp()
+  const { selectedDate, days, settings } = useApp()
+  const kg = resolveReviewWeightKg(days, settings.goalWeightKg)
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-      {CELLS.map(c => <Cell key={c.key} cfg={c} selected={selectedDate} />)}
+      {CELLS.map(c => <Cell key={c.key} cfg={c} selected={selectedDate} kg={kg} />)}
     </div>
   )
 }

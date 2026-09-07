@@ -1,4 +1,4 @@
-import type { DayLog, Food, Settings, MealMap } from '../types'
+import type { DayLog, Food, Settings, MealMap, MacroRange } from '../types'
 import { migrate, CURRENT_SCHEMA_VERSION } from './migrations'
 
 const K = {
@@ -11,9 +11,18 @@ const K = {
   customIcons: 'cc.customIcons',
 } as const
 
+/** Dashboard review ranges: macros per kg of body weight, fiber absolute grams. */
+export const DEFAULT_MACRO_RANGES: Record<'carbs' | 'protein' | 'fat' | 'fiber', MacroRange> = {
+  carbs: { min: 2.5, max: 4 },
+  protein: { min: 1.2, max: 2.2 },
+  fat: { min: 0.5, max: 1.2 },
+  fiber: { min: 20, max: 40 },
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   dailyBudget: 2248,
   macroTargets: { carbs: 280, protein: 120, fat: 72, fiber: 30 },
+  macroRanges: DEFAULT_MACRO_RANGES,
   language: 'en',
   goalWeightKg: null,
 }
@@ -30,11 +39,17 @@ function write(key: string, value: unknown): void {
 
 export function loadSettings(): Settings {
   const stored = read<Partial<Settings>>(K.settings, {})
-  // Deep-merge macroTargets so older blobs missing carbs/fat get the defaults.
+  // Deep-merge macroTargets so older blobs missing carbs/fat get the defaults,
+  // and macroRanges the same way per macro so legacy blobs (and partial edits)
+  // never end up with half-defined review ranges.
+  const dr = DEFAULT_MACRO_RANGES
+  const sr = stored.macroRanges ?? ({} as Partial<Settings['macroRanges']>)
+  const range = (k: 'carbs' | 'protein' | 'fat' | 'fiber'): MacroRange => ({ ...dr[k], ...sr[k] })
   return {
     ...DEFAULT_SETTINGS,
     ...stored,
     macroTargets: { ...DEFAULT_SETTINGS.macroTargets, ...stored.macroTargets },
+    macroRanges: { carbs: range('carbs'), protein: range('protein'), fat: range('fat'), fiber: range('fiber') },
   }
 }
 export function saveSettings(s: Settings): void { write(K.settings, s) }

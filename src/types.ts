@@ -64,9 +64,15 @@ export interface DayLog {
 
 export type Language = 'en' | 'zh' | 'es' | 'fr' | 'ar' | 'ru'
 
+/** Review standard for one macro. carbs/protein/fat are per kg of body weight; fiber is absolute grams. */
+export interface MacroRange { min: number; max: number }
+
 export interface Settings {
   dailyBudget: number
   macroTargets: { carbs: number; protein: number; fat: number; fiber: number }
+  /** Dashboard four-cell review standard — independent of macroTargets (which
+   * still drives the Goals page and the Log page's progress bars). */
+  macroRanges: { carbs: MacroRange; protein: MacroRange; fat: MacroRange; fiber: MacroRange }
   language: Language
   goalWeightKg: number | null   // safe-loss corridor endpoint; null = not set
 }

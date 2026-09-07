@@ -1,4 +1,4 @@
-import type { DayLog } from '../types'
+import type { DayLog, MacroRange } from '../types'
 import { emptyDay, hasExplicitRecords } from './storage'
 import { weekOf } from './date'
 
@@ -12,9 +12,11 @@ export interface WeeklyStats { bars: WeeklyBar[]; avg: number | null; hitDays: n
  * count for the conclusion lines. `avg` is the mean over RECORDED days (a meal
  * or exercise entry exists — see hasExplicitRecords; a weigh-in-only day is
  * "no data" and is skipped, not a silent zero) — null when no day in the week
- * is recorded. `hitDays` counts recorded days meeting `target` (`dir='max'`:
- * value ≤ target, `dir='min'`: value ≥ target); null when target ≤ 0 or no
- * day is recorded.
+ * is recorded. `hitDays` counts recorded days meeting the standard: with
+ * `range` (the MacroMatrix cells) that is min ≤ value ≤ max, otherwise the
+ * one-sided `target`/`dir` rule (value ≤ target for 'max', ≥ target for
+ * 'min'). Null when no day is recorded and, in one-sided mode, when
+ * target ≤ 0.
  */
 export function weeklyStats(
   days: Record<string, DayLog>,
@@ -22,6 +24,7 @@ export function weeklyStats(
   metric: (d: DayLog) => number,
   target: number,
   dir: 'max' | 'min',
+  range?: MacroRange,
 ): WeeklyStats {
   const week = weekOf(selected)
   const bars: WeeklyBar[] = week.map(date => ({
@@ -36,8 +39,10 @@ export function weeklyStats(
   const values = present.map(date => metric(days[date]))
   const avg = present.length ? values.reduce((a, b) => a + b, 0) / present.length : null
   let hitDays: number | null = null
-  if (target > 0 && present.length) {
-    hitDays = values.filter(v => (dir === 'max' ? v <= target : v >= target)).length
+  if (present.length && (range || target > 0)) {
+    hitDays = range
+      ? values.filter(v => v >= range.min && v <= range.max).length
+      : values.filter(v => (dir === 'max' ? v <= target : v >= target)).length
   }
   return { bars, avg, hitDays }
 }

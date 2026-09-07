@@ -43,6 +43,21 @@ describe('storage', () => {
     // stored protein/fiber preserved; carbs/fat filled from defaults
     expect(s.macroTargets).toEqual({ carbs: 280, fat: 72, protein: 128, fiber: 30 })
   })
+  it('macroRanges default to the per-kg review standard', () => {
+    expect(loadSettings().macroRanges).toEqual({
+      carbs: { min: 2.5, max: 4 },
+      protein: { min: 1.2, max: 2.2 },
+      fat: { min: 0.5, max: 1.2 },
+      fiber: { min: 20, max: 40 },
+    })
+  })
+  it('macroRanges deep-merge per macro: legacy blobs and partial edits keep defaults', () => {
+    localStorage.setItem('cc.settings', JSON.stringify({ macroRanges: { protein: { min: 1.5, max: 2.5 } } }))
+    const s = loadSettings()
+    expect(s.macroRanges.protein).toEqual({ min: 1.5, max: 2.5 }) // edited
+    expect(s.macroRanges.carbs).toEqual({ min: 2.5, max: 4 })     // backfilled
+    expect(s.macroRanges.fiber).toEqual({ min: 20, max: 40 })     // backfilled
+  })
   it('ensureSchema sets the current version', () => {
     ensureSchema()
     expect(localStorage.getItem('cc.schemaVersion')).toBe('1')

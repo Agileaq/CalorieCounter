@@ -12,6 +12,7 @@ import { hasExplicitRecords } from './storage'
 
 export const LB_PER_KG = 2.2046226218
 export const MAX_GAP_DAYS = 7
+export const BASE_WEIGHT_KG = 80 // review-ruler fallback when nothing was ever weighed
 export const SLOW_RATE = 0.005 // safe-loss corridor, slow rail (per week)
 export const FAST_RATE = 0.01  // safe-loss corridor, fast rail (per week)
 
@@ -40,6 +41,18 @@ export function extractWeighIns(days: Record<string, DayLog>): WeighIn[] {
     .filter(([, d]) => typeof d.weightKg === 'number' && d.weightKg > 0)
     .map(([date, d]) => ({ date, kg: d.weightKg as number }))
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
+}
+
+/**
+ * The single "ruler" weight for the dashboard's per-kg review ranges: the
+ * latest weigh-in, else the goal weight, else a fixed 80 kg base. One number
+ * for the whole review week — the standard must not wobble day to day.
+ */
+export function resolveReviewWeightKg(days: Record<string, DayLog>, goalWeightKg: number | null): number {
+  const weighIns = extractWeighIns(days)
+  if (weighIns.length > 0) return weighIns[weighIns.length - 1].kg
+  if (goalWeightKg != null && goalWeightKg > 0) return goalWeightKg
+  return BASE_WEIGHT_KG
 }
 
 /**
