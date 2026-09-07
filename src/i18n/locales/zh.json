@@ -35,8 +35,7 @@
     "carbs": "碳水化合物",
     "fat": "脂肪",
     "weekAvg": "周日均 {{n}}",
-    "hit": "达标 {{n}}/7 天",
-    "remaining": "{{left}} / {{target}}g"
+    "hit": "达标 {{n}}/7 天"
   },
   "weight": {
     "title": "体重",

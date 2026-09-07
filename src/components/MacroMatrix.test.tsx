@@ -42,29 +42,36 @@ describe('MacroMatrix', () => {
     const cells = screen.getAllByTestId(/^macro-cell-/).map(c => c.dataset.testid)
     expect(cells).toEqual(['macro-cell-carbs', 'macro-cell-protein', 'macro-cell-fat', 'macro-cell-fiber'])
   })
-  it('macros show a signed remaining: positive default, negative red when over target', () => {
+  it('macros show a signed remaining: big bold number, small grey target, red when over target', () => {
     seedDays([foodDay(today, { carbs: 150, protein: 150 })])
     render(<AppProvider><MacroMatrix /></AppProvider>)
     // carbs 150 vs 280 → +130; protein 150 vs 120 → −30 (red)
+    const carbsNum = screen.getByTestId('macro-num-carbs')
+    expect(carbsNum).toHaveTextContent('+130')
+    expect(carbsNum).toHaveStyle({ fontSize: '17px', fontWeight: 700 })
     expect(screen.getByTestId('macro-value-carbs')).toHaveTextContent('+130 / 280g')
-    const protein = screen.getByTestId('macro-value-protein')
-    expect(protein).toHaveTextContent('−30 / 120g')
-    expect(protein).toHaveStyle({ color: 'var(--red)' })
+    const proteinNum = screen.getByTestId('macro-num-protein')
+    expect(proteinNum).toHaveTextContent('−30')
+    expect(proteinNum).toHaveStyle({ color: 'var(--red)', fontWeight: 700 })
+    // the "/ 298g" part is de-emphasised: small and muted
+    expect((screen.getByTestId('macro-value-protein').lastElementChild as HTMLElement).style.color).toBe('var(--muted)')
   })
   it('fiber shows plain intake (never a signed remaining), muted when short, green when met', () => {
     seedDays([foodDay(today, { fiber: 12 })])
     render(<AppProvider><MacroMatrix /></AppProvider>)
-    const fiber = screen.getByTestId('macro-value-fiber')
-    expect(fiber).toHaveTextContent('12 / 30g')
-    expect(fiber.textContent).not.toMatch(/^[+−]/)
-    expect(fiber).toHaveStyle({ color: 'var(--muted)' })
+    const fiberNum = screen.getByTestId('macro-num-fiber')
+    expect(fiberNum).toHaveTextContent('12')
+    expect(fiberNum.textContent).not.toMatch(/^[+−]/)
+    expect(fiberNum).toHaveStyle({ color: 'var(--muted)' })
+    expect(screen.getByTestId('macro-value-fiber')).toHaveTextContent('12 / 30g')
   })
   it('fiber met turns green', () => {
     seedDays([foodDay(today, { fiber: 32 })])
     render(<AppProvider><MacroMatrix /></AppProvider>)
-    const fiber = screen.getByTestId('macro-value-fiber')
-    expect(fiber).toHaveTextContent('32 / 30g')
-    expect(fiber).toHaveStyle({ color: 'var(--green)' })
+    const fiberNum = screen.getByTestId('macro-num-fiber')
+    expect(fiberNum).toHaveTextContent('32')
+    expect(fiberNum).toHaveStyle({ color: 'var(--green)' })
+    expect(screen.getByTestId('macro-value-fiber')).toHaveTextContent('32 / 30g')
   })
   it('selected day without a record shows — / targetg', () => {
     seedDays([foodDay('2026-01-01', { carbs: 100 })]) // some other day, not today
@@ -83,19 +90,25 @@ describe('MacroMatrix', () => {
     expect(cell.textContent).toContain('Avg 102/day')
     expect(cell.textContent).toContain('4/7 days on target')
   })
-  it('MiniBars color over-target days red (macros) and met days green (fiber)', () => {
+  it('MiniBars: 7 full-height track slots always render; over-target days red (macros), met days green (fiber)', () => {
     const week = weekOf(todayKey())
     const today = todayKey()
     const other = week.find(k => k !== today)! // robust even when today is Monday
     const otherIdx = week.indexOf(other)
     const todayIdx = week.indexOf(today)
+    const emptyIdx = week.findIndex(k => k !== today && k !== other)
     seedDays([foodDay(other, { carbs: 300, fiber: 32 }), foodDay(today, { carbs: 100, fiber: 10 })])
     render(<AppProvider><MacroMatrix /></AppProvider>)
-    const carbBars = screen.getByTestId('macro-minis-carbs').children
-    expect((carbBars[todayIdx] as HTMLElement).style.background).toBe('var(--accent)') // 100 ≤ 280 → cell colour
-    expect((carbBars[otherIdx] as HTMLElement).style.background).toBe('var(--red)')    // 300 > 280 → red
-    const fiberBars = screen.getByTestId('macro-minis-fiber').children
-    expect((fiberBars[otherIdx] as HTMLElement).style.background).toBe('var(--green)') // 32 ≥ 30
-    expect((fiberBars[todayIdx] as HTMLElement).style.background).toBe('var(--muted)') // 10 < 30
+    const carbTracks = screen.getByTestId('macro-minis-carbs').children
+    expect(carbTracks).toHaveLength(7)
+    // empty days keep a visible grey slot so the 7-day shape always reads
+    expect((carbTracks[emptyIdx] as HTMLElement).style.height).toBe('28px')
+    expect((carbTracks[emptyIdx] as HTMLElement).style.background).toBe('var(--line)')
+    // recorded days stack a coloured fill inside the slot
+    expect(((carbTracks[todayIdx] as HTMLElement).firstElementChild as HTMLElement).style.background).toBe('var(--accent)') // 100 ≤ 280 → cell colour
+    expect(((carbTracks[otherIdx] as HTMLElement).firstElementChild as HTMLElement).style.background).toBe('var(--red)')    // 300 > 280 → red
+    const fiberTracks = screen.getByTestId('macro-minis-fiber').children
+    expect(((fiberTracks[otherIdx] as HTMLElement).firstElementChild as HTMLElement).style.background).toBe('var(--green)') // 32 ≥ 30
+    expect(((fiberTracks[todayIdx] as HTMLElement).firstElementChild as HTMLElement).style.background).toBe('var(--muted)') // 10 < 30
   })
 })

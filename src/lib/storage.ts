@@ -72,6 +72,16 @@ export function emptyDay(key: string): DayLog {
   return { date: key, meals, exercise: [] }
 }
 
+/**
+ * A day counts as recorded when it has at least one meal or exercise entry.
+ * Weigh-ins and event tags are check-in side data, NOT intake records: a day
+ * without any explicit entry is "no data" for review sums — never a silently
+ * assumed zero-intake fast (missed logging is far more common than fasting).
+ */
+export function hasExplicitRecords(d: DayLog): boolean {
+  return Object.values(d.meals).some(m => m.length > 0) || d.exercise.length > 0
+}
+
 export function getDay(days: Record<string, DayLog>, key: string): DayLog {
   return days[key] ?? emptyDay(key)
 }

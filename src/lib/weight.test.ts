@@ -150,16 +150,18 @@ describe('safeCorridor', () => {
 })
 
 describe('deficitSeries', () => {
-  it('only existing day keys; deficit = (food − exercise) − budget', () => {
+  it('recorded days only — deficit = (food − exercise) − budget; weigh-in-only days are no data', () => {
     const days: Record<string, DayLog> = {
-      '2026-01-01': { ...dayWithCals('2026-01-01', 500, 200), weightKg: 80 },
-      '2026-01-02': { ...dayWithCals('2026-01-02', 0), weightKg: 80 }, // exists but nothing eaten
+      '2026-01-01': { ...dayWithCals('2026-01-01', 500, 200), weightKg: 80 }, // recorded → −1948
+      '2026-01-02': { ...dayWithCals('2026-01-02', 0, 100), weightKg: 80 },   // exercise-only → real zero intake → −2348
+      '2026-01-03': { ...dayWithCals('2026-01-03', 0), weightKg: 80 },        // weigh-in only → no data → no bar
     }
-    const s = dailySeries(days, 'all', '2026-01-03')
+    const s = dailySeries(days, 'all', '2026-01-04')
     const d = deficitSeries(days, s, 2248)
     expect(d.find(p => p.date === '2026-01-01')!.deficit).toBe(-1948)
-    expect(d.find(p => p.date === '2026-01-02')!.deficit).toBe(-2248)
-    expect(d.find(p => p.date === '2026-01-03')).toBeUndefined() // day key absent
+    expect(d.find(p => p.date === '2026-01-02')!.deficit).toBe(-2348)
+    expect(d.find(p => p.date === '2026-01-03')).toBeUndefined() // no explicit record → skipped
+    expect(d.find(p => p.date === '2026-01-04')).toBeUndefined() // day key absent
   })
 })
 
@@ -176,28 +178,23 @@ describe('bounds', () => {
 })
 
 describe('deficitWeekSummary', () => {
-  it('sums (food − exercise) − budget over the 7 days ending at selected, present days only', () => {
+  // Week of Wed 2026-01-07 is Mon 2026-01-05 .. Sun 2026-01-11
+  it('sums recorded days of the calendar week containing selected, Mon..Sun', () => {
     const days: Record<string, DayLog> = {
-      '2026-01-01': { ...dayWithCals('2026-01-01', 500, 200), weightKg: 80 }, // −1948
-      '2026-01-02': { ...dayWithCals('2026-01-02', 0), weightKg: 80 },        // −2248 (opened, real zero)
-      // 01-03..01-05 absent → skipped
+      '2026-01-04': { ...dayWithCals('2026-01-04', 500, 200), weightKg: 80 }, // previous week's Sunday → excluded
+      '2026-01-05': { ...dayWithCals('2026-01-05', 500, 200), weightKg: 80 }, // Monday → −1948
+      '2026-01-06': { ...dayWithCals('2026-01-06', 0), weightKg: 80 },         // weigh-in only → no data
+      '2026-01-07': { ...dayWithCals('2026-01-07', 3000), weightKg: 80 },     // selected → +752
+      '2026-01-08': { ...dayWithCals('2026-01-08', 4248), weightKg: 80 },     // pre-logged Thursday → +2000
     }
-    days['2026-01-06'] = { ...dayWithCals('2026-01-06', 3000), weightKg: 80 } // +752
     const r = deficitWeekSummary(days, '2026-01-07', 2248)
     expect(r.hasData).toBe(true)
-    expect(r.totalKcal).toBe(-1948 - 2248 + 752)
+    expect(r.totalKcal).toBe(-1948 + 752 + 2000)
   })
-  it('window edges: selected−6 counts, selected−7 does not', () => {
-    const days: Record<string, DayLog> = {
-      '2025-12-30': { ...dayWithCals('2025-12-30', 4248), weightKg: 80 }, // selected − 7 → excluded
-      '2025-12-31': { ...dayWithCals('2025-12-31', 2248), weightKg: 80 }, // selected − 6 → (2248) − 2248 = 0
-    }
-    const r = deficitWeekSummary(days, '2026-01-06', 2248)
-    expect(r.hasData).toBe(true)
-    expect(r.totalKcal).toBe(0)
-  })
-  it('no present days in the window → hasData=false, total 0', () => {
+  it('no recorded day in the week → hasData=false, total 0', () => {
     expect(deficitWeekSummary({}, '2026-01-07', 2248)).toEqual({ totalKcal: 0, hasData: false })
+    const weighOnly = { '2026-01-06': { ...dayWithCals('2026-01-06', 0), weightKg: 80 } }
+    expect(deficitWeekSummary(weighOnly, '2026-01-07', 2248)).toEqual({ totalKcal: 0, hasData: false })
   })
 })
 

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
 import { WeightTrendChart } from './WeightTrendChart'
-import { addDays, todayKey, daysBetween } from '../lib/date'
+import { addDays, todayKey, daysBetween, weekOf } from '../lib/date'
 import { TAG_COLORS } from '../lib/weight'
 import { emptyNutrition } from '../lib/nutrition'
 import type { DayLog } from '../types'
@@ -130,27 +130,33 @@ describe('WeightTrendChart', () => {
     // the tapped column is crosshair-ed and its weigh-in dot highlighted
     expect(screen.getByTestId(`trend-dot-${addDays(today, -8)}`)).toHaveAttribute('fill', 'var(--accent)')
   })
-  it('deficit bars render for existing day keys, green when under budget', () => {
-    const d = addDays(today, -8)
+  it('deficit bars render for recorded day keys, green when under budget', () => {
+    const d = addDays(today, -5) // distinct from the threeWeighIns dates (−10/−9/−8)
     seedDays([weighDay(d, 79, undefined, 500, 200), ...threeWeighIns().slice(0, 3)])
     render(<AppProvider><WeightTrendChart /></AppProvider>)
     expect(screen.getByTestId(`deficit-bar-${d}`)).toHaveAttribute('fill', 'var(--green)')
   })
-  it('verdict row: sums the visible deficit bars for the 7 days ending at the selected date, with the trend direction', () => {
-    // weighDay days are present in `days`; default budget 2248. Window today−6..today:
-    // today−2: 0 kcal → −2248; today−1: 3000 kcal → +752; today: weigh-in day, 0 kcal → −2248.
-    seedDays([...threeWeighIns(), weighDay(addDays(today, -2), 79), weighDay(addDays(today, -1), 79.2, undefined, 3000)], { goalWeightKg: 78 })
+  it('verdict row: sums recorded days of the calendar week containing the selected date, with the trend direction', () => {
+    // weigh-in-only days are no data and never count; the week's food day is
+    // the only recorded day → 3000 − 2248 = +752 (robust to any run weekday)
+    const monday = weekOf(today)[0]
+    seedDays([...threeWeighIns(), weighDay(monday, 79.1, undefined, 3000)], { goalWeightKg: 78 })
     render(<AppProvider><WeightTrendChart /></AppProvider>)
     const verdict = screen.getByTestId('trend-verdict')
-    expect(verdict.textContent).toContain('−3,744')
+    expect(verdict.textContent).toContain('+752')
     expect(verdict.textContent).toContain('weight down')
   })
   it('verdict degrades to the deficit-only template when the trend direction is unavailable', () => {
-    // series starts at today−2 → no trend 7 days before today → dir null
-    seedDays([weighDay(addDays(today, -2), 79, undefined, 2248), weighDay(addDays(today, -1), 78.8), weighDay(today, 78.6)])
+    // weigh-ins only within the last 3 days → no trend 7 days before today → dir null
+    const week = weekOf(today)
+    const rec = week.find(k => k !== today && k !== addDays(today, -1) && k !== addDays(today, -2))!
+    seedDays([
+      weighDay(addDays(today, -2), 79), weighDay(addDays(today, -1), 78.8), weighDay(today, 78.6),
+      weighDay(rec, 79.2, undefined, 4248), // recorded → +2000 (pre-logging a later week day is fine)
+    ])
     render(<AppProvider><WeightTrendChart /></AppProvider>)
     const verdict = screen.getByTestId('trend-verdict')
-    expect(verdict.textContent).toContain('−4,496') // 0 + (−2248) + (−2248)
+    expect(verdict.textContent).toContain('+2,000')
     expect(verdict.textContent).not.toContain('weight')
   })
   it('no verdict row below 3 weigh-ins (deficit sub-chart hidden)', () => {

@@ -35,8 +35,7 @@
     "carbs": "Carbohidratos",
     "fat": "Grasa",
     "weekAvg": "Media {{n}}/día",
-    "hit": "{{n}}/7 días en objetivo",
-    "remaining": "{{left}} / {{target}}g"
+    "hit": "{{n}}/7 días en objetivo"
   },
   "weight": {
     "title": "Peso",

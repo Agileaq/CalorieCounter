@@ -70,9 +70,19 @@ describe('weeklyStats', () => {
     expect(weeklyStats(days, '2026-08-19', metric, 0, 'max').avg).toBe(300)
     expect(weeklyStats({}, '2026-08-19', metric, 0, 'max').avg).toBeNull()
   })
-  it('an opened-but-empty day counts as a real 0 in avg', () => {
+  it('a weigh-in-only day is no data: excluded from avg', () => {
+    const weighOnly = { ...emptyDay('2026-08-17'), weightKg: 80 }
     const days = {
-      '2026-08-17': emptyDay('2026-08-17'), // opened, nothing eaten → 0
+      '2026-08-17': weighOnly, // opened for the weigh-in, nothing recorded → skipped
+      '2026-08-19': dayWithCalories('2026-08-19', 800),
+    }
+    expect(weeklyStats(days, '2026-08-19', metric, 0, 'max').avg).toBe(800)
+  })
+  it('an exercise-only day counts as a real 0 in avg', () => {
+    const exercised = emptyDay('2026-08-17')
+    exercised.exercise.push({ id: 'x', name: 'Run', caloriesBurned: 0 })
+    const days = {
+      '2026-08-17': exercised, // explicit record → real zero-intake day
       '2026-08-19': dayWithCalories('2026-08-19', 800),
     }
     expect(weeklyStats(days, '2026-08-19', metric, 0, 'max').avg).toBe(400)

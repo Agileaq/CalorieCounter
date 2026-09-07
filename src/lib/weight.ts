@@ -6,8 +6,9 @@
  * injected parameter so tests are deterministic.
  */
 import type { DayLog, WeightTag } from '../types'
-import { addDays, daysBetween, todayKey } from './date'
+import { addDays, daysBetween, todayKey, weekOf } from './date'
 import { dayFoodNutrition, exerciseTotal } from './nutrition'
+import { hasExplicitRecords } from './storage'
 
 export const LB_PER_KG = 2.2046226218
 export const MAX_GAP_DAYS = 7
@@ -123,13 +124,16 @@ export interface DeficitPoint { date: string; deficit: number }
 /**
  * Daily energy balance against the CURRENT daily budget (the app stores no
  * historical budgets — documented limitation). A negative deficit (green)
- * means eating under budget. Only day keys actually present in `days` are
- * returned: a never-opened day is "no data", while an opened-but-empty day
- * is a real zero-intake day.
+ * means eating under budget. Only RECORDED day keys are returned — a meal or
+ * exercise entry exists (see hasExplicitRecords): a never-opened day AND a
+ * weigh-in-only day are "no data", not a silently assumed zero-intake day.
  */
 export function deficitSeries(days: Record<string, DayLog>, s: Series, budget: number): DeficitPoint[] {
   return s.points
-    .filter(p => days[p.date] != null)
+    .filter(p => {
+      const d = days[p.date]
+      return d != null && hasExplicitRecords(d)
+    })
     .map(p => {
       const d = days[p.date]
       return { date: p.date, deficit: (dayFoodNutrition(d).calories - exerciseTotal(d)) - budget }
@@ -153,15 +157,20 @@ export function symmetricBounds(values: number[], floor: number): { lo: number; 
 export interface DeficitWeek { totalKcal: number; hasData: boolean }
 
 /**
- * Sum of the food-budget deficit — the same numbers the trend chart's deficit
- * sub-chart draws — over the 7-day window ending at `selected`, so the verdict
- * line always equals the sum of the visible bars. Only day keys present in
- * `days` count (an opened-but-empty day is a real zero). Window keys come from
- * the pure local-calendar helpers, never `new Date("YYYY-MM-DD")`.
+ * Sum of the food-budget deficit over the CALENDAR week (Mon..Sun) containing
+ * `selected` — the "this week" the verdict line promises. The whole week is
+ * summed, so pre-logged days after `selected` count too. Only RECORDED days
+ * count (a meal or exercise entry exists — see hasExplicitRecords): missing
+ * days and weigh-in-only days are "no data", never a silently assumed zero.
+ * Window keys come from the pure local-calendar helpers, never
+ * `new Date("YYYY-MM-DD")`.
  */
 export function deficitWeekSummary(days: Record<string, DayLog>, selected: string, budget: number): DeficitWeek {
-  const keys = Array.from({ length: 7 }, (_, i) => addDays(selected, i - 6))
-  const present = keys.filter(k => days[k] != null)
+  const keys = weekOf(selected)
+  const present = keys.filter(k => {
+    const d = days[k]
+    return d != null && hasExplicitRecords(d)
+  })
   if (present.length === 0) return { totalKcal: 0, hasData: false }
   const totalKcal = present.reduce((sum, k) => {
     const d = days[k]

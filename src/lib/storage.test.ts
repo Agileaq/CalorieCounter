@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import {
   DEFAULT_SETTINGS, loadSettings, saveSettings, loadMyFoods, saveMyFoods,
-  loadDays, saveDays, getDay, emptyDay, ensureSchema,
+  loadDays, saveDays, getDay, emptyDay, ensureSchema, hasExplicitRecords,
   loadHiddenFoods, saveHiddenFoods,
 } from './storage'
 
@@ -53,5 +53,25 @@ describe('storage', () => {
   it('round-trips hiddenFoods', () => {
     saveHiddenFoods({ 'pre-white-rice': true, 'pre-egg': true })
     expect(loadHiddenFoods()).toEqual({ 'pre-white-rice': true, 'pre-egg': true })
+  })
+})
+
+describe('hasExplicitRecords', () => {
+  it('an empty day has no explicit records', () => {
+    expect(hasExplicitRecords(emptyDay('2026-08-18'))).toBe(false)
+  })
+  it('any meal entry counts as a record', () => {
+    const d = emptyDay('2026-08-18')
+    d.meals.dinner.push({ id: 'e', servingId: 's', quantity: 1 } as any)
+    expect(hasExplicitRecords(d)).toBe(true)
+  })
+  it('an exercise entry alone counts as a record', () => {
+    const d = emptyDay('2026-08-18')
+    d.exercise.push({ id: 'x', name: 'Run', caloriesBurned: 0 })
+    expect(hasExplicitRecords(d)).toBe(true)
+  })
+  it('weight and tags alone do NOT count as records', () => {
+    const d = { ...emptyDay('2026-08-18'), weightKg: 80, tags: ['cheat' as const] }
+    expect(hasExplicitRecords(d)).toBe(false)
   })
 })
