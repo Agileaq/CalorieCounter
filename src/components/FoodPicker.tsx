@@ -10,8 +10,9 @@ import { SheetModal } from './SheetModal'
 import { FoodForm } from './FoodForm'
 import { FoodDetail } from './FoodDetail'
 
-/** All tab: most-logged first (last 180 days), then alphabetical. Unused foods
- *  get count 0 and fall through to the alphabetical tail. */
+/** All and My Foods tabs alike: most-logged first (last 180 days), then
+ *  alphabetical. Unused foods get count 0 and fall through to the
+ *  alphabetical tail. */
 function sortByFrequency(foods: Food[], counts: Map<string, number>): Food[] {
   return [...foods].sort((a, b) => {
     const ca = counts.get(a.id) ?? 0
@@ -19,11 +20,6 @@ function sortByFrequency(foods: Food[], counts: Map<string, number>): Food[] {
     if (ca !== cb) return cb - ca
     return a.name.localeCompare(b.name)
   })
-}
-
-/** My Foods tab: flat alphabetical, same as All but without the frequency pass. */
-function sortAlphabetical(foods: Food[]): Food[] {
-  return [...foods].sort((a, b) => a.name.localeCompare(b.name))
 }
 
 export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void; onClose: () => void }) {
@@ -48,8 +44,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
     () => foodCounts(days, selectedDate || todayKey()),
     [days, selectedDate],
   )
-  const allSorted = useMemo(() => sortByFrequency(filtered, counts), [filtered, counts])
-  const mySorted = useMemo(() => sortAlphabetical(filtered), [filtered])
+  const sorted = useMemo(() => sortByFrequency(filtered, counts), [filtered, counts])
 
   useEffect(() => {
     if (!toast) return
@@ -77,7 +72,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
         <button className="btn-ghost" data-testid="new-food" onClick={() => setCreating(true)}>+ {t('foodPicker.newMyFood')}</button>
       </div>
       <div>
-        {(tab === 'all' ? allSorted : mySorted).map(f => renderRow(f))}
+        {sorted.map(f => renderRow(f))}
         {toast && (
           <div className="fast-add-toast" data-testid="fast-add-toast">
             ✓ {t('foodPicker.added', { name: toast.name })}

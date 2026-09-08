@@ -168,14 +168,17 @@ describe('FoodPicker', () => {
     expect(screen.queryByText('B')).not.toBeInTheDocument()
   })
 
-  it('My Foods tab is a flat alphabetical list like All — no letter headers', () => {
-    localStorage.setItem('cc.myFoods', JSON.stringify([myFood('b', 'Bbbb'), myFood('a', 'Aaaa')]))
+  it('My Foods tab sorts by log frequency like All — flat, no letter headers', () => {
+    // "Bbbb" logged twice, "Aaaa" never → Bbbb ranks above Aaaa despite the name order
+    localStorage.setItem('cc.myFoods', JSON.stringify([myFood('a', 'Aaaa'), myFood('b', 'Bbbb')]))
+    localStorage.setItem('cc.days', JSON.stringify({
+      [todayKey()]: dayWithEntries({ breakfast: [loggedEntry('b'), loggedEntry('b')] }),
+    }))
     render(<AppProvider><FoodPicker onPick={() => {}} onClose={() => {}} /></AppProvider>)
     fireEvent.click(screen.getByText(/My Foods/))
-    // flat alphabetical — stored order (Bbbb, Aaaa) becomes (Aaaa, Bbbb)
     const names = screen.getAllByTestId('food-row').map(r => r.textContent)
-    expect(names.findIndex(n => /Aaaa/.test(n))).toBeLessThan(names.findIndex(n => /Bbbb/.test(n)))
-    // no letter group headers (single-letter "muted" divs)
+    expect(names.findIndex(n => /Bbbb/.test(n))).toBeLessThan(names.findIndex(n => /Aaaa/.test(n)))
+    // still a flat list — no letter group headers (single-letter "muted" divs)
     expect(screen.queryByText('A')).not.toBeInTheDocument()
     expect(screen.queryByText('B')).not.toBeInTheDocument()
   })
