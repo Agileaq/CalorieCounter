@@ -3,31 +3,36 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
 import { newId } from '../lib/ids'
 import { NumberInput } from './NumberInput'
+import type { ExercisePreset } from '../types'
 
 /**
  * Exercise name is a combobox: free-typed text + a ▾ button that opens an
  * UNFILTERED list of the preset activities. Unlike a native <datalist>, the
  * presets are always selectable regardless of what the input currently holds.
+ * Picking a preset stamps the entry with its machine key (drives the
+ * exercise→day-tag linkage); typing clears the stamp.
  */
 export function ExerciseCard() {
   const { t } = useTranslation()
   const { day, addExercise, deleteExercise } = useApp()
   const [exName, setExName] = useState(() => t('exercise.strength')) // default preset
+  const [picked, setPicked] = useState<ExercisePreset | null>('strength') // matches the default name
   const [exCals, setExCals] = useState(0)
   const [open, setOpen] = useState(false)
 
-  const presets = [
-    t('exercise.strength'),
-    t('exercise.walking'),
-    t('exercise.running'),
-    t('exercise.swimming'),
+  const presets: { key: ExercisePreset; label: string }[] = [
+    { key: 'strength', label: t('exercise.strength') },
+    { key: 'walking', label: t('exercise.walking') },
+    { key: 'running', label: t('exercise.running') },
+    { key: 'swimming', label: t('exercise.swimming') },
   ]
 
   function add() {
     const name = exName.trim()
     if (!name) return
-    addExercise({ id: newId(), name, caloriesBurned: exCals })
+    addExercise({ id: newId(), name, caloriesBurned: exCals, ...(picked ? { preset: picked } : {}) })
     setExName(t('exercise.strength')) // reset to the default preset
+    setPicked('strength')
     setExCals(0)
   }
 
@@ -46,7 +51,7 @@ export function ExerciseCard() {
           <div className="row" data-testid="exercise-combobox"
             style={{ gap: 0, border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden', background: 'var(--card)' }}>
             <input data-testid="exercise-name" placeholder={t('exercise.custom')}
-              value={exName} onChange={e => setExName(e.target.value)}
+              value={exName} onChange={e => { setExName(e.target.value); setPicked(null) }}
               style={{ flex: 1, padding: '10px 12px', border: 'none', background: 'transparent' }} />
             <button type="button" data-testid="exercise-name-toggle" aria-label={t('dashboard.exercise')}
               onClick={() => setOpen(o => !o)}
@@ -62,11 +67,11 @@ export function ExerciseCard() {
                 onClick={() => setOpen(false)} />
               <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10,
                   background: 'var(--card)', border: '1px solid var(--line)' }}>
-                {presets.map(p => (
-                  <button key={p} type="button" data-testid="exercise-preset" className="row spread"
+                {presets.map(({ key, label }) => (
+                  <button key={key} type="button" data-testid="exercise-preset" className="row spread"
                     style={{ width: '100%', padding: 8, background: 'transparent', border: 'none',
                       borderBottom: '1px solid var(--line)' }}
-                    onClick={() => { setExName(p); setOpen(false) }}>{p}</button>
+                    onClick={() => { setExName(label); setPicked(key); setOpen(false) }}>{label}</button>
                 ))}
               </div>
             </>

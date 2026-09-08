@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import type { DayLog, Food, Language, Settings } from '../types'
+import type { DayLog, ExercisePreset, Food, Language, Settings, WeightTag } from '../types'
 import {
   loadSettings, saveSettings, loadMyFoods, saveMyFoods, loadDays, saveDays,
   loadFoodOverrides, saveFoodOverrides, loadHiddenFoods, saveHiddenFoods,
@@ -14,6 +14,15 @@ import { AppContext, type AppContextValue } from './useApp'
 import { todayKey } from '../lib/date'
 
 const predefined = (predefinedRaw as Food[]).map(collapseToPrimaryServing)
+
+/** Exercise→day-tag linkage: a preset-stamped entry lights the mapped tag on
+ *  record; deleting the last stamped entry of a kind darkens it again. */
+const PRESET_TAG: Record<ExercisePreset, WeightTag> = {
+  strength: 'strength',
+  walking: 'cardio',
+  running: 'cardio',
+  swimming: 'cardio',
+}
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(() => { ensureSchema(); return loadSettings() })
@@ -66,8 +75,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
     updateEntry: (meal, entry) => mutateDay(d => ({ ...d, meals: { ...d.meals, [meal]: d.meals[meal].map(e => e.id === entry.id ? entry : e) } })),
     deleteEntry: (meal, id) => mutateDay(d => ({ ...d, meals: { ...d.meals, [meal]: d.meals[meal].filter(e => e.id !== id) } })),
     clearMeal: (meal) => mutateDay(d => ({ ...d, meals: { ...d.meals, [meal]: [] } })),
-    addExercise: (e) => mutateDay(d => ({ ...d, exercise: [...d.exercise, e] })),
-    deleteExercise: (id) => mutateDay(d => ({ ...d, exercise: d.exercise.filter(e => e.id !== id) })),
+    addExercise: (e) => mutateDay(d => {
+      const out = { ...d, exercise: [...d.exercise, e] }
+      if (e.preset) {
+        const tag = PRESET_TAG[e.preset]
+        const tags = out.tags ?? []
+        if (!tags.includes(tag)) out.tags = [...tags, tag]
+      }
+      return out
+    }),
+    deleteExercise: (id) => mutateDay(d => {
+      const removed = d.exercise.find(e => e.id === id)
+      const exercise = d.exercise.filter(e => e.id !== id)
+      const out = { ...d, exercise }
+      if (removed?.preset) {
+        const tag = PRESET_TAG[removed.preset]
+        const stillMapped = exercise.some(e => e.preset && PRESET_TAG[e.preset] === tag)
+        if (!stillMapped) {
+          const tags = (out.tags ?? []).filter(t => t !== tag)
+          if (tags.length) out.tags = tags
+          else delete out.tags
+        }
+      }
+      return out
+    }),
     setDayWeight: (kg) => mutateDay(d => {
       const next = { ...d }
       if (kg != null && kg > 0) next.weightKg = kg

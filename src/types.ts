@@ -50,7 +50,10 @@ export interface LogEntry {
   quantity: number
 }
 
-export interface ExerciseEntry { id: string; name: string; caloriesBurned: number }
+/** Machine key stamped when the entry came from a preset activity pick
+ *  (free-typed names stay unstamped); drives the exercise→day-tag linkage. */
+export type ExercisePreset = 'strength' | 'walking' | 'running' | 'swimming'
+export interface ExerciseEntry { id: string; name: string; caloriesBurned: number; preset?: ExercisePreset }
 
 export type MealMap = Record<MealKey, LogEntry[]>
 

@@ -3,6 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
 import { ExerciseCard } from './ExerciseCard'
+import { useApp } from '../state/useApp'
+
+function TagProbe() {
+  const { day } = useApp()
+  return <span data-testid="probe-tags">{JSON.stringify(day.tags ?? null)}</span>
+}
 
 describe('ExerciseCard', () => {
   it('defaults the name to the localized "Strength training" preset', () => {
@@ -33,5 +39,30 @@ describe('ExerciseCard', () => {
     expect(screen.getByText(/Yoga/)).toBeInTheDocument()
     // after adding, the field resets to the default preset
     expect(screen.getByTestId('exercise-name')).toHaveValue('Strength training')
+  })
+
+  describe('exercise-tag linkage', () => {
+    function mount() {
+      return render(<AppProvider><ExerciseCard /><TagProbe /></AppProvider>)
+    }
+    it('adding the default strength preset lights the strength tag', () => {
+      mount()
+      fireEvent.click(screen.getByTestId('exercise-add'))
+      expect(screen.getByTestId('probe-tags').textContent).toBe('["strength"]')
+    })
+    it('adding the swimming preset lights the cardio tag', () => {
+      mount()
+      fireEvent.click(screen.getByTestId('exercise-name-toggle'))
+      fireEvent.click(screen.getAllByTestId('exercise-preset')[3]) // Swimming
+      fireEvent.click(screen.getByTestId('exercise-add'))
+      expect(screen.getByTestId('probe-tags').textContent).toBe('["cardio"]')
+    })
+    it('typing a custom name clears the preset stamp — no tag', () => {
+      mount()
+      const name = screen.getByTestId('exercise-name')
+      fireEvent.change(name, { target: { value: 'Yoga' } })
+      fireEvent.click(screen.getByTestId('exercise-add'))
+      expect(screen.getByTestId('probe-tags').textContent).toBe('null')
+    })
   })
 })

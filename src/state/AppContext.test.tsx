@@ -213,3 +213,56 @@ describe('AppContext weight', () => {
     expect('tags' in after[Object.keys(after)[0]]).toBe(false)
   })
 })
+
+function ExerciseTagProbe() {
+  const app = useApp()
+  return (
+    <div>
+      <span data-testid="tags">{JSON.stringify(app.day.tags ?? null)}</span>
+      <button onClick={() => app.addExercise({ id: 'x1', name: 'Strength training', caloriesBurned: 100, preset: 'strength' })}>add-strength</button>
+      <button onClick={() => app.addExercise({ id: 'x1b', name: 'Strength training', caloriesBurned: 100, preset: 'strength' })}>add-strength-2</button>
+      <button onClick={() => app.addExercise({ id: 'x2', name: 'Swimming', caloriesBurned: 200, preset: 'swimming' })}>add-swim</button>
+      <button onClick={() => app.addExercise({ id: 'x3', name: 'Yoga', caloriesBurned: 50 })}>add-custom</button>
+      <button onClick={() => app.deleteExercise('x1')}>del-x1</button>
+      <button onClick={() => app.deleteExercise('x1b')}>del-x1b</button>
+      <button onClick={() => app.deleteExercise('x2')}>del-x2</button>
+      <button onClick={() => app.deleteExercise('x3')}>del-x3</button>
+    </div>
+  )
+}
+
+describe('AppContext exercise-tag linkage', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('adding a preset-stamped exercise lights the mapped tag; repeats do not toggle it off', () => {
+    render(<AppProvider><ExerciseTagProbe /></AppProvider>)
+    act(() => { screen.getByText('add-strength').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('["strength"]')
+    act(() => { screen.getByText('add-strength-2').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('["strength"]')
+    act(() => { screen.getByText('add-swim').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('["strength","cardio"]')
+  })
+
+  it('deleting the last stamped entry of a kind clears its tag; remaining ones keep it', () => {
+    render(<AppProvider><ExerciseTagProbe /></AppProvider>)
+    act(() => { screen.getByText('add-strength').click() })
+    act(() => { screen.getByText('add-strength-2').click() })
+    act(() => { screen.getByText('add-swim').click() })
+    act(() => { screen.getByText('del-x1').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('["strength","cardio"]') // one strength entry left
+    act(() => { screen.getByText('del-x1b').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('["cardio"]')
+    act(() => { screen.getByText('del-x2').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('null') // field dropped when empty
+  })
+
+  it('custom (unstamped) exercise never touches tags, even on delete', () => {
+    render(<AppProvider><ExerciseTagProbe /></AppProvider>)
+    act(() => { screen.getByText('add-custom').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('null')
+    act(() => { screen.getByText('add-swim').click() })
+    act(() => { screen.getByText('del-x3').click() })
+    expect(screen.getByTestId('tags').textContent).toBe('["cardio"]') // swim tag survives the custom delete
+  })
+})
