@@ -168,12 +168,16 @@ describe('FoodPicker', () => {
     expect(screen.queryByText('B')).not.toBeInTheDocument()
   })
 
-  it('My Foods tab still groups by letter', () => {
-    localStorage.setItem('cc.myFoods', JSON.stringify([myFood('a', 'Aaaa'), myFood('b', 'Bbbb')]))
+  it('My Foods tab is a flat alphabetical list like All — no letter headers', () => {
+    localStorage.setItem('cc.myFoods', JSON.stringify([myFood('b', 'Bbbb'), myFood('a', 'Aaaa')]))
     render(<AppProvider><FoodPicker onPick={() => {}} onClose={() => {}} /></AppProvider>)
     fireEvent.click(screen.getByText(/My Foods/))
-    expect(screen.getByText('A')).toBeInTheDocument()
-    expect(screen.getByText('B')).toBeInTheDocument()
+    // flat alphabetical — stored order (Bbbb, Aaaa) becomes (Aaaa, Bbbb)
+    const names = screen.getAllByTestId('food-row').map(r => r.textContent)
+    expect(names.findIndex(n => /Aaaa/.test(n))).toBeLessThan(names.findIndex(n => /Bbbb/.test(n)))
+    // no letter group headers (single-letter "muted" divs)
+    expect(screen.queryByText('A')).not.toBeInTheDocument()
+    expect(screen.queryByText('B')).not.toBeInTheDocument()
   })
 
   // Regression: scroll-lock leak across the stacked-sheet "Add" flow.

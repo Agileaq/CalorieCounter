@@ -10,15 +10,6 @@ import { SheetModal } from './SheetModal'
 import { FoodForm } from './FoodForm'
 import { FoodDetail } from './FoodDetail'
 
-function groupByLetter(foods: Food[]): [string, Food[]][] {
-  const map = new Map<string, Food[]>()
-  for (const f of [...foods].sort((a, b) => a.name.localeCompare(b.name))) {
-    const letter = (f.name[0] || '#').toUpperCase()
-    map.set(letter, [...(map.get(letter) ?? []), f])
-  }
-  return [...map.entries()]
-}
-
 /** All tab: most-logged first (last 180 days), then alphabetical. Unused foods
  *  get count 0 and fall through to the alphabetical tail. */
 function sortByFrequency(foods: Food[], counts: Map<string, number>): Food[] {
@@ -28,6 +19,11 @@ function sortByFrequency(foods: Food[], counts: Map<string, number>): Food[] {
     if (ca !== cb) return cb - ca
     return a.name.localeCompare(b.name)
   })
+}
+
+/** My Foods tab: flat alphabetical, same as All but without the frequency pass. */
+function sortAlphabetical(foods: Food[]): Food[] {
+  return [...foods].sort((a, b) => a.name.localeCompare(b.name))
 }
 
 export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void; onClose: () => void }) {
@@ -53,7 +49,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
     [days, selectedDate],
   )
   const allSorted = useMemo(() => sortByFrequency(filtered, counts), [filtered, counts])
-  const myGroups = useMemo(() => groupByLetter(filtered), [filtered])
+  const mySorted = useMemo(() => sortAlphabetical(filtered), [filtered])
 
   useEffect(() => {
     if (!toast) return
@@ -81,14 +77,7 @@ export function FoodPicker({ onPick, onClose }: { onPick: (e: LogEntry) => void;
         <button className="btn-ghost" data-testid="new-food" onClick={() => setCreating(true)}>+ {t('foodPicker.newMyFood')}</button>
       </div>
       <div>
-        {tab === 'all'
-          ? allSorted.map(f => renderRow(f))
-          : myGroups.map(([letter, foods]) => (
-            <div key={letter}>
-              <div className="muted" style={{ marginTop: 8 }}>{letter}</div>
-              {foods.map(f => renderRow(f))}
-            </div>
-          ))}
+        {(tab === 'all' ? allSorted : mySorted).map(f => renderRow(f))}
         {toast && (
           <div className="fast-add-toast" data-testid="fast-add-toast">
             ✓ {t('foodPicker.added', { name: toast.name })}
