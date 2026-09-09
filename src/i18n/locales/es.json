@@ -154,6 +154,7 @@
     "servingUnitHint": "unidad"
   },
   "foodDetail": {
+    "value": "Cantidad",
     "nutritionFacts": "Información nutricional",
     "editNutrition": "Editar nutrición",
     "amount": "Cantidad",

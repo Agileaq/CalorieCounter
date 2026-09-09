@@ -154,6 +154,7 @@
     "servingUnitHint": "unit"
   },
   "foodDetail": {
+    "value": "Amount",
     "nutritionFacts": "Nutrition Facts",
     "editNutrition": "Edit Nutrition",
     "amount": "Amount",

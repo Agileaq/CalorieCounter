@@ -154,6 +154,7 @@
     "servingUnitHint": "单位"
   },
   "foodDetail": {
+    "value": "数值",
     "nutritionFacts": "营养成分",
     "editNutrition": "编辑营养",
     "amount": "份量",

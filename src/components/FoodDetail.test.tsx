@@ -121,4 +121,45 @@ describe('FoodDetail', () => {
     // the static serving label is shown instead
     expect(screen.getByText(/Grams \(100g\)/)).toBeInTheDocument()
   })
+
+  describe('linked value input (数量 ⇄ 数值)', () => {
+    it('typing 63.2 into the value input drives quantity to 0.632', () => {
+      render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
+      fireEvent.change(screen.getByTestId('amount-input'), { target: { value: '63.2' } })
+      expect(screen.getByTestId('qty-input')).toHaveValue(0.632)
+      // 0.632 × 130 kcal = 82.16 → 82
+      expect(screen.getByTestId('qty-preview-cals')).toHaveTextContent('82')
+    })
+    it('typing in quantity drives the value the other way (1.5 × 100g → 150)', () => {
+      render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
+      fireEvent.change(screen.getByTestId('qty-input'), { target: { value: '1.5' } })
+      expect(screen.getByTestId('amount-input')).toHaveValue(150)
+    })
+    it('converts proportionally for a 140g serving (63.2 → 0.451)', () => {
+      const food = mkFood({ servings: [{ id: 's1', kind: 'weight', label: '1个', amount: 140, unit: 'g', isPrimary: true }] })
+      render(<AppProvider><FoodDetail food={food} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
+      fireEvent.change(screen.getByTestId('amount-input'), { target: { value: '63.2' } })
+      expect(screen.getByTestId('qty-input')).toHaveValue(0.451)
+    })
+    it('the value input clears on focus and restores on blur when nothing was typed', () => {
+      render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
+      const val = screen.getByTestId('amount-input') as HTMLInputElement
+      expect(val).toHaveValue(100) // qty 1 × 100g
+      fireEvent.focus(val)
+      expect(val.value).toBe('') // blank while focused — type straight away
+      fireEvent.blur(val)
+      expect(val).toHaveValue(100) // restored, no accidental zero
+    })
+    it('edit mode seeds the value from the entry quantity (2 → 200)', () => {
+      const food = mkFood()
+      const entry = { id: 'e1', foodSnapshot: food, servingId: 's1', quantity: 2 }
+      render(<AppProvider><FoodDetail food={food} onAdd={() => {}} onClose={() => {}} initialEntry={entry} onSaveEntry={() => {}} /></AppProvider>)
+      expect(screen.getByTestId('amount-input')).toHaveValue(200)
+    })
+    it('labels the pair Quantity / Amount', () => {
+      render(<AppProvider><FoodDetail food={mkFood()} onAdd={() => {}} onClose={() => {}} /></AppProvider>)
+      expect(screen.getByText('Quantity')).toBeInTheDocument()
+      expect(screen.getByText('Amount')).toBeInTheDocument()
+    })
+  })
 })

@@ -154,6 +154,7 @@
     "servingUnitHint": "Единица"
   },
   "foodDetail": {
+    "value": "Количество",
     "nutritionFacts": "Пищевая ценность",
     "editNutrition": "Изменить состав",
     "amount": "Количество",

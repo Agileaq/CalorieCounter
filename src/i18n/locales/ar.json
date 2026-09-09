@@ -154,6 +154,7 @@
     "servingUnitHint": "الوحدة"
   },
   "foodDetail": {
+    "value": "الكمية",
     "nutritionFacts": "القيم الغذائية",
     "editNutrition": "تعديل القيم",
     "amount": "الكمية",

@@ -53,6 +53,14 @@ export function FoodDetail({
   const entry: LogEntry = { id: initialEntry?.id ?? newId(), foodSnapshot: food, servingId, quantity: qty }
   const previewCals = Math.round(entryNutrition(entry).calories)
 
+  // 数量 ⇄ 数值 linkage: the value field shows the real total in the serving's
+  // unit (qty × per-serving amount); editing either recomputes the other.
+  const serving = food.servings.find(s => s.id === servingId) ?? primaryServing(food)
+  const per = serving.amount > 0 ? serving.amount : 0
+  const toValue = (q: number) => (per ? Math.round(q * per * 10) / 10 : 0)
+  const toQty = (v: number) => (per ? Math.round((v / per) * 1000) / 1000 : 0)
+  const [val, setVal] = useState(() => toValue(initialEntry?.quantity ?? 1))
+
   function save(f: Food) {
     if (f.source === 'custom') updateMyFood(f)
     else overrideFood(f)
@@ -86,9 +94,15 @@ export function FoodDetail({
         {food.brand && <div className="muted" style={{ textAlign: 'center' }}>{food.brand}</div>}
 
         <div className="card" data-testid="food-detail-quantity">
-          <div className="muted">{t('foodForm.quantity')}</div>
+          <div className="row" style={{ gap: 8 }}>
+            <span className="muted" style={{ width: 100 }}>{t('foodForm.quantity')}</span>
+            <span className="muted">{t('foodDetail.value')}</span>
+          </div>
           <div className="row" style={{ gap: 8, marginTop: 6 }}>
-            <NumberInput testId="qty-input" value={qty} onChange={setQty} style={{ width: 100, padding: 8 }} />
+            <NumberInput testId="qty-input" value={qty}
+              onChange={q => { setQty(q); setVal(toValue(q)) }} style={{ width: 100, padding: 8 }} />
+            <NumberInput testId="amount-input" value={val} clearOnFocus
+              onChange={v => { setVal(v); setQty(toQty(v)) }} style={{ width: 100, padding: 8 }} />
             <span className="muted" style={{ alignSelf: 'center' }}>
               {(() => {
                 const ps = primaryServing(food)
