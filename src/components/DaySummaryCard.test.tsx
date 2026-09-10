@@ -7,25 +7,25 @@ import { emptyNutrition } from '../lib/nutrition'
 import { todayKey } from '../lib/date'
 import type { DayLog, Food } from '../types'
 
-function food(calories: number, carbs: number, protein: number, fat: number): Food {
+function food(calories: number, carbs: number, protein: number, fat: number, fiber = 0): Food {
   const base = emptyNutrition()
   return {
     id: 'f1', name: 'Rice', icon: '🍚', source: 'custom', createdAt: '2026-01-01',
     servings: [{ id: 's1', kind: 'weight', label: 'Grams', amount: 100, unit: 'g', isPrimary: true }],
     nutrition: {
       ...base, calories, protein,
-      carbs: { ...base.carbs, total: carbs },
+      carbs: { ...base.carbs, total: carbs, fiber },
       fat: { ...base.fat, total: fat },
     },
   }
 }
 
 /** Seed today's log: one food entry + one exercise entry. */
-function seedDay(calories: number, carbs: number, protein: number, fat: number, burned: number) {
+function seedDay(calories: number, carbs: number, protein: number, fat: number, burned: number, fiber = 0) {
   const day: DayLog = {
     date: todayKey(),
     meals: {
-      breakfast: [{ id: 'e1', foodSnapshot: food(calories, carbs, protein, fat), servingId: 's1', quantity: 1 }],
+      breakfast: [{ id: 'e1', foodSnapshot: food(calories, carbs, protein, fat, fiber), servingId: 's1', quantity: 1 }],
       lunch: [], dinner: [], snacks: [],
     },
     exercise: [{ id: 'x1', name: 'Running', caloriesBurned: burned }],
@@ -65,7 +65,7 @@ describe('DaySummaryCard', () => {
     seedDay(500, 140, 60, 30, 200)
     render(<AppProvider><DaySummaryCard /></AppProvider>)
     const carbs = screen.getByTestId('summary-macro-carbs')
-    expect(carbs.children[0]).toHaveTextContent('Carbohydrates') // name above
+    expect(carbs.children[0]).toHaveTextContent('Carbs') // name above
     expect(carbs.children[2]).toHaveTextContent('140/280g')      // grams below
     expect((carbs.querySelector('[data-testid="summary-macro-fill"]') as HTMLElement).style.width).toBe('50%')
 
@@ -78,6 +78,19 @@ describe('DaySummaryCard', () => {
     expect(fat.children[0]).toHaveTextContent('Fat')
     expect(fat.children[2]).toHaveTextContent('30/72g')
     expect(parseFloat((fat.querySelector('[data-testid="summary-macro-fill"]') as HTMLElement).style.width)).toBeCloseTo(41.67, 1)
+  })
+  it('fiber bar sits after fat with grams below and a blue fill', () => {
+    seedDay(500, 140, 60, 30, 200, 12)
+    render(<AppProvider><DaySummaryCard /></AppProvider>)
+    const fiber = screen.getByTestId('summary-macro-fiber')
+    expect(fiber.children[0]).toHaveTextContent('Fiber')
+    expect(fiber.children[2]).toHaveTextContent('12/30g') // default fiber target 30
+    const fill = fiber.querySelector('[data-testid="summary-macro-fill"]') as HTMLElement
+    expect(parseFloat(fill.style.width)).toBeCloseTo(40, 1)
+    expect(fill.style.background).toBe('rgb(52, 192, 235)') // #34c0eb
+    // order: fiber comes after the fat bar
+    const fat = screen.getByTestId('summary-macro-fat')
+    expect(fat.compareDocumentPosition(fiber) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
   it('macro fill is capped at 100% when over target', () => {
     seedDay(2500, 350, 60, 30, 0)

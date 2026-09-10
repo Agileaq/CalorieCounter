@@ -80,12 +80,12 @@ describe('MacroMatrix', () => {
     expect(screen.getByTestId('macro-num-carbs').style.color).toBe('inherit') // within → text colour
     expect(screen.getByTestId('macro-value-carbs')).toHaveTextContent('350 / 229–366g')
   })
-  it('fiber met turns green', () => {
+  it('fiber met turns blue', () => {
     seedDays([foodDay(today, { fiber: 32 })])
     render(<AppProvider><MacroMatrix /></AppProvider>)
     const fiberNum = screen.getByTestId('macro-num-fiber')
     expect(fiberNum).toHaveTextContent('32')
-    expect(fiberNum).toHaveStyle({ color: 'var(--green)' })
+    expect(fiberNum).toHaveStyle({ color: '#34c0eb' })
     expect(screen.getByTestId('macro-value-fiber')).toHaveTextContent('32 / 20–40g')
   })
   it('selected day without a record shows — over the range', () => {
@@ -105,7 +105,7 @@ describe('MacroMatrix', () => {
     expect(cell.textContent).toContain('Avg 255/day')
     expect(cell.textContent).toContain('4/7 days on target')
   })
-  it('MiniBars: 7 full-height track slots always render; over-target days red (macros), met days green (fiber)', () => {
+  it('MiniBars: 7 full-height track slots always render; over-target days red (macros), met days blue (fiber)', () => {
     const week = weekOf(todayKey())
     const today = todayKey()
     const d1 = week.find(k => k !== today)! // robust even when today is Monday
@@ -117,7 +117,7 @@ describe('MacroMatrix', () => {
     seedDays([
       foodDay(d1, { carbs: 350, fiber: 45 }),   // over max → red
       foodDay(d2, { carbs: 100, fiber: 10 }),   // short → muted
-      foodDay(today, { carbs: 250, fiber: 25 }), // within → cell colour / green
+      foodDay(today, { carbs: 250, fiber: 25 }), // within → cell colour / blue
     ])
     render(<AppProvider><MacroMatrix /></AppProvider>)
     const carbTracks = screen.getByTestId('macro-minis-carbs').children
@@ -132,6 +132,6 @@ describe('MacroMatrix', () => {
     const fiberTracks = screen.getByTestId('macro-minis-fiber').children
     expect(((fiberTracks[i1] as HTMLElement).firstElementChild as HTMLElement).style.background).toBe('var(--red)')    // 45 > 40
     expect(((fiberTracks[i2] as HTMLElement).firstElementChild as HTMLElement).style.background).toBe('var(--muted)')  // 10 < 20
-    expect(((fiberTracks[todayIdx] as HTMLElement).firstElementChild as HTMLElement).style.background).toBe('var(--green)') // 25 within
+    expect(((fiberTracks[todayIdx] as HTMLElement).firstElementChild as HTMLElement).style.background).toBe('rgb(52, 192, 235)') // 25 within → #34c0eb
   })
 })

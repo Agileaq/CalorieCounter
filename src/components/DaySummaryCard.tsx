@@ -1,7 +1,7 @@
 /**
  * Log page's day-summary card: fixed budget top-left, food / calorie ring /
- exercise row, then carbs-protein-fat progress bars. Read-only — editing
- happens in the meal and exercise cards below it.
+ * exercise row, then carbs-protein-fat-fiber progress bars. Read-only — editing
+ * happens in the meal and exercise cards below it.
  */
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state/useApp'
@@ -12,6 +12,7 @@ const MACROS = [
   { key: 'carbs', label: 'dashboard.carbs', color: 'var(--accent)' },
   { key: 'protein', label: 'dashboard.protein', color: '#5b3df5' },
   { key: 'fat', label: 'dashboard.fat', color: '#f5a623' },
+  { key: 'fiber', label: 'dashboard.fiber', color: '#34c0eb' },
 ] as const
 
 export function DaySummaryCard() {
@@ -48,13 +49,16 @@ export function DaySummaryCard() {
           <div data-testid="summary-exercise" style={{ fontWeight: 700, fontSize: 20 }}>{nf(burned)}</div>
         </div>
       </div>
-      <div className="row" style={{ justifyContent: 'center', gap: 40, marginTop: 12 }}>
+      <div className="row" style={{ justifyContent: 'center', gap: 12, marginTop: 12 }}>
         {MACROS.map(m => {
-          const cur = m.key === 'carbs' ? n.carbs.total : m.key === 'protein' ? n.protein : n.fat.total
+          const cur = m.key === 'carbs' ? n.carbs.total
+            : m.key === 'fiber' ? n.carbs.fiber
+            : m.key === 'protein' ? n.protein
+            : n.fat.total
           const target = settings.macroTargets[m.key]
           const pct = target > 0 ? Math.min(cur / target, 1) * 100 : 0
           return (
-            <div key={m.key} data-testid={`summary-macro-${m.key}`} style={{ width: 90 }}>
+            <div key={m.key} data-testid={`summary-macro-${m.key}`} style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12, textAlign: 'center' }}>{t(m.label)}</div>
               <div style={{ height: 8, background: '#e5e5ea', borderRadius: 4, overflow: 'hidden', marginTop: 4 }}>
                 {cur > 0 && (

@@ -32,7 +32,7 @@
     "language": "Idioma",
     "version": "Versión",
     "calories": "Calorías",
-    "carbs": "Carbohidratos",
+    "carbs": "Carbos",
     "fat": "Grasa",
     "weekAvg": "Media {{n}}/día",
     "hit": "{{n}}/7 días en objetivo"

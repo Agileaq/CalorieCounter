@@ -20,7 +20,7 @@ const nf = (n: number) => Math.round(n).toLocaleString('en-US')
 interface CellConfig {
   key: 'carbs' | 'protein' | 'fat' | 'fiber'
   label: string
-  /** fill/number colour while the value sits inside the range (fiber is green, not its blue accent) */
+  /** fill/number colour while the value sits inside the range (fiber is blue, not green) */
   withinColor: string
   metric: (d: DayLog) => number
 }
@@ -32,7 +32,7 @@ const CELLS: CellConfig[] = [
     metric: d => dayFoodNutrition(d).protein },
   { key: 'fat', label: 'dashboard.fat', withinColor: '#f5a623',
     metric: d => dayFoodNutrition(d).fat.total },
-  { key: 'fiber', label: 'dashboard.fiber', withinColor: 'var(--green)',
+  { key: 'fiber', label: 'dashboard.fiber', withinColor: '#34c0eb',
     metric: d => dayFoodNutrition(d).carbs.fiber },
 ]
 
@@ -87,8 +87,8 @@ function Cell({ cfg, selected, kg }: { cfg: CellConfig; selected: string; kg: nu
   let value: React.ReactNode
   if (dayN == null) value = <>{num('—', 'var(--muted)')}{unit}</>
   else {
-    // number: inherit (macros) / green (fiber) inside the range; minibars use the cell colour
-    const color = stateColor(dayN) ?? (cfg.key === 'fiber' ? 'var(--green)' : undefined)
+    // number: inherit (macros) / blue (fiber) inside the range; minibars use the cell colour
+    const color = stateColor(dayN) ?? (cfg.key === 'fiber' ? '#34c0eb' : undefined)
     value = <>{num(nf(dayN), color)}{unit}</>
   }
 

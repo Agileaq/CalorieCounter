@@ -32,7 +32,7 @@
     "language": "语言",
     "version": "版本",
     "calories": "卡路里",
-    "carbs": "碳水化合物",
+    "carbs": "碳水",
     "fat": "脂肪",
     "weekAvg": "周日均 {{n}}",
     "hit": "达标 {{n}}/7 天"

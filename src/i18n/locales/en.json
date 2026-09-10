@@ -32,7 +32,7 @@
     "language": "Language",
     "version": "Version",
     "calories": "Calories",
-    "carbs": "Carbohydrates",
+    "carbs": "Carbs",
     "fat": "Fat",
     "weekAvg": "Avg {{n}}/day",
     "hit": "{{n}}/7 days on target"
