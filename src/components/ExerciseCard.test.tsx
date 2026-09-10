@@ -40,6 +40,20 @@ describe('ExerciseCard', () => {
     // after adding, the field resets to the default preset
     expect(screen.getByTestId('exercise-name')).toHaveValue('Strength training')
   })
+  it('the entry ✕ matches the food-item ✕ (icon-btn 28×28/14px) and removes the entry', () => {
+    render(<AppProvider><ExerciseCard /></AppProvider>)
+    const cals = screen.getByTestId('exercise-cals')
+    fireEvent.focus(cals)
+    fireEvent.change(cals, { target: { value: '90' } })
+    fireEvent.click(screen.getByTestId('exercise-add'))
+    const x = screen.getByLabelText(/Remove entry|删除条目/i)
+    expect(x.className).toBe('icon-btn')
+    expect(x.style.width).toBe('28px')
+    expect(x.style.height).toBe('28px')
+    expect(x.style.fontSize).toBe('14px')
+    fireEvent.click(x)
+    expect(screen.queryByText(/90/)).not.toBeInTheDocument()
+  })
 
   describe('exercise-tag linkage', () => {
     function mount() {
