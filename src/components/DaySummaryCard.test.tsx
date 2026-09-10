@@ -48,6 +48,7 @@ describe('DaySummaryCard', () => {
     render(<AppProvider><DaySummaryCard /></AppProvider>)
     // remaining = 2248 − 500 + 200 = 1948
     expect(screen.getByTestId('summary-gauge-value')).toHaveTextContent('1,948')
+    expect(screen.getByTestId('summary-gauge-value').style.color).toBe('var(--green)')
     expect(screen.getByText('Under')).toBeInTheDocument()
     const fill = document.querySelector('[data-testid="stat-ring-fill"]')!
     expect(fill.getAttribute('stroke')).toBe('var(--green)')
@@ -58,8 +59,37 @@ describe('DaySummaryCard', () => {
     render(<AppProvider><DaySummaryCard /></AppProvider>)
     // remaining = 2248 − 2500 = −252
     expect(screen.getByTestId('summary-gauge-value')).toHaveTextContent('252')
+    expect(screen.getByTestId('summary-gauge-value').style.color).toBe('var(--red)')
     expect(screen.getByText('Over')).toBeInTheDocument()
     expect(document.querySelector('[data-testid="stat-ring-over"]')).not.toBeNull()
+  })
+  it('food number is tiered by budget share: green ≤80%, orange near budget, red over', () => {
+    const cases: Array<[number, string]> = [
+      [500, 'var(--green)'],   // 22%
+      [1900, 'var(--accent)'], // 84.5% — approaching
+      [2500, 'var(--red)'],    // over
+    ]
+    for (const [calories, color] of cases) {
+      seedDay(calories, 140, 60, 30, 0)
+      const { unmount } = render(<AppProvider><DaySummaryCard /></AppProvider>)
+      expect(screen.getByTestId('summary-food').style.color).toBe(color)
+      unmount()
+    }
+  })
+  it('exercise number is tiered by absolute burn: >0 blue, ≥200 green, ≥500 orange, ≥1000 red, 0 black', () => {
+    const cases: Array<[number, string]> = [
+      [0, ''],
+      [150, 'rgb(52, 192, 235)'], // #34c0eb — jsdom normalises hex colours
+      [300, 'var(--green)'],
+      [600, 'var(--accent)'],
+      [1000, 'var(--red)'],
+    ]
+    for (const [burned, color] of cases) {
+      seedDay(500, 140, 60, 30, burned)
+      const { unmount } = render(<AppProvider><DaySummaryCard /></AppProvider>)
+      expect(screen.getByTestId('summary-exercise').style.color).toBe(color)
+      unmount()
+    }
   })
   it('macro bars: name above, grams below, fill proportional to target', () => {
     seedDay(500, 140, 60, 30, 200)
