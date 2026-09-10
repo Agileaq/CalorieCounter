@@ -46,7 +46,7 @@ describe('ExerciseCard', () => {
     fireEvent.focus(cals)
     fireEvent.change(cals, { target: { value: '90' } })
     fireEvent.click(screen.getByTestId('exercise-add'))
-    const x = screen.getByLabelText(/Remove entry|删除条目/i)
+    const x = screen.getByLabelText(/Delete|删除/i)
     expect(x.className).toBe('icon-btn')
     expect(x.style.width).toBe('28px')
     expect(x.style.height).toBe('28px')
