@@ -69,12 +69,12 @@ describe('WeightTrendChart', () => {
     seedDays(threeWeighIns(), { dailyBudget: 2000 })
     render(<AppProvider><WeightTrendChart /><DateFlipper to={addDays(today, -14)} /></AppProvider>)
     // default selectedDate = today → this week, same weekOf() the week card uses
-    const [mon, sun] = weekOf(today)
-    expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(mon)} – ${fmt(sun)}`)
+    const w = weekOf(today)
+    expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(w[0])} – ${fmt(w[6])}`)
     // flipping the date (calendar/DateHeader) re-labels the trend header
     fireEvent.click(screen.getByTestId('flip-date'))
-    const [mon2, sun2] = weekOf(addDays(today, -14))
-    expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(mon2)} – ${fmt(sun2)}`)
+    const w2 = weekOf(addDays(today, -14))
+    expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(w2[0])} – ${fmt(w2[6])}`)
   })
   it('single weigh-in: dot only, no trend line, warm-up hint', () => {
     seedDays([weighDay(addDays(today, -2), 80)])
