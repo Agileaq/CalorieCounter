@@ -79,19 +79,18 @@ describe('WeightTrendChart', () => {
   it('the week range renders only the selected calendar week', () => {
     seedDays([
       weighDay(addDays(today, -40), 80),
-      weighDay(addDays(today, -2), 79),
+      weighDay(addDays(today, -2), 79, undefined, 1800),
       weighDay(addDays(today, -1), 78.8),
-      weighDay(today, 78.9),
+      weighDay(today, 78.9, undefined, 1800),
     ], { dailyBudget: 2000, goalWeightKg: 75 })
     render(<AppProvider><WeightTrendChart /></AppProvider>)
     fireEvent.click(screen.getByTestId('range-week'))
     // dots: only in-week weigh-ins
     expect(screen.getByTestId(`trend-dot-${today}`)).toBeInTheDocument()
     expect(screen.queryByTestId(`trend-dot-${addDays(today, -40)}`)).toBeNull()
-    // deficit sub-chart spans exactly Mon..Sun of the selected week
-    const wk = weekOf(today)
-    expect(screen.getByTestId(`deficit-bar-${wk[0]}`)).toBeInTheDocument()
-    expect(screen.getByTestId(`deficit-bar-${wk[6]}`)).toBeInTheDocument()
+    // deficit bars only for recorded days, all inside the selected week
+    expect(screen.getByTestId(`deficit-bar-${today}`)).toBeInTheDocument()
+    expect(screen.getByTestId(`deficit-bar-${addDays(today, -2)}`)).toBeInTheDocument()
     expect(screen.queryByTestId(`deficit-bar-${addDays(today, -40)}`)).toBeNull()
   })
   it('the week range follows the selected date and shows noData for empty weeks', () => {
