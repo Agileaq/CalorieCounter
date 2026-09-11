@@ -16,7 +16,7 @@ import {
   padBounds, symmetricBounds, round1,
   TAG_COLORS, type Range,
 } from '../lib/weight'
-import { daysBetween, fromDateKey } from '../lib/date'
+import { daysBetween, fromDateKey, weekOf } from '../lib/date'
 
 const W = 360
 const PAD_L = 36
@@ -133,7 +133,12 @@ export function WeightTrendChart() {
     <div className="card">
       <div className="row spread">
         <strong>{t('weight.trendTitle')}</strong>
-        <div className="row" style={{ border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
+        <div className="row" style={{ gap: 8 }}>
+          {/* selected week (Mon–Sun), same weekOf() source as the week card and calendar */}
+          <span className="muted" data-testid="trend-week" style={{ fontSize: 12 }}>
+            {(() => { const w = weekOf(selectedDate); return `${fmtDate(w[0])} – ${fmtDate(w[6])}` })()}
+          </span>
+          <div className="row" style={{ border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
           {([30, 90, 'all'] as Range[]).map(r => (
             <button key={String(r)} type="button" data-testid={`range-${r}`} onClick={() => { setRange(r); setSel(null) }}
               style={{
@@ -143,6 +148,7 @@ export function WeightTrendChart() {
               {t(r === 30 ? 'weight.range30' : r === 90 ? 'weight.range90' : 'weight.rangeAll')}
             </button>
           ))}
+          </div>
         </div>
       </div>
 

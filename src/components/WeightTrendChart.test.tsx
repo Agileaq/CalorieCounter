@@ -65,6 +65,17 @@ describe('WeightTrendChart', () => {
     expect(screen.getByText(/Log/)).toBeInTheDocument()
     expect(screen.queryByTestId('weight-trend-svg')).toBeNull()
   })
+  it('header labels the selected week (Mon–Sun) before the range switcher and follows date flips', () => {
+    seedDays(threeWeighIns(), { dailyBudget: 2000 })
+    render(<AppProvider><WeightTrendChart /><DateFlipper to={addDays(today, -14)} /></AppProvider>)
+    // default selectedDate = today → this week, same weekOf() the week card uses
+    const [mon, sun] = weekOf(today)
+    expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(mon)} – ${fmt(sun)}`)
+    // flipping the date (calendar/DateHeader) re-labels the trend header
+    fireEvent.click(screen.getByTestId('flip-date'))
+    const [mon2, sun2] = weekOf(addDays(today, -14))
+    expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(mon2)} – ${fmt(sun2)}`)
+  })
   it('single weigh-in: dot only, no trend line, warm-up hint', () => {
     seedDays([weighDay(addDays(today, -2), 80)])
     render(<AppProvider><WeightTrendChart /></AppProvider>)
