@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import '../i18n'
 import { AppProvider } from '../state/AppContext'
+import { useApp } from '../state/useApp'
 import { MacroMatrix } from './MacroMatrix'
 import { emptyDay } from '../lib/storage'
 import { todayKey, weekOf, addDays } from '../lib/date'
@@ -41,6 +42,23 @@ describe('MacroMatrix', () => {
     render(<AppProvider><MacroMatrix /></AppProvider>)
     const cells = screen.getAllByTestId(/^macro-cell-/).map(c => c.dataset.testid)
     expect(cells).toEqual(['macro-cell-carbs', 'macro-cell-protein', 'macro-cell-fat', 'macro-cell-fiber'])
+  })
+  it('mini bars are 1.3× wider (7.8–10.4px) with a 4px gap and switch the date on tap', () => {
+    seedDays([foodDay(addDays(today, -2), { carbs: 220, fiber: 12 })])
+    function DateProbe() {
+      const { selectedDate } = useApp()
+      return <span data-testid="probe-date">{selectedDate}</span>
+    }
+    render(<AppProvider><MacroMatrix /><DateProbe /></AppProvider>)
+    const minis = screen.getByTestId('macro-minis-carbs')
+    expect(minis.style.gap).toBe('4px')
+    const slot = minis.firstElementChild as HTMLElement
+    expect(slot.style.maxWidth).toBe('10.4px')
+    expect(slot.style.minWidth).toBe('7.8px')
+    // Monday of the selected week is linkable even with no data
+    const mon = weekOf(today)[0]
+    fireEvent.click(within(minis).getByLabelText(mon))
+    expect(screen.getByTestId('probe-date').textContent).toBe(mon)
   })
   it('cells show intake over the weight-scaled range (80kg base): tri-state colors', () => {
     // no weigh-ins, no goal → 80kg base: carbs 200–320, protein 96–176, fat 40–96, fiber 20–40

@@ -65,16 +65,33 @@ describe('WeightTrendChart', () => {
     expect(screen.getByText(/Log/)).toBeInTheDocument()
     expect(screen.queryByTestId('weight-trend-svg')).toBeNull()
   })
-  it('header labels the selected week (Mon–Sun) before the range switcher and follows date flips', () => {
+  it('range switcher buttons are separated by grey dividers', () => {
+    seedDays(threeWeighIns())
+    render(<AppProvider><WeightTrendChart /></AppProvider>)
+    const btns = (['week', 30, 90, 'all'] as const).map(r => screen.getByTestId(`range-${r}`))
+    // jsdom serialises a collapsed border as 'medium' — assert the divider colour instead
+    expect(btns[0].style.borderLeft).not.toContain('var(--line)')
+    btns.slice(1).forEach(b => expect(b.style.borderLeft).toBe('1px solid var(--line)'))
+  })
+  it('tapping a column selects that date app-wide (two-way dashboard linkage)', () => {
     seedDays(threeWeighIns(), { dailyBudget: 2000 })
-    render(<AppProvider><WeightTrendChart /><DateFlipper to={addDays(today, -14)} /></AppProvider>)
-    // default selectedDate = today → this week, same weekOf() the week card uses
-    const w = weekOf(today)
-    expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(w[0])} – ${fmt(w[6])}`)
-    // flipping the date (calendar/DateHeader) re-labels the trend header
-    fireEvent.click(screen.getByTestId('flip-date'))
-    const w2 = weekOf(addDays(today, -14))
-    expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(w2[0])} – ${fmt(w2[6])}`)
+    function DateProbe() {
+      const { selectedDate } = useApp()
+      return <span data-testid="probe-date">{selectedDate}</span>
+    }
+    render(<AppProvider><WeightTrendChart /><DateProbe /></AppProvider>)
+    expect(screen.getByTestId('probe-date').textContent).toBe(today)
+    // tap the today−8 column (series index 2 of 10): x = PAD_L + 2/10 × innerW
+    const svg = screen.getByTestId('weight-trend-svg')
+    const total = daysBetween(addDays(today, -10), today)
+    fireEvent(svg, new MouseEvent('pointerdown', {
+      bubbles: true,
+      clientX: PAD_L + (2 / total) * (W - PAD_L - PAD_R),
+      clientY: 100,
+    }))
+    expect(screen.getByTestId('probe-date').textContent).toBe(addDays(today, -8))
+    // readout and crosshair follow the (now app-wide) selected date
+    expect(screen.getByTestId('trend-readout').textContent).toContain(fmt(addDays(today, -8)))
   })
   it('the week range renders only the selected calendar week', () => {
     seedDays([

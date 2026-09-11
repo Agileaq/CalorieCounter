@@ -39,20 +39,28 @@ const CELLS: CellConfig[] = [
 /**
  * 7 axis-less mini bars over always-visible grey track slots (same track+fill
  * layering as WeekBars): tri-state range colouring, heights capped by the week
- * max. Empty days keep their slot so the 7-day shape always reads.
+ * max. Empty days keep their slot so the 7-day shape always reads. Bars are
+ * tappable and switch the selected date (two-way with the trend chart and the
+ * weekly calorie card). Narrow-screen defense: MiniBars use gap 4 / max-width
+ * 10.4 / min-width 7.8 inside minWidth:0 cells.
  */
-function MiniBars({ bars, range, withinColor, testId }: {
+function MiniBars({ bars, range, withinColor, testId, onPick }: {
   bars: WeeklyBar[]; range: MacroRange; withinColor: string; testId: string
+  onPick?: (date: string) => void
 }) {
   const cellMax = Math.max(1, ...bars.map(b => b.value))
   const fill = (v: number) => (v > range.max ? 'var(--red)' : v < range.min ? 'var(--muted)' : withinColor)
   return (
-    <div data-testid={testId} style={{ display: 'flex', gap: 2, height: 28, minWidth: 0 }}>
+    <div data-testid={testId} style={{ display: 'flex', gap: 4, height: 28, minWidth: 0 }}>
       {bars.map(b => (
-        <div key={b.date} style={{
-          position: 'relative', flex: 1, minWidth: 6, maxWidth: 8, height: 28,
-          background: 'var(--line)', borderRadius: 2, overflow: 'hidden',
-        }}>
+        <button key={b.date} type="button" aria-label={b.date}
+          disabled={!onPick} onClick={onPick ? () => onPick(b.date) : undefined}
+          style={{
+            position: 'relative', flex: 1, minWidth: 7.8, maxWidth: 10.4, height: 28,
+            background: 'var(--line)', borderRadius: 2, overflow: 'hidden',
+            border: 'none', padding: 0, margin: 0, font: 'inherit',
+            cursor: onPick ? 'pointer' : 'default',
+          }}>
           {b.value > 0 && (
             <div style={{
               position: 'absolute', left: 0, right: 0, bottom: 0, borderRadius: 2,
@@ -60,7 +68,7 @@ function MiniBars({ bars, range, withinColor, testId }: {
               background: fill(b.value),
             }} />
           )}
-        </div>
+        </button>
       ))}
     </div>
   )
@@ -68,7 +76,7 @@ function MiniBars({ bars, range, withinColor, testId }: {
 
 function Cell({ cfg, selected, kg }: { cfg: CellConfig; selected: string; kg: number }) {
   const { t } = useTranslation()
-  const { days, settings } = useApp()
+  const { days, settings, setSelectedDate } = useApp()
   const perKg = settings.macroRanges[cfg.key]
   // macros scale with the ruler weight; fiber's range is already absolute
   const range: MacroRange = cfg.key === 'fiber' ? perKg : { min: kg * perKg.min, max: kg * perKg.max }
@@ -103,7 +111,7 @@ function Cell({ cfg, selected, kg }: { cfg: CellConfig; selected: string; kg: nu
         </span>
       </div>
       <div style={{ marginTop: 6 }}>
-        <MiniBars bars={stats.bars} range={range} withinColor={cfg.withinColor} testId={`macro-minis-${cfg.key}`} />
+        <MiniBars bars={stats.bars} range={range} withinColor={cfg.withinColor} testId={`macro-minis-${cfg.key}`} onPick={setSelectedDate} />
       </div>
       <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>
         {t('dashboard.weekAvg', { n: stats.avg == null ? '—' : nf(stats.avg) })}

@@ -16,7 +16,7 @@ import {
   padBounds, symmetricBounds, round1,
   TAG_COLORS, type Range,
 } from '../lib/weight'
-import { daysBetween, fromDateKey, todayKey, weekOf } from '../lib/date'
+import { daysBetween, fromDateKey, todayKey } from '../lib/date'
 
 const W = 360
 const PAD_L = 36
@@ -38,7 +38,7 @@ const signedKcal = (n: number) => {
 
 export function WeightTrendChart() {
   const { t, i18n } = useTranslation()
-  const { days, settings, selectedDate } = useApp()
+  const { days, settings, selectedDate, setSelectedDate } = useApp()
   const [range, setRange] = useState<Range>(90)
   const [sel, setSel] = useState<string | null>(null)
 
@@ -74,26 +74,20 @@ export function WeightTrendChart() {
   const fmtDate = (date: string) =>
     Intl.DateTimeFormat(i18n.language, { month: 'numeric', day: 'numeric' }).format(fromDateKey(date))
 
-  const weekKeys = weekOf(selectedDate)
   const header = (
     <div className="row spread">
       <strong>{t('weight.trendTitle')}</strong>
-      <div className="row" style={{ gap: 8 }}>
-        {/* selected week (Mon–Sun), same weekOf() source as the week card and calendar */}
-        <span className="muted" data-testid="trend-week" style={{ fontSize: 12 }}>
-          {`${fmtDate(weekKeys[0])} – ${fmtDate(weekKeys[6])}`}
-        </span>
-        <div className="row" style={{ border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
-          {(['week', 30, 90, 'all'] as Range[]).map(r => (
+      <div className="row" style={{ border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
+        {(['week', 30, 90, 'all'] as Range[]).map((r, i) => (
             <button key={String(r)} type="button" data-testid={`range-${r}`} onClick={() => { setRange(r); setSel(null) }}
               style={{
                 padding: '6px 10px', border: 'none', cursor: 'pointer', fontSize: 12,
+                borderLeft: i > 0 ? '1px solid var(--line)' : 'none',
                 background: range === r ? 'var(--accent)' : 'var(--card)', color: range === r ? '#fff' : 'inherit',
               }}>
               {t(r === 'week' ? 'weight.rangeWeek' : r === 30 ? 'weight.range30' : r === 90 ? 'weight.range90' : 'weight.rangeAll')}
             </button>
           ))}
-        </div>
       </div>
     </div>
   )
@@ -161,7 +155,11 @@ export function WeightTrendChart() {
     }
     const frac = (vx - PAD_L) / INNER
     const p = s.points[Math.max(0, Math.min(s.points.length - 1, Math.round(frac * total)))]
-    if (p) setSel(p.date)
+    // two-way linkage: a tap promotes the column's date to the app-wide
+    // selected date (cards below follow); the selectedDate effect re-syncs
+    // the tap override. Any calendar date is representable, so every
+    // column is linkable.
+    if (p) { setSel(p.date); setSelectedDate(p.date) }
   }
 
   // week mode: one label per day; longer ranges keep the 5-tick spacing
