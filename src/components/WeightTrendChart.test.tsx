@@ -65,10 +65,13 @@ describe('WeightTrendChart', () => {
     expect(screen.getByText(/Log/)).toBeInTheDocument()
     expect(screen.queryByTestId('weight-trend-svg')).toBeNull()
   })
-  it('range switcher buttons are separated by grey dividers', () => {
+  it('range switcher is a flush segmented control: no gaps, grey dividers attached', () => {
     seedDays(threeWeighIns())
     render(<AppProvider><WeightTrendChart /></AppProvider>)
     const btns = (['week', 30, 90, 'all'] as const).map(r => screen.getByTestId(`range-${r}`))
+    // the .row class gap (12px) must be overridden to 0 — segments sit flush
+    const switcher = btns[0].parentElement as HTMLElement
+    expect(switcher.style.gap).toBe('0px')
     // jsdom serialises a collapsed border as 'medium' — assert the divider colour instead
     expect(btns[0].style.borderLeft).not.toContain('var(--line)')
     btns.slice(1).forEach(b => expect(b.style.borderLeft).toBe('1px solid var(--line)'))

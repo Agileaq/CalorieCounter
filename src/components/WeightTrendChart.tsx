@@ -77,7 +77,7 @@ export function WeightTrendChart() {
   const header = (
     <div className="row spread">
       <strong>{t('weight.trendTitle')}</strong>
-      <div className="row" style={{ border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
+      <div className="row" style={{ gap: 0, border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
         {(['week', 30, 90, 'all'] as Range[]).map((r, i) => (
             <button key={String(r)} type="button" data-testid={`range-${r}`} onClick={() => { setRange(r); setSel(null) }}
               style={{
