@@ -41,6 +41,7 @@
     "title": "Poids",
     "placeholder": "Non enregistré",
     "kg": "kg",
+    "rangeWeek": "Semaine",
     "range30": "30 j",
     "range90": "90 j",
     "rangeAll": "Tout",

@@ -41,6 +41,7 @@
     "title": "Weight",
     "placeholder": "Not recorded",
     "kg": "kg",
+    "rangeWeek": "Week",
     "range30": "30d",
     "range90": "90d",
     "rangeAll": "All",

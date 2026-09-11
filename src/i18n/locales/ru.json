@@ -41,6 +41,7 @@
     "title": "Вес",
     "placeholder": "Нет записи",
     "kg": "кг",
+    "rangeWeek": "Неделя",
     "range30": "30 дн",
     "range90": "90 дн",
     "rangeAll": "Всё",

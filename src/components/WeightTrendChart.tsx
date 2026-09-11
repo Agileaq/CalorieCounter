@@ -16,7 +16,7 @@ import {
   padBounds, symmetricBounds, round1,
   TAG_COLORS, type Range,
 } from '../lib/weight'
-import { daysBetween, fromDateKey, weekOf } from '../lib/date'
+import { daysBetween, fromDateKey, todayKey, weekOf } from '../lib/date'
 
 const W = 360
 const PAD_L = 36
@@ -43,7 +43,10 @@ export function WeightTrendChart() {
   const [sel, setSel] = useState<string | null>(null)
 
   const weighIns = useMemo(() => extractWeighIns(days), [days])
-  const s = useMemo(() => dailySeries(days, range), [days, range])
+  const s = useMemo(
+    () => (range === 'week' ? dailySeries(days, 'week', todayKey(), selectedDate) : dailySeries(days, range)),
+    [days, range, selectedDate],
+  )
   const corr = useMemo(() => safeCorridor(weighIns, s, settings.goalWeightKg), [weighIns, s, settings.goalWeightKg])
   const deficits = useMemo(() => deficitSeries(days, s, settings.dailyBudget), [days, s, settings.dailyBudget])
   const deficitWeek = useMemo(
@@ -70,6 +73,41 @@ export function WeightTrendChart() {
   const unitLabel = t('weight.kg')
   const fmtDate = (date: string) =>
     Intl.DateTimeFormat(i18n.language, { month: 'numeric', day: 'numeric' }).format(fromDateKey(date))
+
+  const weekKeys = weekOf(selectedDate)
+  const header = (
+    <div className="row spread">
+      <strong>{t('weight.trendTitle')}</strong>
+      <div className="row" style={{ gap: 8 }}>
+        {/* selected week (Mon–Sun), same weekOf() source as the week card and calendar */}
+        <span className="muted" data-testid="trend-week" style={{ fontSize: 12 }}>
+          {`${fmtDate(weekKeys[0])} – ${fmtDate(weekKeys[6])}`}
+        </span>
+        <div className="row" style={{ border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
+          {(['week', 30, 90, 'all'] as Range[]).map(r => (
+            <button key={String(r)} type="button" data-testid={`range-${r}`} onClick={() => { setRange(r); setSel(null) }}
+              style={{
+                padding: '6px 10px', border: 'none', cursor: 'pointer', fontSize: 12,
+                background: range === r ? 'var(--accent)' : 'var(--card)', color: range === r ? '#fff' : 'inherit',
+              }}>
+              {t(r === 'week' ? 'weight.rangeWeek' : r === 30 ? 'weight.range30' : r === 90 ? 'weight.range90' : 'weight.rangeAll')}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
+  // week mode over a stretch with no reachable data (no dots, no carry):
+  // no svg — just the header and the honest hint
+  if (s.points.every(p => p.kg === undefined)) {
+    return (
+      <div className="card">
+        {header}
+        <div className="muted" style={{ marginTop: 6 }}>{t('weight.noData')}</div>
+      </div>
+    )
+  }
   const total = Math.max(1, daysBetween(s.start, s.end))
   const x = (date: string) => PAD_L + (daysBetween(s.start, date) / total) * INNER
 
@@ -126,31 +164,15 @@ export function WeightTrendChart() {
     if (p) setSel(p.date)
   }
 
-  const ticks = [0, 1, 2, 3, 4].map(k => s.points[Math.round((k * total) / 4)]).filter(Boolean)
+  // week mode: one label per day; longer ranges keep the 5-tick spacing
+  const ticks = range === 'week'
+    ? s.points
+    : [0, 1, 2, 3, 4].map(k => s.points[Math.round((k * total) / 4)]).filter(Boolean)
   const inRange = weighIns.filter(w => w.date >= s.start && w.date <= s.end)
 
   return (
     <div className="card">
-      <div className="row spread">
-        <strong>{t('weight.trendTitle')}</strong>
-        <div className="row" style={{ gap: 8 }}>
-          {/* selected week (Mon–Sun), same weekOf() source as the week card and calendar */}
-          <span className="muted" data-testid="trend-week" style={{ fontSize: 12 }}>
-            {(() => { const w = weekOf(selectedDate); return `${fmtDate(w[0])} – ${fmtDate(w[6])}` })()}
-          </span>
-          <div className="row" style={{ border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
-          {([30, 90, 'all'] as Range[]).map(r => (
-            <button key={String(r)} type="button" data-testid={`range-${r}`} onClick={() => { setRange(r); setSel(null) }}
-              style={{
-                padding: '6px 10px', border: 'none', cursor: 'pointer', fontSize: 12,
-                background: range === r ? 'var(--accent)' : 'var(--card)', color: range === r ? '#fff' : 'inherit',
-              }}>
-              {t(r === 30 ? 'weight.range30' : r === 90 ? 'weight.range90' : 'weight.rangeAll')}
-            </button>
-          ))}
-          </div>
-        </div>
-      </div>
+      {header}
 
       <div data-testid="trend-readout" className="muted" style={{ fontSize: 12, marginTop: 6, minHeight: 18 }}>
         {ro && ro.kg != null ? (

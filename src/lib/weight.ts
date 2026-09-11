@@ -24,7 +24,7 @@ export const TAG_COLORS: Record<WeightTag, string> = {
   period: '#f56fa1',
 }
 
-export type Range = 30 | 90 | 'all'
+export type Range = 30 | 90 | 'all' | 'week'
 
 export interface WeighIn { date: string; kg: number }
 export interface DailyPoint { date: string; kg: number | undefined; trend: number | undefined }
@@ -56,27 +56,40 @@ export function resolveReviewWeightKg(days: Record<string, DayLog>, goalWeightKg
 }
 
 /**
- * Per-calendar-day series over the visible window [start..today].
+ * Per-calendar-day series over the visible window [start..end].
  * kg: the day's weigh-in, else a carry-forward of the last weigh-in
  * (≤ MAX_GAP_DAYS, then undefined — the "fuse" that stops stale flat lines),
  * else undefined. trend: 7-day simple moving average over the defined values
  * in the window (expanding during warm-up); undefined exactly where kg is
  * undefined, so after a fused gap the line resumes on the day of the next
  * weigh-in instead of staying broken for another week.
+ * range 'week' pins the window to the anchor date's Mon–Sun (the calendar
+ * week); every other range anchors to today. `anchor` defaults to today.
  */
-export function dailySeries(days: Record<string, DayLog>, range: Range, today = todayKey()): Series {
+export function dailySeries(days: Record<string, DayLog>, range: Range, today = todayKey(), anchor = today): Series {
   const weighIns = extractWeighIns(days)
   const first = weighIns[0]?.date
-  if (!first || first > today) return { start: today, end: today, points: [], weighInCount: weighIns.length }
-  const windowStart = range === 'all' ? first : addDays(today, -(range - 1))
-  const start = windowStart < first ? first : windowStart
+  if (!first) return { start: today, end: today, points: [], weighInCount: weighIns.length }
+  let start: string
+  let end: string
+  if (range === 'week') {
+    const w = weekOf(anchor)
+    start = w[0]
+    end = w[6]
+  } else {
+    end = today
+    if (first > today) return { start: today, end: today, points: [], weighInCount: weighIns.length }
+    const windowStart = range === 'all' ? first : addDays(today, -(range - 1))
+    start = windowStart < first ? first : windowStart
+  }
+  if (first > end) return { start, end, points: [], weighInCount: weighIns.length }
   const byDate = new Map(weighIns.map(w => [w.date, w.kg]))
   // a weigh-in just before the window still feeds carry-forward into the first days
   const pre = [...weighIns].reverse().find(w => w.date <= start)
   let lastDate: string | null = pre ? pre.date : null
   let lastKg: number | undefined = pre ? pre.kg : undefined
   const points: DailyPoint[] = []
-  const n = daysBetween(start, today)
+  const n = daysBetween(start, end)
   for (let i = 0; i <= n; i++) {
     const date = addDays(start, i)
     const w = byDate.get(date)
@@ -96,7 +109,7 @@ export function dailySeries(days: Record<string, DayLog>, range: Range, today = 
     }
     points.push({ date, kg, trend })
   }
-  return { start, end: today, points, weighInCount: weighIns.length }
+  return { start, end, points, weighInCount: weighIns.length }
 }
 
 export interface RailPoint { date: string; v: number }

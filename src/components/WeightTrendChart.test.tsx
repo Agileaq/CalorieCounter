@@ -76,6 +76,42 @@ describe('WeightTrendChart', () => {
     const w2 = weekOf(addDays(today, -14))
     expect(screen.getByTestId('trend-week').textContent).toBe(`${fmt(w2[0])} – ${fmt(w2[6])}`)
   })
+  it('the week range renders only the selected calendar week', () => {
+    seedDays([
+      weighDay(addDays(today, -40), 80),
+      weighDay(addDays(today, -2), 79),
+      weighDay(addDays(today, -1), 78.8),
+      weighDay(today, 78.9),
+    ], { dailyBudget: 2000, goalWeightKg: 75 })
+    render(<AppProvider><WeightTrendChart /></AppProvider>)
+    fireEvent.click(screen.getByTestId('range-week'))
+    // dots: only in-week weigh-ins
+    expect(screen.getByTestId(`trend-dot-${today}`)).toBeInTheDocument()
+    expect(screen.queryByTestId(`trend-dot-${addDays(today, -40)}`)).toBeNull()
+    // deficit sub-chart spans exactly Mon..Sun of the selected week
+    const wk = weekOf(today)
+    expect(screen.getByTestId(`deficit-bar-${wk[0]}`)).toBeInTheDocument()
+    expect(screen.getByTestId(`deficit-bar-${wk[6]}`)).toBeInTheDocument()
+    expect(screen.queryByTestId(`deficit-bar-${addDays(today, -40)}`)).toBeNull()
+  })
+  it('the week range follows the selected date and shows noData for empty weeks', () => {
+    const past = addDays(today, -21) // three weeks back
+    seedDays([weighDay(past, 81), weighDay(today, 78.9), weighDay(addDays(today, -1), 79)], { dailyBudget: 2000 })
+    render(<AppProvider><WeightTrendChart /><DateFlipper to={past} /></AppProvider>)
+    fireEvent.click(screen.getByTestId('flip-date'))
+    fireEvent.click(screen.getByTestId('range-week'))
+    expect(screen.getByTestId(`trend-dot-${past}`)).toBeInTheDocument()
+    expect(screen.queryByTestId(`trend-dot-${today}`)).toBeNull()
+  })
+  it('a week with no reachable data shows the no-data hint instead of a chart', () => {
+    seedDays([weighDay(today, 78.9)], { dailyBudget: 2000 })
+    const far = addDays(today, -60)
+    render(<AppProvider><WeightTrendChart /><DateFlipper to={far} /></AppProvider>)
+    fireEvent.click(screen.getByTestId('flip-date'))
+    fireEvent.click(screen.getByTestId('range-week'))
+    expect(screen.queryByTestId('weight-trend-svg')).toBeNull()
+    expect(screen.getByText('Not recorded')).toBeInTheDocument()
+  })
   it('single weigh-in: dot only, no trend line, warm-up hint', () => {
     seedDays([weighDay(addDays(today, -2), 80)])
     render(<AppProvider><WeightTrendChart /></AppProvider>)

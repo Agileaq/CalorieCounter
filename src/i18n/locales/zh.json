@@ -41,6 +41,7 @@
     "title": "体重",
     "placeholder": "未记录",
     "kg": "kg",
+    "rangeWeek": "当周",
     "range30": "30天",
     "range90": "90天",
     "rangeAll": "全部",

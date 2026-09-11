@@ -125,6 +125,27 @@ describe('dailySeries', () => {
     expect(s.start).toBe('2025-12-01')
     expect(s.points[0].kg).toBe(80)
   })
+  it("'week' renders exactly the anchor date's Mon–Sun, carrying across Monday", () => {
+    // 2026-09-11 is a Friday; its week runs Mon 09-07 .. Sun 09-13
+    const days = { ...D('2026-09-01', 80), ...D('2026-09-09', 79), ...D('2026-09-20', 78) }
+    const s = dailySeries(days, 'week', '2026-09-11', '2026-09-11')
+    expect(s.start).toBe('2026-09-07')
+    expect(s.end).toBe('2026-09-13')
+    expect(s.points).toHaveLength(7)
+    expect(s.points[0].kg).toBe(80)          // Monday: carried from 09-01 (6-day gap ≤ fuse)
+    expect(s.points[0].trend).toBe(80)       // expanding window from day one
+    expect(s.points[2].kg).toBe(79)          // Wednesday weigh-in
+    expect(s.points[6].kg).toBe(79)          // Sunday: carried from 09-09 (4 days)
+    // the 09-20 weigh-in stays outside the window entirely
+    expect(s.points.some(p => p.kg === 78)).toBe(false)
+  })
+  it("'week' past all data yields week bounds with only undefined points", () => {
+    const s = dailySeries(D('2026-01-01', 80), 'week', '2026-09-11', '2026-09-11')
+    expect(s.start).toBe('2026-09-07')
+    expect(s.end).toBe('2026-09-13')
+    expect(s.points).toHaveLength(7)
+    expect(s.points.every(p => p.kg === undefined && p.trend === undefined)).toBe(true)
+  })
 })
 
 describe('safeCorridor', () => {
