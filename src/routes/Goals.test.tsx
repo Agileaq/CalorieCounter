@@ -124,6 +124,15 @@ describe('Goals', () => {
 
   // Two-way macro auto-calc. Budget ↔ 3 macros (carbs/protein/fat) by the
   // 3.5:1.5:0.8 ratio; fiber is manual and never affects the budget.
+  it('advice-card weight blanks a zero on focus (same clear-on-focus as food detail)', () => {
+    render(<AppProvider><Goals /></AppProvider>)
+    const w = screen.getByTestId('cut-weight')
+    expect(w).toHaveValue(0)
+    fireEvent.focus(w)
+    expect(w).toHaveValue(null)
+    fireEvent.blur(w)
+    expect(w).toHaveValue(0)
+  })
   describe('macro auto-calc', () => {
     it('editing the budget redistributes carbs/protein/fat by 3.5:1.5:0.8 and keeps the budget as typed', () => {
       render(<AppProvider><Goals /></AppProvider>)

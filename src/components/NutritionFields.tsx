@@ -10,6 +10,7 @@ function Field({ label, value, onChange, testId, indent }: { label: string; valu
     <div className="row spread" style={{ padding: '10px 0', borderBottom: '1px solid var(--line)', paddingInlineStart: indent ? 16 : 0 }}>
       <label style={{ color: indent ? 'var(--muted)' : 'inherit' }}>{label}</label>
       <NumberInput testId={testId} value={Number.isFinite(value) ? value : 0} onChange={onChange}
+        clearOnFocus
         style={{ width: 90, textAlign: 'end', border: 'none', background: 'transparent' }} />
     </div>
   )

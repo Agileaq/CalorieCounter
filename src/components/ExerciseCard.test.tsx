@@ -40,6 +40,16 @@ describe('ExerciseCard', () => {
     // after adding, the field resets to the default preset
     expect(screen.getByTestId('exercise-name')).toHaveValue('Strength training')
   })
+  it('tapping the calorie field blanks a zero value — no need to delete the 0 first', () => {
+    render(<AppProvider><ExerciseCard /></AppProvider>)
+    const cals = screen.getByTestId('exercise-cals')
+    expect(cals).toHaveValue(0)
+    fireEvent.focus(cals)
+    expect(cals).toHaveValue(null)
+    // nothing typed → blur restores the stored value without committing
+    fireEvent.blur(cals)
+    expect(cals).toHaveValue(0)
+  })
   it('the entry ✕ matches the food-item ✕ (icon-btn 28×28/14px) and removes the entry', () => {
     render(<AppProvider><ExerciseCard /></AppProvider>)
     const cals = screen.getByTestId('exercise-cals')

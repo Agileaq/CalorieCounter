@@ -54,7 +54,7 @@ function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; to
         </span>
         <label className="row" style={{ gap: 6 }}>
           {t('goals.weightLabel')}:
-          <NumberInput testId={weightTestId} value={weight} onChange={setWeight}
+          <NumberInput testId={weightTestId} value={weight} onChange={setWeight} clearOnFocus
             style={{ width: 80, textAlign: 'end' }} />
         </label>
       </div>

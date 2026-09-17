@@ -77,7 +77,7 @@ export function ExerciseCard() {
             </>
           )}
         </div>
-        <NumberInput testId="exercise-cals" integer value={exCals} onChange={setExCals} style={{ width: 80 }} />
+        <NumberInput testId="exercise-cals" integer value={exCals} onChange={setExCals} clearOnFocus style={{ width: 80 }} />
       </div>
       <div className="row" style={{ justifyContent: 'flex-end', marginTop: 8 }}>
         <button className="btn-accent" data-testid="exercise-add" onClick={add}>{t('exercise.addExercise')}</button>
