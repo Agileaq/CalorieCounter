@@ -7,7 +7,7 @@ import Log from './Log'
 describe('Log', () => {
   it('renders the four meal cards and the exercise card', () => {
     render(<AppProvider><Log /></AppProvider>)
-    for (const meal of ['Breakfast', 'Lunch', 'Dinner', 'Snacks']) {
+    for (const meal of ['Breakfast', 'Lunch', 'Dinner', 'Pre/post-workout meal or snack']) {
       expect(screen.getByText(new RegExp(meal))).toBeInTheDocument()
     }
     expect(screen.getByTestId('exercise-add')).toBeInTheDocument()

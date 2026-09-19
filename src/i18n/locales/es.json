@@ -84,7 +84,7 @@
     "breakfast": "Desayuno",
     "lunch": "Almuerzo",
     "dinner": "Cena",
-    "snacks": "Snacks",
+    "snacks": "Comida pre/post-entrenamiento o snack",
     "cals": "{{n}} cal",
     "addFood": "Añadir comida",
     "proteinFiber": "{{p}}g proteína · {{f}}g fibra",
