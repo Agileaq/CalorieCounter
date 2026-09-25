@@ -25,6 +25,8 @@ export const DEFAULT_SETTINGS: Settings = {
   macroRanges: DEFAULT_MACRO_RANGES,
   language: 'en',
   goalWeightKg: null,
+  adviceCutWeightKg: 0,
+  adviceBulkWeightKg: 0,
 }
 
 function read<T>(key: string, fallback: T): T {

@@ -78,6 +78,8 @@ export interface Settings {
   macroRanges: { carbs: MacroRange; protein: MacroRange; fat: MacroRange; fiber: MacroRange }
   language: Language
   goalWeightKg: number | null   // safe-loss corridor endpoint; null = not set
+  adviceCutWeightKg: number     // advice-card body weights (kg); 0 = not entered.
+  adviceBulkWeightKg: number    // persisted so a page switch doesn't reset them
 }
 
 export const MEAL_KEYS: MealKey[] = ['breakfast', 'lunch', 'dinner', 'snacks']

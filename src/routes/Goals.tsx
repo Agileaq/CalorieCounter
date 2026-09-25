@@ -19,9 +19,8 @@ const BULK: Quota = { carbs: 4, protein: 2, fat: 1 }
  * user gets a starting point to copy into the targets above. No fiber is suggested
  * (the quota tables don't define one).
  */
-function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; tooltip: string; quota: Quota; weightTestId: string }) {
+function AdviceCard({ title, tooltip, quota, weightTestId, weight, onWeightChange }: { title: string; tooltip: string; quota: Quota; weightTestId: string; weight: number; onWeightChange: (v: number) => void }) {
   const { t } = useTranslation()
-  const [weight, setWeight] = useState(0)
   const [showTip, setShowTip] = useState(false)
   const tipRef = useRef<HTMLSpanElement>(null)
   // Click outside (or tap) the tip wrapper closes the bubble. onBlur can't do this
@@ -54,7 +53,7 @@ function AdviceCard({ title, tooltip, quota, weightTestId }: { title: string; to
         </span>
         <label className="row" style={{ gap: 6 }}>
           {t('goals.weightLabel')}:
-          <NumberInput testId={weightTestId} value={weight} onChange={setWeight} clearOnFocus
+          <NumberInput testId={weightTestId} value={weight} onChange={onWeightChange} clearOnFocus
             style={{ width: 80, textAlign: 'end' }} />
         </label>
       </div>
@@ -139,8 +138,10 @@ export default function Goals() {
             style={{ width: 100, textAlign: 'end' }} /></label>
       </div>
 
-      <AdviceCard title={t('goals.cutTitle')} tooltip={t('goals.cutTooltip')} quota={CUT} weightTestId="cut-weight" />
-      <AdviceCard title={t('goals.bulkTitle')} tooltip={t('goals.bulkTooltip')} quota={BULK} weightTestId="bulk-weight" />
+      <AdviceCard title={t('goals.cutTitle')} tooltip={t('goals.cutTooltip')} quota={CUT} weightTestId="cut-weight"
+        weight={settings.adviceCutWeightKg} onWeightChange={v => updateSettings({ adviceCutWeightKg: v })} />
+      <AdviceCard title={t('goals.bulkTitle')} tooltip={t('goals.bulkTooltip')} quota={BULK} weightTestId="bulk-weight"
+        weight={settings.adviceBulkWeightKg} onWeightChange={v => updateSettings({ adviceBulkWeightKg: v })} />
 
       <div className="card">
         <strong>{t('goals.data')}</strong>

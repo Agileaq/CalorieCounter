@@ -133,6 +133,19 @@ describe('Goals', () => {
     fireEvent.blur(w)
     expect(w).toHaveValue(0)
   })
+  it('advice-card weights survive a page switch, persisted like the macro targets', () => {
+    const first = render(<AppProvider><Goals /></AppProvider>)
+    fireEvent.change(screen.getByTestId('cut-weight'), { target: { value: '70' } })
+    fireEvent.change(screen.getByTestId('bulk-weight'), { target: { value: '72' } })
+    const stored = JSON.parse(localStorage.getItem('cc.settings')!)
+    expect(stored.adviceCutWeightKg).toBe(70)
+    expect(stored.adviceBulkWeightKg).toBe(72)
+    // leave the page (unmount) and come back — values must survive
+    first.unmount()
+    render(<AppProvider><Goals /></AppProvider>)
+    expect(screen.getByTestId('cut-weight')).toHaveValue(70)
+    expect(screen.getByTestId('bulk-weight')).toHaveValue(72)
+  })
   describe('macro auto-calc', () => {
     it('editing the budget redistributes carbs/protein/fat by 3.5:1.5:0.8 and keeps the budget as typed', () => {
       render(<AppProvider><Goals /></AppProvider>)
