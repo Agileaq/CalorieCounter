@@ -57,10 +57,12 @@ function AdviceCard({ title, tooltip, quota, weightTestId, weight, onWeightChang
     <div className="card">
       <div className="row spread">
         <span className="info-wrap" ref={tipRef}>
-          <strong>{title}</strong>
-          <button className="info-tip" aria-label={title} title=""
+          <button
+            type="button"
+            className="dashed-tip-trigger"
+            aria-label={title}
             onClick={() => setShowTip(s => !s)}>
-            {'!'}
+            <strong>{title}</strong>
             {showTip && <div className="info-bubble">{tooltip}</div>}
           </button>
         </span>
@@ -245,24 +247,26 @@ export default function Goals() {
             <div className="row spread" style={{ flexWrap: 'wrap', gap: 8 }}>
               {bmi != null && displayCat != null && (
                 <div className="row" style={{ gap: 8, alignItems: 'center' }}>
-                  <span className="muted">{t('goals.bmiLabel')}:</span>
+                  <span className="info-wrap" ref={bmiTipRef}>
+                    <button
+                      type="button"
+                      className="dashed-tip-trigger"
+                      data-testid="bmi-info-tip"
+                      onClick={() => setShowBmiTip(s => !s)}>
+                      <span className="muted">{t('goals.bmiLabel')}:</span>
+                      {showBmiTip && (
+                        <div className="info-bubble" data-testid="bmi-tip-content">
+                          {idealRange != null
+                            ? t('goals.idealWeightTooltip', { range: `${idealRange.min} – ${idealRange.max}` })
+                            : `${t('goals.bmiLabel')}: ${bmi}`}
+                        </div>
+                      )}
+                    </button>
+                  </span>
                   <strong data-testid="bmi-value" style={{ fontSize: '1.2em' }}>{bmi}</strong>
                   <span data-testid="bmi-badge" className={`bmi-badge ${displayCat}`}>
                     {t(`goals.bmiCategory.${displayCat}`)}
                   </span>
-                  {idealRange != null && (
-                    <span className="info-wrap" ref={bmiTipRef}>
-                      <button type="button" className="info-tip" data-testid="bmi-info-tip" aria-label={t('goals.idealWeight')} title=""
-                        onClick={() => setShowBmiTip(s => !s)}>
-                        {'!'}
-                        {showBmiTip && (
-                          <div className="info-bubble tip-end" data-testid="bmi-tip-content">
-                            {t('goals.idealWeightTooltip', { range: `${idealRange.min} – ${idealRange.max}` })}
-                          </div>
-                        )}
-                      </button>
-                    </span>
-                  )}
                 </div>
               )}
             </div>
