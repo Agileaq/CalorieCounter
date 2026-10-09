@@ -238,7 +238,9 @@
     "bmiSuggestionObese": "Actuellement en zone d'obésité. Il est conseillé de suivre un plan progressif et durable.",
     "bmiSuggestionAthletic": "L'IMC est élevé, mais le tour de taille / taux de graisse sain indique une bonne masse musculaire. Inutile de perdre du poids aveuglément !",
     "waistRiskNote": "Attention : Le tour de taille atteint le seuil d'alerte (≥85cm homme / ≥80cm femme), signalant un risque de graisse viscérale.",
-    "strengthTrainerHint": "Note musculation : Une masse musculaire développée peut classer l'IMC en surpoids. Vérifiez le tour de taille (<85cm H / <80cm F) ou la masse grasse."
+    "strengthTrainerHint": "Note musculation : Une masse musculaire développée peut classer l'IMC en surpoids. Vérifiez le tour de taille (<85cm H / <80cm F) ou la masse grasse.",
+    "waistTooltip": "Guide de mesure du tour de taille :\n1. Debout, pieds joints, relâchez l'abdomen ;\n2. Placez le ruban horizontalement à mi-chemin entre la dernière côte et l'os de la hanche (~1cm au-dessus du nombril) ;\n3. Mesurez en fin d'expiration normale, sans serrer.\nCibles : Homme <85cm, Femme <80cm.",
+    "idealWeightTooltip": "Fourchette de poids santé : {{range}} kg\n(Basée sur la norme IMC 18,5 – 23,9)"
   },
   "update": {
     "available": "Nouvelle version disponible",

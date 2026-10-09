@@ -238,7 +238,9 @@
     "bmiSuggestionObese": "Currently in the obese category. Consider a steady and sustainable fat-loss plan.",
     "bmiSuggestionAthletic": "BMI is elevated, but healthy waist/body fat indicates substantial muscle mass from strength training. No need to cut weight blindly!",
     "waistRiskNote": "Notice: Waist circumference reaches central obesity threshold (≥85cm male / ≥80cm female), suggesting visceral fat risk.",
-    "strengthTrainerHint": "Strength lifter note: High skeletal muscle mass can skew BMI into 'overweight'. Check waist (<85cm male / <80cm female) or body fat % for accuracy."
+    "strengthTrainerHint": "Strength lifter note: High skeletal muscle mass can skew BMI into 'overweight'. Check waist (<85cm male / <80cm female) or body fat % for accuracy.",
+    "waistTooltip": "Waist Measurement Guide:\n1. Stand upright with feet together and relax your abdomen;\n2. Wrap tape horizontally midway between bottom rib and hip bone (~1cm above navel);\n3. Measure at the end of a normal exhale, snug but not compressing.\nTarget: Male <85cm, Female <80cm.",
+    "idealWeightTooltip": "Healthy Weight Range: {{range}} kg\n(Based on BMI 18.5 – 23.9 standard)"
   },
   "update": {
     "available": "New version available",

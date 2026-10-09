@@ -238,7 +238,9 @@
     "bmiSuggestionObese": "Actualmente en rango de obesidad. Se recomienda un plan gradual y sostenible de pérdida de grasa.",
     "bmiSuggestionAthletic": "El IMC es alto, pero la cintura/grasa corporal saludable indica buena masa muscular. ¡No es necesario bajar de peso a ciegas!",
     "waistRiskNote": "Aviso: La cintura alcanza el umbral de riesgo (≥85cm hombre / ≥80cm mujer), indicando posible grasa visceral.",
-    "strengthTrainerHint": "Nota para fuerza: La masa muscular puede situar el IMC en sobrepeso. Comprueba cintura (<85cm H / <80cm M) o % graso."
+    "strengthTrainerHint": "Nota para fuerza: La masa muscular puede situar el IMC en sobrepeso. Comprueba cintura (<85cm H / <80cm M) o % graso.",
+    "waistTooltip": "Guía para medir la cintura:\n1. De pie, pies juntos y abdomen relajado;\n2. Pasa la cinta métrica horizontalmente entre la última costilla y la cresta ilíaca (~1cm sobre el ombligo);\n3. Mide al final de una espiración normal sin apretar.\nObjetivo: Hombre <85cm, Mujer <80cm.",
+    "idealWeightTooltip": "Rango de peso saludable: {{range}} kg\n(Basado en el estándar de IMC 18,5 – 23,9)"
   },
   "update": {
     "available": "Nueva versión disponible",

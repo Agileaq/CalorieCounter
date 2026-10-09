@@ -237,7 +237,7 @@ describe('Goals', () => {
       expect(storedDays[today].weightKg).toBe(72)
     })
 
-    it('displays BMI, category badge, and ideal weight range when height and weight are provided', () => {
+    it('displays BMI, category badge, and ideal weight tooltip when height and weight are provided', () => {
       localStorage.setItem('cc.settings', JSON.stringify({ heightCm: 175, gender: 'male' }))
       const today = new Date().toISOString().slice(0, 10)
       localStorage.setItem('cc.days', JSON.stringify({
@@ -248,10 +248,22 @@ describe('Goals', () => {
       // 70 / (1.75^2) = 22.9 (normal)
       expect(screen.getByTestId('bmi-value')).toHaveTextContent('22.9')
       expect(screen.getByTestId('bmi-badge')).toBeInTheDocument()
-      // Ideal weight range: 56.7 ~ 73.2 kg
-      expect(screen.getByTestId('ideal-weight-range')).toHaveTextContent('56.7 – 73.2 kg')
+      // BMI info tip containing ideal weight range
+      const bmiTipBtn = screen.getByTestId('bmi-info-tip')
+      expect(bmiTipBtn).toBeInTheDocument()
+      fireEvent.click(bmiTipBtn)
+      expect(screen.getByTestId('bmi-tip-content')).toHaveTextContent(/56.7 – 73.2 kg/)
+
       // BMR for male 175cm 70kg age 30 = 1649 kcal
       expect(screen.getByTestId('bmr-value')).toHaveTextContent('1649 kcal')
+    })
+
+    it('displays waist measurement guidance tooltip next to waist input label', () => {
+      render(<AppProvider><Goals /></AppProvider>)
+      const waistTipBtn = screen.getByTestId('waist-info-tip')
+      expect(waistTipBtn).toBeInTheDocument()
+      fireEvent.click(waistTipBtn)
+      expect(screen.getByTestId('waist-tip-content')).toBeInTheDocument()
     })
 
     it('provides quick button to apply ideal weight upper bound or recommended target weight', () => {

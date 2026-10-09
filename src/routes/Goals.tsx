@@ -96,6 +96,25 @@ export default function Goals() {
   const { t } = useTranslation()
   const { settings, updateSettings, myFoods, allFoods, foodOverrides, days, customIcons, importFoods, replaceAll, mergeBackup, setDayWeight } = useApp()
   const [msg, setMsg] = useState('')
+  const [showBmiTip, setShowBmiTip] = useState(false)
+  const [showWaistTip, setShowWaistTip] = useState(false)
+  const bmiTipRef = useRef<HTMLSpanElement>(null)
+  const waistTipRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (!showBmiTip && !showWaistTip) return
+    const onDown = (e: PointerEvent) => {
+      if (showBmiTip && bmiTipRef.current && !bmiTipRef.current.contains(e.target as Node)) {
+        setShowBmiTip(false)
+      }
+      if (showWaistTip && waistTipRef.current && !waistTipRef.current.contains(e.target as Node)) {
+        setShowWaistTip(false)
+      }
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [showBmiTip, showWaistTip])
+
   const mt = settings.macroTargets
   const setMacro = (patch: Partial<typeof mt>) => updateSettings({ macroTargets: { ...mt, ...patch } })
 
@@ -178,7 +197,20 @@ export default function Goals() {
               style={{ width: 80, textAlign: 'end' }} />
           </label>
           <label className="row spread">
-            {t('goals.waistLabel')}
+            <span className="row" style={{ gap: 4 }}>
+              {t('goals.waistLabel')}
+              <span className="info-wrap" ref={waistTipRef}>
+                <button type="button" className="info-tip" data-testid="waist-info-tip" aria-label={t('goals.waistLabel')} title=""
+                  onClick={() => setShowWaistTip(s => !s)}>
+                  {'!'}
+                  {showWaistTip && (
+                    <div className="info-bubble" data-testid="waist-tip-content">
+                      {t('goals.waistTooltip')}
+                    </div>
+                  )}
+                </button>
+              </span>
+            </span>
             <NumberInput testId="waist-input" value={settings.waistCm ?? 0} hideZero
               onChange={v => updateSettings({ waistCm: v > 0 ? Math.round(v * 10) / 10 : null })}
               style={{ width: 80, textAlign: 'end' }} />
@@ -209,20 +241,25 @@ export default function Goals() {
           <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div className="row spread" style={{ flexWrap: 'wrap', gap: 8 }}>
               {bmi != null && displayCat != null && (
-                <div className="row" style={{ gap: 8 }}>
+                <div className="row" style={{ gap: 8, alignItems: 'center' }}>
                   <span className="muted">{t('goals.bmiLabel')}:</span>
                   <strong data-testid="bmi-value" style={{ fontSize: '1.2em' }}>{bmi}</strong>
                   <span data-testid="bmi-badge" className={`bmi-badge ${displayCat}`}>
                     {t(`goals.bmiCategory.${displayCat}`)}
                   </span>
-                </div>
-              )}
-              {idealRange != null && (
-                <div className="row" style={{ gap: 6, fontSize: 13 }}>
-                  <span className="muted">{t('goals.idealWeight')}:</span>
-                  <span data-testid="ideal-weight-range" style={{ fontWeight: 600 }}>
-                    {idealRange.min} – {idealRange.max} kg
-                  </span>
+                  {idealRange != null && (
+                    <span className="info-wrap" ref={bmiTipRef}>
+                      <button type="button" className="info-tip" data-testid="bmi-info-tip" aria-label={t('goals.idealWeight')} title=""
+                        onClick={() => setShowBmiTip(s => !s)}>
+                        {'!'}
+                        {showBmiTip && (
+                          <div className="info-bubble" data-testid="bmi-tip-content">
+                            {t('goals.idealWeightTooltip', { range: `${idealRange.min} – ${idealRange.max}` })}
+                          </div>
+                        )}
+                      </button>
+                    </span>
+                  )}
                 </div>
               )}
             </div>
