@@ -8,6 +8,7 @@ export const FOOD_EMOJI_CATEGORIES: EmojiCategory[] = [
     { char: '🍓', keywords: ['strawberry', '草莓', 'berry'] }, { char: '🫐', keywords: ['blueberry', '蓝莓', 'berry'] },
     { char: '🍉', keywords: ['watermelon', '西瓜'] }, { char: '🍑', keywords: ['peach', '桃'] },
     { char: '🍍', keywords: ['pineapple', '菠萝'] }, { char: '🥝', keywords: ['kiwi', '猕猴桃'] },
+    { char: '🍈', keywords: ['melon', 'cantaloupe', '哈密瓜', '甜瓜'] }, { char: '🥭', keywords: ['mango', '芒果'] },
   ]},
   { key: 'vegetables', emojis: [
     { char: '🥕', keywords: ['carrot', '胡萝卜'] }, { char: '🥦', keywords: ['broccoli', '西兰花'] },
@@ -16,6 +17,8 @@ export const FOOD_EMOJI_CATEGORIES: EmojiCategory[] = [
     { char: '🧅', keywords: ['onion', '洋葱'] }, { char: '🥬', keywords: ['lettuce', 'greens', '生菜'] },
     { char: '🥒', keywords: ['cucumber', '黄瓜'] }, { char: '🍄', keywords: ['mushroom', '蘑菇'] },
     { char: '🥑', keywords: ['avocado', '牛油果'] },
+    { char: '🍠', keywords: ['sweet potato', 'yam', '红薯', '地瓜', '烤红薯'] },
+    { char: '🎃', keywords: ['pumpkin', 'jack-o-lantern', '南瓜'] },
   ]},
   { key: 'grains', emojis: [
     { char: '🍚', keywords: ['rice', '米饭'] }, { char: '🍞', keywords: ['bread', '面包'] },
@@ -30,6 +33,7 @@ export const FOOD_EMOJI_CATEGORIES: EmojiCategory[] = [
     { char: '🐟', keywords: ['fish', 'salmon', '鱼'] }, { char: '🥚', keywords: ['egg', '蛋'] },
     { char: '🧀', keywords: ['cheese', '奶酪'] }, { char: '🥜', keywords: ['nuts', 'almond', 'peanut', '坚果'] },
     { char: '🫘', keywords: ['beans', 'legume', '豆'] }, { char: '🍳', keywords: ['fried egg', 'cooking', '煎蛋'] },
+    { char: '🦀', keywords: ['crab', 'seafood', '螃蟹', '海鲜', '蟹'] },
   ]},
   { key: 'dairy', emojis: [
     { char: '🥛', keywords: ['milk', '牛奶'] }, { char: '🧈', keywords: ['butter', '黄油'] },
@@ -51,6 +55,13 @@ export const FOOD_EMOJI_CATEGORIES: EmojiCategory[] = [
     { char: '🌮', keywords: ['taco', '玉米卷'] }, { char: '🍱', keywords: ['bento', '便当'] },
     { char: '🍲', keywords: ['stew', 'hotpot', '炖菜'] }, { char: '🥗', keywords: ['salad', '沙拉'] },
     { char: '🍟', keywords: ['fries', '薯条'] }, { char: '🥪', keywords: ['sandwich', '三明治'] },
+  ]},
+  { key: 'activities', emojis: [
+    { char: '🏁', keywords: ['flag', 'chequered flag', 'finish', 'race', 'goal', '旗帜', '终点', '目标', '赛车'] },
+  ]},
+  { key: 'mood', emojis: [
+    { char: '😆', keywords: ['laugh', 'happy', 'smile', 'grin', '大笑', '开心', '笑'] },
+    { char: '😁', keywords: ['grin', 'smile', 'happy', 'beam', '微笑', '露齿笑', '开心'] },
   ]},
   { key: 'other', emojis: [
     { char: '🍽️', keywords: ['default', 'meal', 'food', '默认'] }, { char: '🧂', keywords: ['salt', '盐'] },

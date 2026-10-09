@@ -57,4 +57,21 @@ describe('IconPicker', () => {
     expect(screen.getByText('Icon')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /close/i })).not.toBeInTheDocument()
   })
+  it('renders new emojis in categories and searches them by English and Chinese keywords', () => {
+    renderPicker()
+    // verify presence in rendered picker
+    expect(screen.getByRole('button', { name: '🍈' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '🥭' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '🍠' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '🎃' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '🦀' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '🏁' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '😆' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '😁' })).toBeInTheDocument()
+
+    // search keyword test
+    fireEvent.change(screen.getByPlaceholderText(/search/i), { target: { value: '螃蟹' } })
+    expect(screen.getByRole('button', { name: '🦀' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '🍈' })).not.toBeInTheDocument()
+  })
 })
