@@ -7,6 +7,8 @@ import { NumberInput } from '../components/NumberInput'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { distributeBudget } from '../lib/nutrition'
 import { parseSettingsBlob } from '../lib/storage'
+import { extractWeighIns } from '../lib/weight'
+import { calculateBmi, classifyChineseBmi, idealWeightRange, calculateBmr, calculateTdee } from '../lib/bmi'
 
 interface Quota { carbs?: number; carbsMin?: number; carbsMax?: number; protein: number; fat: number }
 const CUT: Quota = { carbsMin: 2.5, carbsMax: 3.5, protein: 1.5, fat: 0.8 }
@@ -22,9 +24,6 @@ function AdviceCard({ title, tooltip, quota, weightTestId, weight, onWeightChang
   const { t } = useTranslation()
   const [showTip, setShowTip] = useState(false)
   const tipRef = useRef<HTMLSpanElement>(null)
-  // Click outside (or tap) the tip wrapper closes the bubble. onBlur can't do this
-  // reliably on touch — the button loses focus immediately after a tap, so a later
-  // tap elsewhere never fires blur, and the bubble gets stuck open.
   useEffect(() => {
     if (!showTip) return
     const onDown = (e: PointerEvent) => {
@@ -95,17 +94,28 @@ function AdviceCard({ title, tooltip, quota, weightTestId, weight, onWeightChang
 
 export default function Goals() {
   const { t } = useTranslation()
-  const { settings, updateSettings, myFoods, allFoods, foodOverrides, days, customIcons, importFoods, replaceAll, mergeBackup } = useApp()
+  const { settings, updateSettings, myFoods, allFoods, foodOverrides, days, customIcons, importFoods, replaceAll, mergeBackup, setDayWeight } = useApp()
   const [msg, setMsg] = useState('')
   const mt = settings.macroTargets
   const setMacro = (patch: Partial<typeof mt>) => updateSettings({ macroTargets: { ...mt, ...patch } })
 
+  // Resolve current weight: from weigh-ins (latest weigh-in), else fallback to 0
+  const weighIns = extractWeighIns(days)
+  const latestWeight = weighIns.length > 0 ? weighIns[weighIns.length - 1].kg : 0
+
+  function onCurrentWeightChange(v: number) {
+    setDayWeight(v > 0 ? Math.round(v * 100) / 100 : null)
+  }
+
+  const height = settings.heightCm ?? 0
+  const gender = settings.gender
+  const bmi = calculateBmi(height, latestWeight)
+  const bmiCat = bmi ? classifyChineseBmi(bmi) : null
+  const idealRange = idealWeightRange(height)
+  const bmr = calculateBmr({ heightCm: height, weightKg: latestWeight, gender })
+  const tdee = calculateTdee(bmr)
+
   // Two-way macro auto-calc, purely event-driven (no watch/effect loops):
-  //  - edit budget → redistribute carbs/protein/fat by 3.5:1.5:0.8 (±1g, drift ≤ 2),
-  //    budget stays as typed; fiber preserved.
-  //  - edit carbs/protein/fat → recompute budget = 4c + 4p + 9f exactly; the other
-  //    two macros and fiber are left untouched.
-  //  - edit fiber → fiber only; budget and other macros unchanged.
   function onBudgetChange(v: number) {
     updateSettings({ dailyBudget: v, macroTargets: { ...mt, ...distributeBudget(v) } })
   }
@@ -142,6 +152,108 @@ export default function Goals() {
         <h2 style={{ margin: 0 }}>{t('goals.title')}</h2>
         <LanguageSwitcher />
       </div>
+
+      {/* Body Profile and BMI Card */}
+      <div className="card">
+        <div className="row spread" style={{ marginBottom: 12 }}>
+          <strong>{t('goals.profileTitle')}</strong>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
+          <label className="row spread">
+            {t('goals.heightLabel')}
+            <NumberInput testId="height-input" value={settings.heightCm ?? 0} hideZero
+              onChange={v => updateSettings({ heightCm: v > 0 ? Math.round(v * 10) / 10 : null })}
+              style={{ width: 80, textAlign: 'end' }} />
+          </label>
+          <label className="row spread">
+            {t('goals.currentWeightLabel')}
+            <NumberInput testId="current-weight-input" value={latestWeight} hideZero
+              onChange={onCurrentWeightChange}
+              style={{ width: 80, textAlign: 'end' }} />
+          </label>
+        </div>
+        <div className="row" style={{ gap: 8, marginTop: 12, alignItems: 'center' }}>
+          <span className="muted">{t('goals.genderLabel')}:</span>
+          <button type="button" data-testid="gender-male"
+            className={`gender-pill ${gender === 'male' ? 'active' : ''}`}
+            onClick={() => updateSettings({ gender: 'male' })}>
+            {t('goals.genderMale')}
+          </button>
+          <button type="button" data-testid="gender-female"
+            className={`gender-pill ${gender === 'female' ? 'active' : ''}`}
+            onClick={() => updateSettings({ gender: 'female' })}>
+            {t('goals.genderFemale')}
+          </button>
+        </div>
+
+        {/* BMI & Health Recommendations Readout */}
+        {(bmi != null || idealRange != null) && (
+          <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="row spread" style={{ flexWrap: 'wrap', gap: 8 }}>
+              {bmi != null && bmiCat != null && (
+                <div className="row" style={{ gap: 8 }}>
+                  <span className="muted">{t('goals.bmiLabel')}:</span>
+                  <strong data-testid="bmi-value" style={{ fontSize: '1.2em' }}>{bmi}</strong>
+                  <span data-testid="bmi-badge" className={`bmi-badge ${bmiCat}`}>
+                    {t(`goals.bmiCategory.${bmiCat}`)}
+                  </span>
+                </div>
+              )}
+              {idealRange != null && (
+                <div className="row" style={{ gap: 6, fontSize: 13 }}>
+                  <span className="muted">{t('goals.idealWeight')}:</span>
+                  <span data-testid="ideal-weight-range" style={{ fontWeight: 600 }}>
+                    {idealRange.min} – {idealRange.max} kg
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Scientific BMR / TDEE Reference */}
+            {bmr != null && (
+              <div className="row spread" style={{ flexWrap: 'wrap', gap: 8, fontSize: 13, background: 'var(--bg)', padding: '8px 12px', borderRadius: 10 }}>
+                <div>
+                  <span className="muted">{t('goals.bmrLabel')}: </span>
+                  <strong data-testid="bmr-value">{bmr} kcal</strong>
+                </div>
+                {tdee != null && (
+                  <div>
+                    <span className="muted">{t('goals.tdeeLabel')}: </span>
+                    <strong data-testid="tdee-value">{tdee} kcal</strong>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Smart Suggestions & Goal Weight Action */}
+            {bmiCat != null && (
+              <div className="profile-stat-box">
+                <div style={{ fontSize: 13, lineHeight: 1.4 }}>
+                  {bmiCat === 'underweight' && t('goals.bmiSuggestionUnderweight')}
+                  {bmiCat === 'normal' && t('goals.bmiSuggestionNormal')}
+                  {bmiCat === 'overweight' && t('goals.bmiSuggestionOverweight')}
+                  {bmiCat === 'obese' && t('goals.bmiSuggestionObese')}
+                </div>
+                {idealRange != null && (
+                  <div className="row spread" style={{ marginTop: 6 }}>
+                    <span className="muted" style={{ fontSize: 12 }}>
+                      {latestWeight > idealRange.max
+                        ? `${t('goals.goalWeight')}: ≤ ${idealRange.max} kg`
+                        : `${t('goals.goalWeight')}: ${idealRange.min} – ${idealRange.max} kg`}
+                    </span>
+                    <button type="button" data-testid="apply-ideal-weight-btn" className="btn-outline"
+                      style={{ padding: '4px 10px', fontSize: 11 }}
+                      onClick={() => updateSettings({ goalWeightKg: idealRange.max })}>
+                      {t('goals.applyIdealWeight')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       <div className="card">
         <label className="row spread">{t('goals.dailyBudget')}
           <NumberInput testId="budget-input" integer value={settings.dailyBudget}

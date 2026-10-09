@@ -27,6 +27,8 @@ export const DEFAULT_SETTINGS: Settings = {
   goalWeightKg: null,
   adviceCutWeightKg: 0,
   adviceBulkWeightKg: 0,
+  heightCm: null,
+  gender: null,
 }
 
 function read<T>(key: string, fallback: T): T {

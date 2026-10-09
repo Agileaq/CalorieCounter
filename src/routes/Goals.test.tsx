@@ -202,4 +202,76 @@ describe('Goals', () => {
       expect(s.macroTargets.fat).toBe(72)
     })
   })
+
+  describe('body profile and scientific BMI recommendations', () => {
+    it('allows entering height and gender and persists them', () => {
+      render(<AppProvider><Goals /></AppProvider>)
+      const heightInput = screen.getByTestId('height-input')
+      fireEvent.change(heightInput, { target: { value: '175' } })
+      expect(JSON.parse(localStorage.getItem('cc.settings')!).heightCm).toBe(175)
+
+      const maleBtn = screen.getByTestId('gender-male')
+      fireEvent.click(maleBtn)
+      expect(JSON.parse(localStorage.getItem('cc.settings')!).gender).toBe('male')
+
+      const femaleBtn = screen.getByTestId('gender-female')
+      fireEvent.click(femaleBtn)
+      expect(JSON.parse(localStorage.getItem('cc.settings')!).gender).toBe('female')
+    })
+
+    it('populates current weight from weigh-ins and allows editing it', () => {
+      // Day log with a recorded weight
+      const today = new Date().toISOString().slice(0, 10)
+      localStorage.setItem('cc.days', JSON.stringify({
+        [today]: { date: today, meals: { breakfast: [], lunch: [], dinner: [], snacks: [] }, exercise: [], weightKg: 70 },
+      }))
+
+      render(<AppProvider><Goals /></AppProvider>)
+      const weightInput = screen.getByTestId('current-weight-input')
+      expect(weightInput).toHaveValue(70)
+
+      // Editing current weight updates today's weigh-in
+      fireEvent.change(weightInput, { target: { value: '72' } })
+      expect(weightInput).toHaveValue(72)
+      const storedDays = JSON.parse(localStorage.getItem('cc.days')!)
+      expect(storedDays[today].weightKg).toBe(72)
+    })
+
+    it('displays BMI, category badge, and ideal weight range when height and weight are provided', () => {
+      localStorage.setItem('cc.settings', JSON.stringify({ heightCm: 175, gender: 'male' }))
+      const today = new Date().toISOString().slice(0, 10)
+      localStorage.setItem('cc.days', JSON.stringify({
+        [today]: { date: today, meals: { breakfast: [], lunch: [], dinner: [], snacks: [] }, exercise: [], weightKg: 70 },
+      }))
+
+      render(<AppProvider><Goals /></AppProvider>)
+      // 70 / (1.75^2) = 22.9 (normal)
+      expect(screen.getByTestId('bmi-value')).toHaveTextContent('22.9')
+      expect(screen.getByTestId('bmi-badge')).toBeInTheDocument()
+      // Ideal weight range: 56.7 ~ 73.2 kg
+      expect(screen.getByTestId('ideal-weight-range')).toHaveTextContent('56.7 – 73.2 kg')
+      // BMR for male 175cm 70kg age 30 = 1649 kcal
+      expect(screen.getByTestId('bmr-value')).toHaveTextContent('1649 kcal')
+    })
+
+    it('provides quick button to apply ideal weight upper bound or recommended target weight', () => {
+      localStorage.setItem('cc.settings', JSON.stringify({ heightCm: 175, gender: 'male', goalWeightKg: null }))
+      const today = new Date().toISOString().slice(0, 10)
+      // 85kg -> BMI 27.8 (overweight)
+      localStorage.setItem('cc.days', JSON.stringify({
+        [today]: { date: today, meals: { breakfast: [], lunch: [], dinner: [], snacks: [] }, exercise: [], weightKg: 85 },
+      }))
+
+      render(<AppProvider><Goals /></AppProvider>)
+      const applyBtn = screen.getByTestId('apply-ideal-weight-btn')
+      expect(applyBtn).toBeInTheDocument()
+      fireEvent.click(applyBtn)
+
+      // The goal weight input should now be updated to 73.2 kg (ideal max)
+      const s = JSON.parse(localStorage.getItem('cc.settings')!)
+      expect(s.goalWeightKg).toBe(73.2)
+      expect(screen.getByTestId('goal-weight')).toHaveValue(73.2)
+    })
+  })
 })
+

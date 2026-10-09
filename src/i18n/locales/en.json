@@ -211,7 +211,28 @@
     "adviceFat": "Fat",
     "cutTooltip": "Quota (daily intake per kg body weight)\nFat-loss phase\nCarbs 3.5g  Protein 1.5g  Fat 0.8g (fat-loss, with a baseline)\nAfter weight drops, lower the carb quota gradually (carbs not below 2.5g)",
     "bulkTooltip": "Quota (daily intake per kg body weight)\nMuscle-gain phase\nCarbs 4.0g  Protein 2.0g  Fat 1.0g (muscle-gain, with a baseline)\nGain 1-3 jin/month, otherwise adjust carbs; protein and fat stay fixed",
-    "goalWeight": "Goal weight (kg)"
+    "goalWeight": "Goal weight (kg)",
+    "profileTitle": "Body Profile & BMI",
+    "heightLabel": "Height (cm)",
+    "currentWeightLabel": "Current Weight (kg)",
+    "genderLabel": "Gender",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "bmiLabel": "Body Mass Index (BMI)",
+    "bmiCategory": {
+      "underweight": "Underweight",
+      "normal": "Normal",
+      "overweight": "Overweight",
+      "obese": "Obese"
+    },
+    "idealWeight": "Healthy Weight Range",
+    "bmrLabel": "BMR",
+    "tdeeLabel": "Maintenance (TDEE)",
+    "applyIdealWeight": "Set as Goal Weight",
+    "bmiSuggestionUnderweight": "Currently underweight. Consider healthy nutrition and strength training to gain muscle.",
+    "bmiSuggestionNormal": "Your weight is within the healthy range. Keep up the balanced diet and active lifestyle!",
+    "bmiSuggestionOverweight": "Currently overweight. A moderate calorie deficit and regular exercise are recommended.",
+    "bmiSuggestionObese": "Currently in the obese category. Consider a steady and sustainable fat-loss plan."
   },
   "update": {
     "available": "New version available",

@@ -211,7 +211,28 @@
     "adviceFat": "脂",
     "cutTooltip": "配额（每kg体重的日摄入量）\n减脂期\n碳水3.5g 蛋白质1.5g 脂肪0.8g（减脂期、有基础）\n体重下降后缓慢降低碳水配额（碳水不低于2.5g）",
     "bulkTooltip": "配额（每kg体重的日摄入量）\n增肌期\n碳水4.0g 蛋白质2.0g 脂肪1.0g（增肌期、有基础）\n体重增长1-3斤/月 否则调整碳水 蛋白质脂肪不动",
-    "goalWeight": "目标体重(kg)"
+    "goalWeight": "目标体重(kg)",
+    "profileTitle": "身体档案与 BMI",
+    "heightLabel": "身高 (cm)",
+    "currentWeightLabel": "当前体重 (kg)",
+    "genderLabel": "性别",
+    "genderMale": "男",
+    "genderFemale": "女",
+    "bmiLabel": "身体质量指数 (BMI)",
+    "bmiCategory": {
+      "underweight": "偏瘦",
+      "normal": "正常",
+      "overweight": "超重",
+      "obese": "肥胖"
+    },
+    "idealWeight": "标准健康体重范围",
+    "bmrLabel": "基础代谢 (BMR)",
+    "tdeeLabel": "维持热量 (TDEE)",
+    "applyIdealWeight": "设为目标体重",
+    "bmiSuggestionUnderweight": "当前处于偏瘦区间，建议适度增肌增重。",
+    "bmiSuggestionNormal": "体重处于健康标准区间，请继续保持良好的饮食与运动习惯！",
+    "bmiSuggestionOverweight": "当前处于超重区间，建议适度控制热量摄入并规律运动。",
+    "bmiSuggestionObese": "当前处于肥胖区间，建议科学制定减脂计划，循序渐进降低体脂。"
   },
   "update": {
     "available": "有新版本可用",

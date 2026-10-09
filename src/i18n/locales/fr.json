@@ -211,7 +211,28 @@
     "adviceFat": "Lip",
     "cutTooltip": "Quota (apport quotidien par kg de poids)\nPhase de sèche\nGlucides 3,5g  Protéines 1,5g  Lipides 0,8g (sèche, avec une base)\nAprès une perte de poids, baisse le quota de glucides progressivement (glucides ≥ 2,5g)",
     "bulkTooltip": "Quota (apport quotidien par kg de poids)\nPhase de prise de masse\nGlucides 4,0g  Protéines 2,0g  Lipides 1,0g (prise de masse, avec une base)\nPrends 1-3 jin/mois ; sinon ajuste les glucides ; protéines et lipides fixes",
-    "goalWeight": "Poids objectif (kg)"
+    "goalWeight": "Poids objectif (kg)",
+    "profileTitle": "Profil corporel & IMC",
+    "heightLabel": "Taille (cm)",
+    "currentWeightLabel": "Poids actuel (kg)",
+    "genderLabel": "Sexe",
+    "genderMale": "Homme",
+    "genderFemale": "Femme",
+    "bmiLabel": "Indice de masse corporelle (IMC)",
+    "bmiCategory": {
+      "underweight": "Insuffisance pondérale",
+      "normal": "Normal",
+      "overweight": "Surpoids",
+      "obese": "Obésité"
+    },
+    "idealWeight": "Fourchette de poids santé",
+    "bmrLabel": "Métabolisme de base (BMR)",
+    "tdeeLabel": "Maintien (TDEE)",
+    "applyIdealWeight": "Définir comme poids objectif",
+    "bmiSuggestionUnderweight": "Actuellement en insuffisance pondérale. Pensez à un apport nutritif adapté et au renforcement musculaire.",
+    "bmiSuggestionNormal": "Votre poids se situe dans la plage normale et saine. Continuez ainsi !",
+    "bmiSuggestionOverweight": "Actuellement en surpoids. Un léger déficit calorique et une activité régulière sont recommandés.",
+    "bmiSuggestionObese": "Actuellement en zone d'obésité. Il est conseillé de suivre un plan progressif et durable."
   },
   "update": {
     "available": "Nouvelle version disponible",
