@@ -190,13 +190,13 @@ export default function Goals() {
             {t('goals.heightLabel')}
             <NumberInput testId="height-input" value={settings.heightCm ?? 0} hideZero
               onChange={v => updateSettings({ heightCm: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 80, textAlign: 'end' }} />
+              style={{ width: 64, textAlign: 'end' }} />
           </label>
           <label className="row spread">
             {t('goals.currentWeightLabel')}
             <NumberInput testId="current-weight-input" value={latestWeight} hideZero
               onChange={onCurrentWeightChange}
-              style={{ width: 80, textAlign: 'end' }} />
+              style={{ width: 64, textAlign: 'end' }} />
           </label>
           <label className="row spread">
             <span className="info-wrap" ref={waistTipRef}>
@@ -218,13 +218,13 @@ export default function Goals() {
             </span>
             <NumberInput testId="waist-input" value={settings.waistCm ?? 0} hideZero
               onChange={v => updateSettings({ waistCm: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 80, textAlign: 'end' }} />
+              style={{ width: 64, textAlign: 'end' }} />
           </label>
           <label className="row spread">
             {t('goals.bodyFatLabel')}
             <NumberInput testId="body-fat-input" value={settings.bodyFatPct ?? 0} hideZero
               onChange={v => updateSettings({ bodyFatPct: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 80, textAlign: 'end' }} />
+              style={{ width: 64, textAlign: 'end' }} />
           </label>
         </div>
         <div className="row" style={{ gap: 8, marginTop: 12, alignItems: 'center' }}>
