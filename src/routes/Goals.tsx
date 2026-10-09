@@ -321,7 +321,7 @@ export default function Goals() {
                 {t('goals.waistLabel')}
               </button>
               {showWaistTip && (
-                <div className="info-bubble" data-testid="waist-tip-content">
+                <div className="info-bubble tip-down-start" data-testid="waist-tip-content">
                   {t('goals.waistTooltip')}
                 </div>
               )}
@@ -343,7 +343,7 @@ export default function Goals() {
                 {t('goals.bodyFatLabel')}
               </button>
               {showBodyFatTip && (
-                <div className="info-bubble tip-end" data-testid="body-fat-tip-content">
+                <div className="info-bubble tip-down-end" data-testid="body-fat-tip-content">
                   {t('goals.bodyFatTooltip')}
                 </div>
               )}
