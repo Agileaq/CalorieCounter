@@ -187,20 +187,18 @@ export default function Goals() {
 
       {/* Body Profile and BMI Card */}
       <div className="card">
-        <div className="row spread" style={{ marginBottom: 12, alignItems: 'center' }}>
+        <div className="row" style={{ marginBottom: 12, alignItems: 'center', gap: 8 }}>
           <strong>{t('goals.profileTitle')}</strong>
-          <div className="row" style={{ gap: 6, alignItems: 'center' }}>
-            <button type="button" data-testid="gender-male"
-              className={`gender-pill ${gender === 'male' ? 'active' : ''}`}
-              onClick={() => updateSettings({ gender: 'male' })}>
-              {t('goals.genderMale')}
-            </button>
-            <button type="button" data-testid="gender-female"
-              className={`gender-pill ${gender === 'female' ? 'active' : ''}`}
-              onClick={() => updateSettings({ gender: 'female' })}>
-              {t('goals.genderFemale')}
-            </button>
-          </div>
+          <button type="button" data-testid="gender-male"
+            className={`gender-pill ${gender === 'male' ? 'active' : ''}`}
+            onClick={() => updateSettings({ gender: 'male' })}>
+            {t('goals.genderMale')}
+          </button>
+          <button type="button" data-testid="gender-female"
+            className={`gender-pill ${gender === 'female' ? 'active' : ''}`}
+            onClick={() => updateSettings({ gender: 'female' })}>
+            {t('goals.genderFemale')}
+          </button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10 }}>
           <label className="row spread" style={{ gap: 6 }}>
