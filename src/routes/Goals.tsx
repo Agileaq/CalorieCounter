@@ -355,26 +355,42 @@ export default function Goals() {
         </div>
       </div>
 
-      <div className="card">
-        <label className="row spread">{t('goals.dailyBudget')}
+      <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <label className="row spread" style={{ gap: 8 }}>
+          <span>{t('goals.dailyBudget')}</span>
           <NumberInput testId="budget-input" integer value={settings.dailyBudget}
-            onChange={onBudgetChange} style={{ width: 100, textAlign: 'end' }} /></label>
-        <label className="row spread">{t('goals.carbsTarget')}
-          <NumberInput testId="carbs-target" integer value={mt.carbs}
-            onChange={v => onMacroChange('carbs', v)} style={{ width: 100, textAlign: 'end' }} /></label>
-        <label className="row spread">{t('goals.proteinTarget')}
+            onChange={onBudgetChange} style={{ width: 80, textAlign: 'end' }} />
+        </label>
+        <label className="row spread" style={{ gap: 8 }}>
+          <span>{t('goals.proteinTarget')}</span>
           <NumberInput testId="protein-target" integer value={mt.protein}
-            onChange={v => onMacroChange('protein', v)} style={{ width: 100, textAlign: 'end' }} /></label>
-        <label className="row spread">{t('goals.fatTarget')}
-          <NumberInput testId="fat-target" integer value={mt.fat}
-            onChange={v => onMacroChange('fat', v)} style={{ width: 100, textAlign: 'end' }} /></label>
-        <label className="row spread">{t('goals.fiberTarget')}
-          <NumberInput testId="fiber-target" integer value={mt.fiber}
-            onChange={v => setMacro({ fiber: v })} style={{ width: 100, textAlign: 'end' }} /></label>
-        <label className="row spread">{t('goals.goalWeight')}
-          <NumberInput testId="goal-weight" value={settings.goalWeightKg ?? 0} hideZero
-            onChange={v => updateSettings({ goalWeightKg: v > 0 ? Math.round(v * 100) / 100 : null })}
-            style={{ width: 100, textAlign: 'end' }} /></label>
+            onChange={v => onMacroChange('protein', v)} style={{ width: 80, textAlign: 'end' }} />
+        </label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+          <label className="row spread" style={{ gap: 6 }}>
+            <span>{t('goals.carbsTarget')}</span>
+            <NumberInput testId="carbs-target" integer value={mt.carbs}
+              onChange={v => onMacroChange('carbs', v)} style={{ width: 56, textAlign: 'end' }} />
+          </label>
+          <label className="row spread" style={{ gap: 6 }}>
+            <span>{t('goals.fatTarget')}</span>
+            <NumberInput testId="fat-target" integer value={mt.fat}
+              onChange={v => onMacroChange('fat', v)} style={{ width: 56, textAlign: 'end' }} />
+          </label>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+          <label className="row spread" style={{ gap: 6 }}>
+            <span>{t('goals.fiberTarget')}</span>
+            <NumberInput testId="fiber-target" integer value={mt.fiber}
+              onChange={v => setMacro({ fiber: v })} style={{ width: 56, textAlign: 'end' }} />
+          </label>
+          <label className="row spread" style={{ gap: 6 }}>
+            <span>{t('goals.goalWeight')}</span>
+            <NumberInput testId="goal-weight" value={settings.goalWeightKg ?? 0} hideZero
+              onChange={v => updateSettings({ goalWeightKg: v > 0 ? Math.round(v * 100) / 100 : null })}
+              style={{ width: 56, textAlign: 'end' }} />
+          </label>
+        </div>
       </div>
 
       <AdviceCard title={t('goals.cutTitle')} tooltip={t('goals.cutTooltip')} quota={CUT} weightTestId="cut-weight"
