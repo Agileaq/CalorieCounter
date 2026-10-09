@@ -294,6 +294,7 @@ export default function Goals() {
                             onClick={(e) => {
                               e.stopPropagation()
                               updateSettings({ goalWeightKg: idealRange.max })
+                              setShowWeightTip(false)
                             }}>
                             {t('goals.applyIdealWeight')}
                           </button>

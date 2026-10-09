@@ -306,6 +306,8 @@ describe('Goals', () => {
       const s = JSON.parse(localStorage.getItem('cc.settings')!)
       expect(s.goalWeightKg).toBe(73.2)
       expect(screen.getByTestId('goal-weight')).toHaveValue(73.2)
+      // The tip popup should be dismissed
+      expect(screen.queryByTestId('current-weight-tip-content')).toBeNull()
     })
 
     it('renders profile inputs with sufficient width to display 5+ character decimals like 88.88', () => {
