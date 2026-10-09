@@ -54,8 +54,8 @@ describe('Goals', () => {
   })
   it('advice cards derive read-only macros from weight', () => {
     render(<AppProvider><Goals /></AppProvider>)
-    // 75kg → cut 3.5/1.5/0.8 → 263/113/60g, calories 2040
-    // 75kg → bulk 4/2/1 → 300/150/75g, calories 2475
+    // 75kg → cut carbs 2.5–3.5 / 1.5 / 0.8 → 188–263g carbs, calories 1740–2040kcal
+    // 75kg → bulk 4/2/1 → 300/150/75g, calories 2475kcal
     const enter = (id: string, v: string) => {
       const el = screen.getByTestId(id)
       fireEvent.focus(el)
@@ -64,13 +64,13 @@ describe('Goals', () => {
     enter('cut-weight', '75')
     enter('bulk-weight', '75')
     // ready values render as "<value><unit>"; unset fields stay "—" (no unit)
-    expect(screen.getByText('2040kcal')).toBeInTheDocument()  // cut calories
-    expect(screen.getByText('263g')).toBeInTheDocument()     // cut carbs
-    expect(screen.getByText('113g')).toBeInTheDocument()    // cut protein
-    expect(screen.getByText('60g')).toBeInTheDocument()     // cut fat
-    expect(screen.getByText('2475kcal')).toBeInTheDocument() // bulk calories
-    expect(screen.getByText('300g')).toBeInTheDocument()    // bulk carbs
-    expect(screen.getByText('150g')).toBeInTheDocument()     // bulk protein
+    expect(screen.getByText('1740–2040kcal')).toBeInTheDocument()  // cut calories range
+    expect(screen.getByText('188–263g')).toBeInTheDocument()      // cut carbs range
+    expect(screen.getByText('113g')).toBeInTheDocument()         // cut protein
+    expect(screen.getByText('60g')).toBeInTheDocument()          // cut fat
+    expect(screen.getByText('2475kcal')).toBeInTheDocument()     // bulk calories
+    expect(screen.getByText('300g')).toBeInTheDocument()         // bulk carbs
+    expect(screen.getByText('150g')).toBeInTheDocument()         // bulk protein
   })
   it('the info-tip toggles open and closes on outside click', () => {
     render(<AppProvider><Goals /></AppProvider>)

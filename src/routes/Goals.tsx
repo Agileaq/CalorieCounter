@@ -8,9 +8,8 @@ import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { distributeBudget } from '../lib/nutrition'
 import { parseSettingsBlob } from '../lib/storage'
 
-/** Macros per kg of body weight for an advice card. calories = carbs*4 + protein*4 + fat*9. */
-interface Quota { carbs: number; protein: number; fat: number }
-const CUT: Quota = { carbs: 3.5, protein: 1.5, fat: 0.8 }
+interface Quota { carbs?: number; carbsMin?: number; carbsMax?: number; protein: number; fat: number }
+const CUT: Quota = { carbsMin: 2.5, carbsMax: 3.5, protein: 1.5, fat: 0.8 }
 const BULK: Quota = { carbs: 4, protein: 2, fat: 1 }
 
 /**
@@ -35,11 +34,26 @@ function AdviceCard({ title, tooltip, quota, weightTestId, weight, onWeightChang
     return () => document.removeEventListener('pointerdown', onDown)
   }, [showTip])
   const w = weight > 0 ? weight : 0
-  const carbs = Math.round(w * quota.carbs)
+  const ready = weight > 0
   const protein = Math.round(w * quota.protein)
   const fat = Math.round(w * quota.fat)
-  const calories = Math.round(w * (quota.carbs * 4 + quota.protein * 4 + quota.fat * 9))
-  const ready = weight > 0
+  let carbsStr = '—'
+  let caloriesStr = '—'
+  if (ready) {
+    if (quota.carbsMin !== undefined && quota.carbsMax !== undefined) {
+      const cMin = Math.round(w * quota.carbsMin)
+      const cMax = Math.round(w * quota.carbsMax)
+      carbsStr = `${cMin}–${cMax}g`
+      const calMin = Math.round(w * (quota.carbsMin * 4 + quota.protein * 4 + quota.fat * 9))
+      const calMax = Math.round(w * (quota.carbsMax * 4 + quota.protein * 4 + quota.fat * 9))
+      caloriesStr = `${calMin}–${calMax}kcal`
+    } else if (quota.carbs !== undefined) {
+      const c = Math.round(w * quota.carbs)
+      carbsStr = `${c}g`
+      const cal = Math.round(w * (quota.carbs * 4 + quota.protein * 4 + quota.fat * 9))
+      caloriesStr = `${cal}kcal`
+    }
+  }
   return (
     <div className="card">
       <div className="row spread">
@@ -58,8 +72,8 @@ function AdviceCard({ title, tooltip, quota, weightTestId, weight, onWeightChang
         </label>
       </div>
       <div className="advice-readout">
-        <div>{t('goals.adviceCalories')} <span className="advice-val readonly">{ready ? `${calories}kcal` : '—'}</span></div>
-        <div>{t('goals.adviceCarbs')} <span className="advice-val readonly">{ready ? `${carbs}g` : '—'}</span></div>
+        <div>{t('goals.adviceCalories')} <span className="advice-val readonly">{caloriesStr}</span></div>
+        <div>{t('goals.adviceCarbs')} <span className="advice-val readonly">{carbsStr}</span></div>
         <div>{t('goals.adviceProtein')} <span className="advice-val readonly">{ready ? `${protein}g` : '—'}</span></div>
         <div>{t('goals.adviceFat')} <span className="advice-val readonly">{ready ? `${fat}g` : '—'}</span></div>
       </div>
