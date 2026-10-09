@@ -143,9 +143,12 @@ input, select { font: inherit; }
   inset-inline-start: auto;
   inset-inline-end: 0;
 }
-.info-wrap { display: inline-flex; align-items: center; }
-.dashed-tip-trigger {
+.info-wrap {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.dashed-tip-trigger {
   display: inline-flex;
   align-items: center;
   border-bottom: 1px dashed var(--muted);

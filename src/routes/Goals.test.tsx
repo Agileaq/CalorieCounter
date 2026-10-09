@@ -237,7 +237,7 @@ describe('Goals', () => {
       expect(storedDays[today].weightKg).toBe(72)
     })
 
-    it('displays BMI, category badge, and ideal weight tooltip when height and weight are provided', () => {
+    it('displays BMI, category badge, ideal weight, BMR, and TDEE in current weight tip bubble', () => {
       localStorage.setItem('cc.settings', JSON.stringify({ heightCm: 175, gender: 'male' }))
       const today = new Date().toISOString().slice(0, 10)
       localStorage.setItem('cc.days', JSON.stringify({
@@ -245,17 +245,36 @@ describe('Goals', () => {
       }))
 
       render(<AppProvider><Goals /></AppProvider>)
+      const weightTipBtn = screen.getByTestId('current-weight-info-tip')
+      expect(weightTipBtn).toBeInTheDocument()
+      expect(screen.queryByTestId('current-weight-tip-content')).toBeNull()
+
+      fireEvent.click(weightTipBtn)
+      const tipContent = screen.getByTestId('current-weight-tip-content')
+      expect(tipContent).toBeInTheDocument()
+
       // 70 / (1.75^2) = 22.9 (normal)
       expect(screen.getByTestId('bmi-value')).toHaveTextContent('22.9')
       expect(screen.getByTestId('bmi-badge')).toBeInTheDocument()
-      // BMI info tip containing ideal weight range
-      const bmiTipBtn = screen.getByTestId('bmi-info-tip')
-      expect(bmiTipBtn).toBeInTheDocument()
-      fireEvent.click(bmiTipBtn)
-      expect(screen.getByTestId('bmi-tip-content')).toHaveTextContent(/56.7 – 73.2 kg/)
+      // Ideal weight range
+      expect(tipContent).toHaveTextContent(/56.7 – 73.2 kg/)
 
-      // BMR for male 175cm 70kg age 30 = 1649 kcal
+      // BMR for male 175cm 70kg age 30 = 1649 kcal, TDEE = 1979 kcal
       expect(screen.getByTestId('bmr-value')).toHaveTextContent('1649 kcal')
+      expect(screen.getByTestId('tdee-value')).toHaveTextContent('1979 kcal')
+
+      // Clicking again dismisses bubble
+      fireEvent.click(weightTipBtn)
+      expect(screen.queryByTestId('current-weight-tip-content')).toBeNull()
+    })
+
+    it('shows empty prompt in current weight tip bubble when height or weight is missing', () => {
+      localStorage.setItem('cc.settings', JSON.stringify({ heightCm: null, gender: 'male' }))
+      render(<AppProvider><Goals /></AppProvider>)
+      const weightTipBtn = screen.getByTestId('current-weight-info-tip')
+      fireEvent.click(weightTipBtn)
+      expect(screen.getByTestId('current-weight-tip-content')).toBeInTheDocument()
+      expect(screen.queryByTestId('bmi-value')).toBeNull()
     })
 
     it('displays waist measurement guidance tooltip next to waist input label', () => {
@@ -266,7 +285,7 @@ describe('Goals', () => {
       expect(screen.getByTestId('waist-tip-content')).toBeInTheDocument()
     })
 
-    it('provides quick button to apply ideal weight upper bound or recommended target weight', () => {
+    it('provides quick button in current weight tip to apply ideal weight upper bound', () => {
       localStorage.setItem('cc.settings', JSON.stringify({ heightCm: 175, gender: 'male', goalWeightKg: null }))
       const today = new Date().toISOString().slice(0, 10)
       // 85kg -> BMI 27.8 (overweight)
@@ -275,6 +294,9 @@ describe('Goals', () => {
       }))
 
       render(<AppProvider><Goals /></AppProvider>)
+      const weightTipBtn = screen.getByTestId('current-weight-info-tip')
+      fireEvent.click(weightTipBtn)
+
       const applyBtn = screen.getByTestId('apply-ideal-weight-btn')
       expect(applyBtn).toBeInTheDocument()
       fireEvent.click(applyBtn)
@@ -308,7 +330,7 @@ describe('Goals', () => {
       expect(screen.queryByTestId('body-fat-tip-content')).toBeNull()
     })
 
-    it('corrects overweight BMI to athletic / high muscle when waist is lean or body fat is low', () => {
+    it('corrects overweight BMI to athletic / high muscle when waist is lean or body fat is low inside tip bubble', () => {
       // 175cm, 82kg (BMI 26.8, normally overweight), male with waist 81cm (< 85cm)
       localStorage.setItem('cc.settings', JSON.stringify({ heightCm: 175, gender: 'male', waistCm: 81 }))
       const today = new Date().toISOString().slice(0, 10)
@@ -317,6 +339,8 @@ describe('Goals', () => {
       }))
 
       render(<AppProvider><Goals /></AppProvider>)
+      fireEvent.click(screen.getByTestId('current-weight-info-tip'))
+
       expect(screen.getByTestId('bmi-value')).toHaveTextContent('26.8')
       const badge = screen.getByTestId('bmi-badge')
       expect(badge).toHaveClass('athletic')

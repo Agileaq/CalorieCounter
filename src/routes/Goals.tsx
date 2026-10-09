@@ -98,18 +98,18 @@ export default function Goals() {
   const { t } = useTranslation()
   const { settings, updateSettings, myFoods, allFoods, foodOverrides, days, customIcons, importFoods, replaceAll, mergeBackup, setDayWeight } = useApp()
   const [msg, setMsg] = useState('')
-  const [showBmiTip, setShowBmiTip] = useState(false)
+  const [showWeightTip, setShowWeightTip] = useState(false)
   const [showWaistTip, setShowWaistTip] = useState(false)
   const [showBodyFatTip, setShowBodyFatTip] = useState(false)
-  const bmiTipRef = useRef<HTMLSpanElement>(null)
+  const weightTipRef = useRef<HTMLSpanElement>(null)
   const waistTipRef = useRef<HTMLSpanElement>(null)
   const bodyFatTipRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
-    if (!showBmiTip && !showWaistTip && !showBodyFatTip) return
+    if (!showWeightTip && !showWaistTip && !showBodyFatTip) return
     const onDown = (e: PointerEvent) => {
-      if (showBmiTip && bmiTipRef.current && !bmiTipRef.current.contains(e.target as Node)) {
-        setShowBmiTip(false)
+      if (showWeightTip && weightTipRef.current && !weightTipRef.current.contains(e.target as Node)) {
+        setShowWeightTip(false)
       }
       if (showWaistTip && waistTipRef.current && !waistTipRef.current.contains(e.target as Node)) {
         setShowWaistTip(false)
@@ -120,7 +120,7 @@ export default function Goals() {
     }
     document.addEventListener('pointerdown', onDown)
     return () => document.removeEventListener('pointerdown', onDown)
-  }, [showBmiTip, showWaistTip, showBodyFatTip])
+  }, [showWeightTip, showWaistTip, showBodyFatTip])
 
   const mt = settings.macroTargets
   const setMacro = (patch: Partial<typeof mt>) => updateSettings({ macroTargets: { ...mt, ...patch } })
@@ -198,7 +198,100 @@ export default function Goals() {
               style={{ width: 64, textAlign: 'end' }} />
           </label>
           <label className="row spread">
-            {t('goals.currentWeightLabel')}
+            <span className="info-wrap" ref={weightTipRef}>
+              <button
+                type="button"
+                className="dashed-tip-trigger"
+                data-testid="current-weight-info-tip"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setShowWeightTip(s => !s)
+                }}>
+                {t('goals.currentWeightLabel')}
+              </button>
+              {showWeightTip && (
+                <div className="info-bubble" data-testid="current-weight-tip-content">
+                  {bmi != null ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {displayCat != null && (
+                        <div className="row" style={{ gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <span>{t('goals.bmiLabel')}:</span>
+                          <strong data-testid="bmi-value">{bmi}</strong>
+                          <span data-testid="bmi-badge" className={`bmi-badge ${displayCat}`}>
+                            {t(`goals.bmiCategory.${displayCat}`)}
+                          </span>
+                        </div>
+                      )}
+
+                      {idealRange != null && (
+                        <div>
+                          {t('goals.idealWeight')}: <strong>{idealRange.min} – {idealRange.max} kg</strong>
+                        </div>
+                      )}
+
+                      {bmr != null && (
+                        <div>
+                          {t('goals.bmrLabel')}: <strong data-testid="bmr-value">{bmr} kcal</strong>
+                        </div>
+                      )}
+
+                      {tdee != null && (
+                        <div>
+                          {t('goals.tdeeLabel')}: <strong data-testid="tdee-value">{tdee} kcal</strong>
+                        </div>
+                      )}
+
+                      {displayCat != null && (
+                        <div style={{ fontSize: 11, opacity: 0.9, lineHeight: 1.4, borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: 6 }}>
+                          {displayCat === 'underweight' && t('goals.bmiSuggestionUnderweight')}
+                          {displayCat === 'normal' && t('goals.bmiSuggestionNormal')}
+                          {displayCat === 'overweight' && t('goals.bmiSuggestionOverweight')}
+                          {displayCat === 'obese' && t('goals.bmiSuggestionObese')}
+                          {displayCat === 'athletic' && (
+                            <span data-testid="athletic-note">{t('goals.bmiSuggestionAthletic')}</span>
+                          )}
+                        </div>
+                      )}
+
+                      {compResult?.hasWaistRisk && (
+                        <div style={{ fontSize: 11, color: '#ffb4b4', lineHeight: 1.3 }}>
+                          {t('goals.waistRiskNote')}
+                        </div>
+                      )}
+
+                      {(displayCat === 'overweight' || displayCat === 'obese') && !waist && !bodyFat && (
+                        <div style={{ fontSize: 11, color: '#ffd599', lineHeight: 1.3 }}>
+                          {t('goals.strengthTrainerHint')}
+                        </div>
+                      )}
+
+                      {idealRange != null && (
+                        <div className="row spread" style={{ marginTop: 4, alignItems: 'center', gap: 8 }}>
+                          <span style={{ fontSize: 11, opacity: 0.85 }}>
+                            {latestWeight > idealRange.max
+                              ? `${t('goals.goalWeight')}: ≤ ${idealRange.max} kg`
+                              : `${t('goals.goalWeight')}: ${idealRange.min} – ${idealRange.max} kg`}
+                          </span>
+                          <button
+                            type="button"
+                            data-testid="apply-ideal-weight-btn"
+                            className="btn-outline"
+                            style={{ padding: '2px 8px', fontSize: 11, background: 'rgba(255,255,255,0.15)', color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              updateSettings({ goalWeightKg: idealRange.max })
+                            }}>
+                            {t('goals.applyIdealWeight')}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div>{t('goals.currentWeightTipEmpty')}</div>
+                  )}
+                </div>
+              )}
+            </span>
             <NumberInput testId="current-weight-input" value={latestWeight} hideZero
               onChange={onCurrentWeightChange}
               style={{ width: 64, textAlign: 'end' }} />
@@ -261,97 +354,6 @@ export default function Goals() {
             {t('goals.genderFemale')}
           </button>
         </div>
-
-        {/* BMI & Health Recommendations Readout */}
-        {(bmi != null || idealRange != null) && (
-          <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div className="row spread" style={{ flexWrap: 'wrap', gap: 8 }}>
-              {bmi != null && displayCat != null && (
-                <div className="row" style={{ gap: 8, alignItems: 'center' }}>
-                  <span className="info-wrap" ref={bmiTipRef}>
-                    <button
-                      type="button"
-                      className="dashed-tip-trigger"
-                      data-testid="bmi-info-tip"
-                      onClick={() => setShowBmiTip(s => !s)}>
-                      <span className="muted">{t('goals.bmiLabel')}:</span>
-                      {showBmiTip && (
-                        <div className="info-bubble" data-testid="bmi-tip-content">
-                          {idealRange != null
-                            ? t('goals.idealWeightTooltip', { range: `${idealRange.min} – ${idealRange.max}` })
-                            : `${t('goals.bmiLabel')}: ${bmi}`}
-                        </div>
-                      )}
-                    </button>
-                  </span>
-                  <strong data-testid="bmi-value" style={{ fontSize: '1.2em' }}>{bmi}</strong>
-                  <span data-testid="bmi-badge" className={`bmi-badge ${displayCat}`}>
-                    {t(`goals.bmiCategory.${displayCat}`)}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Scientific BMR / TDEE Reference */}
-            {bmr != null && (
-              <div className="row spread" style={{ flexWrap: 'wrap', gap: 8, fontSize: 13, background: 'var(--bg)', padding: '8px 12px', borderRadius: 10 }}>
-                <div>
-                  <span className="muted">{t('goals.bmrLabel')}: </span>
-                  <strong data-testid="bmr-value">{bmr} kcal</strong>
-                </div>
-                {tdee != null && (
-                  <div>
-                    <span className="muted">{t('goals.tdeeLabel')}: </span>
-                    <strong data-testid="tdee-value">{tdee} kcal</strong>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Smart Suggestions & Muscle / Central Adiposity Indicators */}
-            {displayCat != null && (
-              <div className="profile-stat-box">
-                <div style={{ fontSize: 13, lineHeight: 1.4 }}>
-                  {displayCat === 'underweight' && t('goals.bmiSuggestionUnderweight')}
-                  {displayCat === 'normal' && t('goals.bmiSuggestionNormal')}
-                  {displayCat === 'overweight' && t('goals.bmiSuggestionOverweight')}
-                  {displayCat === 'obese' && t('goals.bmiSuggestionObese')}
-                  {displayCat === 'athletic' && (
-                    <span data-testid="athletic-note">{t('goals.bmiSuggestionAthletic')}</span>
-                  )}
-                </div>
-
-                {compResult?.hasWaistRisk && (
-                  <div className="risk-banner" style={{ marginTop: 6 }}>
-                    {t('goals.waistRiskNote')}
-                  </div>
-                )}
-
-                {/* Helpful note for strength lifters if waist and body fat are empty and BMI is high */}
-                {(displayCat === 'overweight' || displayCat === 'obese') && !waist && !bodyFat && (
-                  <div className="hint-banner" style={{ marginTop: 6 }}>
-                    {t('goals.strengthTrainerHint')}
-                  </div>
-                )}
-
-                {idealRange != null && (
-                  <div className="row spread" style={{ marginTop: 8 }}>
-                    <span className="muted" style={{ fontSize: 12 }}>
-                      {latestWeight > idealRange.max
-                        ? `${t('goals.goalWeight')}: ≤ ${idealRange.max} kg`
-                        : `${t('goals.goalWeight')}: ${idealRange.min} – ${idealRange.max} kg`}
-                    </span>
-                    <button type="button" data-testid="apply-ideal-weight-btn" className="btn-outline"
-                      style={{ padding: '4px 10px', fontSize: 11 }}
-                      onClick={() => updateSettings({ goalWeightKg: idealRange.max })}>
-                      {t('goals.applyIdealWeight')}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       <div className="card">
