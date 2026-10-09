@@ -299,12 +299,19 @@ describe('Goals', () => {
 
       const applyBtn = screen.getByTestId('apply-ideal-weight-btn')
       expect(applyBtn).toBeInTheDocument()
+      fireEvent.pointerDown(applyBtn)
       fireEvent.click(applyBtn)
 
       // The goal weight input should now be updated to 73.2 kg (ideal max)
       const s = JSON.parse(localStorage.getItem('cc.settings')!)
       expect(s.goalWeightKg).toBe(73.2)
       expect(screen.getByTestId('goal-weight')).toHaveValue(73.2)
+    })
+
+    it('renders profile inputs with sufficient width to display 5+ character decimals like 88.88', () => {
+      render(<AppProvider><Goals /></AppProvider>)
+      const weightInput = screen.getByTestId('current-weight-input')
+      expect(weightInput).toHaveStyle({ width: '68px' })
     })
 
     it('allows entering waistline and body fat percentage and persists them', () => {

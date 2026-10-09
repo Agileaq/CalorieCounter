@@ -201,18 +201,19 @@ export default function Goals() {
           </button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10 }}>
-          <label className="row spread" style={{ gap: 6 }}>
-            <span>{t('goals.heightLabel')}</span>
+          <div className="row spread" style={{ gap: 6 }}>
+            <span style={{ whiteSpace: 'nowrap' }}>{t('goals.heightLabel')}</span>
             <NumberInput testId="height-input" value={settings.heightCm ?? 0} hideZero
               onChange={v => updateSettings({ heightCm: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 56, textAlign: 'end' }} />
-          </label>
-          <label className="row spread" style={{ gap: 6 }}>
+              style={{ width: 68, textAlign: 'end' }} />
+          </div>
+          <div className="row spread" style={{ gap: 6 }}>
             <span className="info-wrap" ref={weightTipRef}>
               <button
                 type="button"
                 className="dashed-tip-trigger"
                 data-testid="current-weight-info-tip"
+                style={{ whiteSpace: 'nowrap' }}
                 onClick={(e) => {
                   e.preventDefault()
                   setShowWeightTip(s => !s)
@@ -287,6 +288,9 @@ export default function Goals() {
                             data-testid="apply-ideal-weight-btn"
                             className="btn-outline"
                             style={{ padding: '2px 8px', fontSize: 11, background: 'rgba(255,255,255,0.15)', color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}
+                            onPointerDown={(e) => {
+                              e.stopPropagation()
+                            }}
                             onClick={(e) => {
                               e.stopPropagation()
                               updateSettings({ goalWeightKg: idealRange.max })
@@ -304,14 +308,15 @@ export default function Goals() {
             </span>
             <NumberInput testId="current-weight-input" value={latestWeight} hideZero
               onChange={onCurrentWeightChange}
-              style={{ width: 56, textAlign: 'end' }} />
-          </label>
-          <label className="row spread" style={{ gap: 6 }}>
+              style={{ width: 68, textAlign: 'end' }} />
+          </div>
+          <div className="row spread" style={{ gap: 6 }}>
             <span className="info-wrap" ref={waistTipRef}>
               <button
                 type="button"
                 className="dashed-tip-trigger"
                 data-testid="waist-info-tip"
+                style={{ whiteSpace: 'nowrap' }}
                 onClick={(e) => {
                   e.preventDefault()
                   setShowWaistTip(s => !s)
@@ -326,14 +331,15 @@ export default function Goals() {
             </span>
             <NumberInput testId="waist-input" value={settings.waistCm ?? 0} hideZero
               onChange={v => updateSettings({ waistCm: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 56, textAlign: 'end' }} />
-          </label>
-          <label className="row spread" style={{ gap: 6 }}>
+              style={{ width: 68, textAlign: 'end' }} />
+          </div>
+          <div className="row spread" style={{ gap: 6 }}>
             <span className="info-wrap" ref={bodyFatTipRef}>
               <button
                 type="button"
                 className="dashed-tip-trigger"
                 data-testid="body-fat-info-tip"
+                style={{ whiteSpace: 'nowrap' }}
                 onClick={(e) => {
                   e.preventDefault()
                   setShowBodyFatTip(s => !s)
@@ -348,8 +354,8 @@ export default function Goals() {
             </span>
             <NumberInput testId="body-fat-input" value={settings.bodyFatPct ?? 0} hideZero
               onChange={v => updateSettings({ bodyFatPct: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 56, textAlign: 'end' }} />
-          </label>
+              style={{ width: 68, textAlign: 'end' }} />
+          </div>
         </div>
       </div>
 
@@ -366,27 +372,27 @@ export default function Goals() {
         </label>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
           <label className="row spread" style={{ gap: 6 }}>
-            <span>{t('goals.carbsTarget')}</span>
+            <span style={{ whiteSpace: 'nowrap' }}>{t('goals.carbsTarget')}</span>
             <NumberInput testId="carbs-target" integer value={mt.carbs}
-              onChange={v => onMacroChange('carbs', v)} style={{ width: 56, textAlign: 'end' }} />
+              onChange={v => onMacroChange('carbs', v)} style={{ width: 68, textAlign: 'end' }} />
           </label>
           <label className="row spread" style={{ gap: 6 }}>
-            <span>{t('goals.fatTarget')}</span>
+            <span style={{ whiteSpace: 'nowrap' }}>{t('goals.fatTarget')}</span>
             <NumberInput testId="fat-target" integer value={mt.fat}
-              onChange={v => onMacroChange('fat', v)} style={{ width: 56, textAlign: 'end' }} />
+              onChange={v => onMacroChange('fat', v)} style={{ width: 68, textAlign: 'end' }} />
           </label>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
           <label className="row spread" style={{ gap: 6 }}>
-            <span>{t('goals.fiberTarget')}</span>
+            <span style={{ whiteSpace: 'nowrap' }}>{t('goals.fiberTarget')}</span>
             <NumberInput testId="fiber-target" integer value={mt.fiber}
-              onChange={v => setMacro({ fiber: v })} style={{ width: 56, textAlign: 'end' }} />
+              onChange={v => setMacro({ fiber: v })} style={{ width: 68, textAlign: 'end' }} />
           </label>
           <label className="row spread" style={{ gap: 6 }}>
-            <span>{t('goals.goalWeight')}</span>
+            <span style={{ whiteSpace: 'nowrap' }}>{t('goals.goalWeight')}</span>
             <NumberInput testId="goal-weight" value={settings.goalWeightKg ?? 0} hideZero
               onChange={v => updateSettings({ goalWeightKg: v > 0 ? Math.round(v * 100) / 100 : null })}
-              style={{ width: 56, textAlign: 'end' }} />
+              style={{ width: 68, textAlign: 'end' }} />
           </label>
         </div>
       </div>
