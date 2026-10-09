@@ -296,6 +296,18 @@ describe('Goals', () => {
       expect(JSON.parse(localStorage.getItem('cc.settings')!).bodyFatPct).toBe(15)
     })
 
+    it('toggles body fat guide bubble when clicking body fat dashed trigger', () => {
+      render(<AppProvider><Goals /></AppProvider>)
+      const trigger = screen.getByTestId('body-fat-info-tip')
+      expect(screen.queryByTestId('body-fat-tip-content')).toBeNull()
+
+      fireEvent.click(trigger)
+      expect(screen.getByTestId('body-fat-tip-content')).toBeInTheDocument()
+
+      fireEvent.click(trigger)
+      expect(screen.queryByTestId('body-fat-tip-content')).toBeNull()
+    })
+
     it('corrects overweight BMI to athletic / high muscle when waist is lean or body fat is low', () => {
       // 175cm, 82kg (BMI 26.8, normally overweight), male with waist 81cm (< 85cm)
       localStorage.setItem('cc.settings', JSON.stringify({ heightCm: 175, gender: 'male', waistCm: 81 }))

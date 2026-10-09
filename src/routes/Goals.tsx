@@ -100,11 +100,13 @@ export default function Goals() {
   const [msg, setMsg] = useState('')
   const [showBmiTip, setShowBmiTip] = useState(false)
   const [showWaistTip, setShowWaistTip] = useState(false)
+  const [showBodyFatTip, setShowBodyFatTip] = useState(false)
   const bmiTipRef = useRef<HTMLSpanElement>(null)
   const waistTipRef = useRef<HTMLSpanElement>(null)
+  const bodyFatTipRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
-    if (!showBmiTip && !showWaistTip) return
+    if (!showBmiTip && !showWaistTip && !showBodyFatTip) return
     const onDown = (e: PointerEvent) => {
       if (showBmiTip && bmiTipRef.current && !bmiTipRef.current.contains(e.target as Node)) {
         setShowBmiTip(false)
@@ -112,10 +114,13 @@ export default function Goals() {
       if (showWaistTip && waistTipRef.current && !waistTipRef.current.contains(e.target as Node)) {
         setShowWaistTip(false)
       }
+      if (showBodyFatTip && bodyFatTipRef.current && !bodyFatTipRef.current.contains(e.target as Node)) {
+        setShowBodyFatTip(false)
+      }
     }
     document.addEventListener('pointerdown', onDown)
     return () => document.removeEventListener('pointerdown', onDown)
-  }, [showBmiTip, showWaistTip])
+  }, [showBmiTip, showWaistTip, showBodyFatTip])
 
   const mt = settings.macroTargets
   const setMacro = (patch: Partial<typeof mt>) => updateSettings({ macroTargets: { ...mt, ...patch } })
@@ -221,7 +226,23 @@ export default function Goals() {
               style={{ width: 64, textAlign: 'end' }} />
           </label>
           <label className="row spread">
-            {t('goals.bodyFatLabel')}
+            <span className="info-wrap" ref={bodyFatTipRef}>
+              <button
+                type="button"
+                className="dashed-tip-trigger"
+                data-testid="body-fat-info-tip"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setShowBodyFatTip(s => !s)
+                }}>
+                {t('goals.bodyFatLabel')}
+                {showBodyFatTip && (
+                  <div className="info-bubble tip-end" data-testid="body-fat-tip-content">
+                    {t('goals.bodyFatTooltip')}
+                  </div>
+                )}
+              </button>
+            </span>
             <NumberInput testId="body-fat-input" value={settings.bodyFatPct ?? 0} hideZero
               onChange={v => updateSettings({ bodyFatPct: v > 0 ? Math.round(v * 10) / 10 : null })}
               style={{ width: 64, textAlign: 'end' }} />

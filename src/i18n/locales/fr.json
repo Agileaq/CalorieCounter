@@ -240,6 +240,7 @@
     "waistRiskNote": "Attention : Le tour de taille atteint le seuil d'alerte (≥85cm homme / ≥80cm femme), signalant un risque de graisse viscérale.",
     "strengthTrainerHint": "Note musculation : Une masse musculaire développée peut classer l'IMC en surpoids. Vérifiez le tour de taille (<85cm H / <80cm F) ou la masse grasse.",
     "waistTooltip": "Guide de mesure du tour de taille :\n1. Debout, pieds joints, relâchez l'abdomen ;\n2. Placez le ruban horizontalement à mi-chemin entre la dernière côte et l'os de la hanche (~1cm au-dessus du nombril) ;\n3. Mesurez en fin d'expiration normale, sans serrer.\nCibles : Homme <85cm, Femme <80cm.",
+    "bodyFatTooltip": "Guide du taux de masse grasse sain :\n• Hommes : 10% – 20% santé (10%–15% forme athlétique, ≥25% obésité)\n• Femmes : 18% – 28% santé (18%–23% forme athlétique, ≥32% obésité)\nPermet aux pratiquants de musculation d'évaluer fidèlement leur masse musculaire.",
     "idealWeightTooltip": "Fourchette de poids santé : {{range}} kg\n(Basée sur la norme IMC 18,5 – 23,9)"
   },
   "update": {

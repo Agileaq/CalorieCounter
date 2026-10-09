@@ -240,6 +240,7 @@
     "waistRiskNote": "Notice: Waist circumference reaches central obesity threshold (≥85cm male / ≥80cm female), suggesting visceral fat risk.",
     "strengthTrainerHint": "Strength lifter note: High skeletal muscle mass can skew BMI into 'overweight'. Check waist (<85cm male / <80cm female) or body fat % for accuracy.",
     "waistTooltip": "Waist Measurement Guide:\n1. Stand upright with feet together and relax your abdomen;\n2. Wrap tape horizontally midway between bottom rib and hip bone (~1cm above navel);\n3. Measure at the end of a normal exhale, snug but not compressing.\nTarget: Male <85cm, Female <80cm.",
+    "bodyFatTooltip": "Healthy Body Fat Range (General & Athletic Standards):\n• Men: 10% – 20% healthy (10%–15% athletic, ≥25% obese threshold)\n• Women: 18% – 28% healthy (18%–23% athletic, ≥32% obese threshold)\nIdeal for strength lifters to distinguish high muscle mass from excess body fat.",
     "idealWeightTooltip": "Healthy Weight Range: {{range}} kg\n(Based on BMI 18.5 – 23.9 standard)"
   },
   "update": {

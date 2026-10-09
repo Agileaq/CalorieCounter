@@ -240,6 +240,7 @@
     "waistRiskNote": "Aviso: La cintura alcanza el umbral de riesgo (≥85cm hombre / ≥80cm mujer), indicando posible grasa visceral.",
     "strengthTrainerHint": "Nota para fuerza: La masa muscular puede situar el IMC en sobrepeso. Comprueba cintura (<85cm H / <80cm M) o % graso.",
     "waistTooltip": "Guía para medir la cintura:\n1. De pie, pies juntos y abdomen relajado;\n2. Pasa la cinta métrica horizontalmente entre la última costilla y la cresta ilíaca (~1cm sobre el ombligo);\n3. Mide al final de una espiración normal sin apretar.\nObjetivo: Hombre <85cm, Mujer <80cm.",
+    "bodyFatTooltip": "Guía de porcentaje de grasa corporal saludable:\n• Hombres: 10% – 20% saludable (10%–15% fitness, ≥25% obesidad)\n• Mujeres: 18% – 28% saludable (18%–23% fitness, ≥32% obesidad)\nPermite a atletas distinguir masa muscular de exceso graso.",
     "idealWeightTooltip": "Rango de peso saludable: {{range}} kg\n(Basado en el estándar de IMC 18,5 – 23,9)"
   },
   "update": {
