@@ -272,6 +272,32 @@ describe('Goals', () => {
       expect(s.goalWeightKg).toBe(73.2)
       expect(screen.getByTestId('goal-weight')).toHaveValue(73.2)
     })
+
+    it('allows entering waistline and body fat percentage and persists them', () => {
+      render(<AppProvider><Goals /></AppProvider>)
+      const waistInput = screen.getByTestId('waist-input')
+      fireEvent.change(waistInput, { target: { value: '82' } })
+      expect(JSON.parse(localStorage.getItem('cc.settings')!).waistCm).toBe(82)
+
+      const bodyFatInput = screen.getByTestId('body-fat-input')
+      fireEvent.change(bodyFatInput, { target: { value: '15' } })
+      expect(JSON.parse(localStorage.getItem('cc.settings')!).bodyFatPct).toBe(15)
+    })
+
+    it('corrects overweight BMI to athletic / high muscle when waist is lean or body fat is low', () => {
+      // 175cm, 82kg (BMI 26.8, normally overweight), male with waist 81cm (< 85cm)
+      localStorage.setItem('cc.settings', JSON.stringify({ heightCm: 175, gender: 'male', waistCm: 81 }))
+      const today = new Date().toISOString().slice(0, 10)
+      localStorage.setItem('cc.days', JSON.stringify({
+        [today]: { date: today, meals: { breakfast: [], lunch: [], dinner: [], snacks: [] }, exercise: [], weightKg: 82 },
+      }))
+
+      render(<AppProvider><Goals /></AppProvider>)
+      expect(screen.getByTestId('bmi-value')).toHaveTextContent('26.8')
+      const badge = screen.getByTestId('bmi-badge')
+      expect(badge).toHaveClass('athletic')
+      expect(screen.getByTestId('athletic-note')).toBeInTheDocument()
+    })
   })
 })
 

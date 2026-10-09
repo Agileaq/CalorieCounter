@@ -66,3 +66,59 @@ export function calculateTdee(bmr: number | null): number | null {
   if (bmr == null || bmr <= 0) return null
   return Math.round(bmr * 1.2)
 }
+
+export type BodyCompositionCategory = ChineseBmiCategory | 'athletic'
+
+export interface BodyCompositionInput {
+  bmi: number
+  gender?: 'male' | 'female' | null
+  waistCm?: number | null
+  bodyFatPct?: number | null
+}
+
+export interface BodyCompositionResult {
+  category: BodyCompositionCategory
+  isAthleticHighMuscle: boolean
+  hasWaistRisk: boolean
+}
+
+/**
+ * Evaluates body composition taking athletic muscle mass into account.
+ * When BMI is overweight or obese, but waistline is lean (< 85cm male, < 80cm female)
+ * or body fat percentage is low (<= 18% male, <= 24% female), classifies as 'athletic'
+ * instead of falsely categorizing as overweight/obese.
+ */
+export function evaluateBodyComposition({
+  bmi,
+  gender,
+  waistCm,
+  bodyFatPct,
+}: BodyCompositionInput): BodyCompositionResult {
+  const baseCategory = classifyChineseBmi(bmi)
+  const isHighBmi = baseCategory === 'overweight' || baseCategory === 'obese'
+
+  // Central adiposity risk based on Chinese adult guidelines:
+  // Male >= 85cm, Female >= 80cm
+  const hasWaistRisk = typeof waistCm === 'number' && waistCm > 0
+    ? (gender === 'female' ? waistCm >= 80 : waistCm >= 85)
+    : false
+
+  const hasLeanWaist = typeof waistCm === 'number' && waistCm > 0
+    ? (gender === 'female' ? waistCm < 80 : waistCm < 85)
+    : false
+
+  // Athletic body fat levels:
+  // Male <= 18%, Female <= 24%
+  const hasAthleticFat = typeof bodyFatPct === 'number' && bodyFatPct > 0
+    ? (gender === 'female' ? bodyFatPct <= 24 : bodyFatPct <= 18)
+    : false
+
+  const isAthleticHighMuscle = isHighBmi && (hasLeanWaist || hasAthleticFat)
+
+  return {
+    category: isAthleticHighMuscle ? 'athletic' : baseCategory,
+    isAthleticHighMuscle,
+    hasWaistRisk,
+  }
+}
+

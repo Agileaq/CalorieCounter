@@ -215,6 +215,8 @@
     "profileTitle": "身体档案与 BMI",
     "heightLabel": "身高 (cm)",
     "currentWeightLabel": "当前体重 (kg)",
+    "waistLabel": "腰围 (cm)",
+    "bodyFatLabel": "体脂率 (%)",
     "genderLabel": "性别",
     "genderMale": "男",
     "genderFemale": "女",
@@ -223,7 +225,8 @@
       "underweight": "偏瘦",
       "normal": "正常",
       "overweight": "超重",
-      "obese": "肥胖"
+      "obese": "肥胖",
+      "athletic": "高肌量/健壮"
     },
     "idealWeight": "标准健康体重范围",
     "bmrLabel": "基础代谢 (BMR)",
@@ -232,7 +235,10 @@
     "bmiSuggestionUnderweight": "当前处于偏瘦区间，建议适度增肌增重。",
     "bmiSuggestionNormal": "体重处于健康标准区间，请继续保持良好的饮食与运动习惯！",
     "bmiSuggestionOverweight": "当前处于超重区间，建议适度控制热量摄入并规律运动。",
-    "bmiSuggestionObese": "当前处于肥胖区间，建议科学制定减脂计划，循序渐进降低体脂。"
+    "bmiSuggestionObese": "当前处于肥胖区间，建议科学制定减脂计划，循序渐进降低体脂。",
+    "bmiSuggestionAthletic": "BMI 虽显示偏高，但腰围/体脂率健康，表明骨骼肌含量充沛，属于强健的运动体型，无需盲目减重！",
+    "waistRiskNote": "注意：腰围已达警戒线（男≥85cm/女≥80cm），提示腹部内脏脂肪风险，建议关注体脂管理。",
+    "strengthTrainerHint": "力量训练者提示：骨骼肌发达者单纯看 BMI 易被误判为超重，建议结合腰围（男<85cm/女<80cm）或体脂率综合评估。"
   },
   "update": {
     "available": "有新版本可用",

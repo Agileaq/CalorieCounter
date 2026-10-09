@@ -29,6 +29,8 @@ export const DEFAULT_SETTINGS: Settings = {
   adviceBulkWeightKg: 0,
   heightCm: null,
   gender: null,
+  waistCm: null,
+  bodyFatPct: null,
 }
 
 function read<T>(key: string, fallback: T): T {

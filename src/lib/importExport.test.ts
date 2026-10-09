@@ -23,7 +23,7 @@ function day(date: string, meals: Partial<Record<MealKey, LogEntry[]>> = {}, exe
   for (const k of MEAL_KEYS) m[k] = meals[k] ?? []
   return { date, meals: m, exercise }
 }
-const SET = { dailyBudget: 2000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, macroRanges: DEFAULT_MACRO_RANGES, language: 'en' as const, goalWeightKg: null, adviceCutWeightKg: 0, adviceBulkWeightKg: 0, heightCm: null, gender: null }
+const SET = { dailyBudget: 2000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, macroRanges: DEFAULT_MACRO_RANGES, language: 'en' as const, goalWeightKg: null, adviceCutWeightKg: 0, adviceBulkWeightKg: 0, heightCm: null, gender: null, waistCm: null, bodyFatPct: null }
 
 function backup(days: Record<string, DayLog>): BackupData {
   return { days, myFoods: [], settings: SET }
@@ -167,8 +167,8 @@ describe('importExport', () => {
   })
 
   it('mergeBackup takes incoming settings', () => {
-    const ex = backup({ settings: { dailyBudget: 1000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, macroRanges: DEFAULT_MACRO_RANGES, language: 'en', goalWeightKg: null, adviceCutWeightKg: 0, adviceBulkWeightKg: 0, heightCm: null, gender: null } })
-    const inc = backup({ settings: { dailyBudget: 2500, macroTargets: { carbs: 9, protein: 8, fat: 7, fiber: 6 }, macroRanges: DEFAULT_MACRO_RANGES, language: 'zh' as const, goalWeightKg: null, adviceCutWeightKg: 0, adviceBulkWeightKg: 0, heightCm: null, gender: null } })
+    const ex = backup({ settings: { dailyBudget: 1000, macroTargets: { carbs: 1, protein: 1, fat: 1, fiber: 1 }, macroRanges: DEFAULT_MACRO_RANGES, language: 'en', goalWeightKg: null, adviceCutWeightKg: 0, adviceBulkWeightKg: 0, heightCm: null, gender: null, waistCm: null, bodyFatPct: null } })
+    const inc = backup({ settings: { dailyBudget: 2500, macroTargets: { carbs: 9, protein: 8, fat: 7, fiber: 6 }, macroRanges: DEFAULT_MACRO_RANGES, language: 'zh' as const, goalWeightKg: null, adviceCutWeightKg: 0, adviceBulkWeightKg: 0, heightCm: null, gender: null, waistCm: null, bodyFatPct: null } })
     const merged = mergeBackup(ex, inc)
     expect(merged.settings.dailyBudget).toBe(2500)
     expect(merged.settings.language).toBe('zh')

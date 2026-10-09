@@ -165,7 +165,8 @@ input, select { font: inherit; }
   font-size: 12px;
   font-weight: 600;
 }
-.bmi-badge.normal {
+.bmi-badge.normal,
+.bmi-badge.athletic {
   background: rgba(46, 157, 79, 0.15);
   color: var(--green);
 }
@@ -185,5 +186,23 @@ input, select { font: inherit; }
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+.hint-banner {
+  background: rgba(232, 115, 12, 0.08);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text);
+}
+.risk-banner {
+  background: rgba(214, 69, 69, 0.08);
+  border-left: 3px solid var(--red);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--red);
 }
 

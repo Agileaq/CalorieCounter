@@ -8,7 +8,7 @@ import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { distributeBudget } from '../lib/nutrition'
 import { parseSettingsBlob } from '../lib/storage'
 import { extractWeighIns } from '../lib/weight'
-import { calculateBmi, classifyChineseBmi, idealWeightRange, calculateBmr, calculateTdee } from '../lib/bmi'
+import { calculateBmi, idealWeightRange, calculateBmr, calculateTdee, evaluateBodyComposition } from '../lib/bmi'
 
 interface Quota { carbs?: number; carbsMin?: number; carbsMax?: number; protein: number; fat: number }
 const CUT: Quota = { carbsMin: 2.5, carbsMax: 3.5, protein: 1.5, fat: 0.8 }
@@ -109,11 +109,17 @@ export default function Goals() {
 
   const height = settings.heightCm ?? 0
   const gender = settings.gender
+  const waist = settings.waistCm
+  const bodyFat = settings.bodyFatPct
   const bmi = calculateBmi(height, latestWeight)
-  const bmiCat = bmi ? classifyChineseBmi(bmi) : null
   const idealRange = idealWeightRange(height)
   const bmr = calculateBmr({ heightCm: height, weightKg: latestWeight, gender })
   const tdee = calculateTdee(bmr)
+
+  const compResult = bmi != null
+    ? evaluateBodyComposition({ bmi, gender, waistCm: waist, bodyFatPct: bodyFat })
+    : null
+  const displayCat = compResult ? compResult.category : null
 
   // Two-way macro auto-calc, purely event-driven (no watch/effect loops):
   function onBudgetChange(v: number) {
@@ -171,6 +177,18 @@ export default function Goals() {
               onChange={onCurrentWeightChange}
               style={{ width: 80, textAlign: 'end' }} />
           </label>
+          <label className="row spread">
+            {t('goals.waistLabel')}
+            <NumberInput testId="waist-input" value={settings.waistCm ?? 0} hideZero
+              onChange={v => updateSettings({ waistCm: v > 0 ? Math.round(v * 10) / 10 : null })}
+              style={{ width: 80, textAlign: 'end' }} />
+          </label>
+          <label className="row spread">
+            {t('goals.bodyFatLabel')}
+            <NumberInput testId="body-fat-input" value={settings.bodyFatPct ?? 0} hideZero
+              onChange={v => updateSettings({ bodyFatPct: v > 0 ? Math.round(v * 10) / 10 : null })}
+              style={{ width: 80, textAlign: 'end' }} />
+          </label>
         </div>
         <div className="row" style={{ gap: 8, marginTop: 12, alignItems: 'center' }}>
           <span className="muted">{t('goals.genderLabel')}:</span>
@@ -190,12 +208,12 @@ export default function Goals() {
         {(bmi != null || idealRange != null) && (
           <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div className="row spread" style={{ flexWrap: 'wrap', gap: 8 }}>
-              {bmi != null && bmiCat != null && (
+              {bmi != null && displayCat != null && (
                 <div className="row" style={{ gap: 8 }}>
                   <span className="muted">{t('goals.bmiLabel')}:</span>
                   <strong data-testid="bmi-value" style={{ fontSize: '1.2em' }}>{bmi}</strong>
-                  <span data-testid="bmi-badge" className={`bmi-badge ${bmiCat}`}>
-                    {t(`goals.bmiCategory.${bmiCat}`)}
+                  <span data-testid="bmi-badge" className={`bmi-badge ${displayCat}`}>
+                    {t(`goals.bmiCategory.${displayCat}`)}
                   </span>
                 </div>
               )}
@@ -225,17 +243,34 @@ export default function Goals() {
               </div>
             )}
 
-            {/* Smart Suggestions & Goal Weight Action */}
-            {bmiCat != null && (
+            {/* Smart Suggestions & Muscle / Central Adiposity Indicators */}
+            {displayCat != null && (
               <div className="profile-stat-box">
                 <div style={{ fontSize: 13, lineHeight: 1.4 }}>
-                  {bmiCat === 'underweight' && t('goals.bmiSuggestionUnderweight')}
-                  {bmiCat === 'normal' && t('goals.bmiSuggestionNormal')}
-                  {bmiCat === 'overweight' && t('goals.bmiSuggestionOverweight')}
-                  {bmiCat === 'obese' && t('goals.bmiSuggestionObese')}
+                  {displayCat === 'underweight' && t('goals.bmiSuggestionUnderweight')}
+                  {displayCat === 'normal' && t('goals.bmiSuggestionNormal')}
+                  {displayCat === 'overweight' && t('goals.bmiSuggestionOverweight')}
+                  {displayCat === 'obese' && t('goals.bmiSuggestionObese')}
+                  {displayCat === 'athletic' && (
+                    <span data-testid="athletic-note">{t('goals.bmiSuggestionAthletic')}</span>
+                  )}
                 </div>
+
+                {compResult?.hasWaistRisk && (
+                  <div className="risk-banner" style={{ marginTop: 6 }}>
+                    {t('goals.waistRiskNote')}
+                  </div>
+                )}
+
+                {/* Helpful note for strength lifters if waist and body fat are empty and BMI is high */}
+                {(displayCat === 'overweight' || displayCat === 'obese') && !waist && !bodyFat && (
+                  <div className="hint-banner" style={{ marginTop: 6 }}>
+                    {t('goals.strengthTrainerHint')}
+                  </div>
+                )}
+
                 {idealRange != null && (
-                  <div className="row spread" style={{ marginTop: 6 }}>
+                  <div className="row spread" style={{ marginTop: 8 }}>
                     <span className="muted" style={{ fontSize: 12 }}>
                       {latestWeight > idealRange.max
                         ? `${t('goals.goalWeight')}: ≤ ${idealRange.max} kg`

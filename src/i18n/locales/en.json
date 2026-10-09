@@ -215,6 +215,8 @@
     "profileTitle": "Body Profile & BMI",
     "heightLabel": "Height (cm)",
     "currentWeightLabel": "Current Weight (kg)",
+    "waistLabel": "Waist (cm)",
+    "bodyFatLabel": "Body Fat (%)",
     "genderLabel": "Gender",
     "genderMale": "Male",
     "genderFemale": "Female",
@@ -223,7 +225,8 @@
       "underweight": "Underweight",
       "normal": "Normal",
       "overweight": "Overweight",
-      "obese": "Obese"
+      "obese": "Obese",
+      "athletic": "Athletic / Muscular"
     },
     "idealWeight": "Healthy Weight Range",
     "bmrLabel": "BMR",
@@ -232,7 +235,10 @@
     "bmiSuggestionUnderweight": "Currently underweight. Consider healthy nutrition and strength training to gain muscle.",
     "bmiSuggestionNormal": "Your weight is within the healthy range. Keep up the balanced diet and active lifestyle!",
     "bmiSuggestionOverweight": "Currently overweight. A moderate calorie deficit and regular exercise are recommended.",
-    "bmiSuggestionObese": "Currently in the obese category. Consider a steady and sustainable fat-loss plan."
+    "bmiSuggestionObese": "Currently in the obese category. Consider a steady and sustainable fat-loss plan.",
+    "bmiSuggestionAthletic": "BMI is elevated, but healthy waist/body fat indicates substantial muscle mass from strength training. No need to cut weight blindly!",
+    "waistRiskNote": "Notice: Waist circumference reaches central obesity threshold (≥85cm male / ≥80cm female), suggesting visceral fat risk.",
+    "strengthTrainerHint": "Strength lifter note: High skeletal muscle mass can skew BMI into 'overweight'. Check waist (<85cm male / <80cm female) or body fat % for accuracy."
   },
   "update": {
     "available": "New version available",

@@ -215,6 +215,8 @@
     "profileTitle": "Profil corporel & IMC",
     "heightLabel": "Taille (cm)",
     "currentWeightLabel": "Poids actuel (kg)",
+    "waistLabel": "Tour de taille (cm)",
+    "bodyFatLabel": "Masse grasse (%)",
     "genderLabel": "Sexe",
     "genderMale": "Homme",
     "genderFemale": "Femme",
@@ -223,7 +225,8 @@
       "underweight": "Insuffisance pondérale",
       "normal": "Normal",
       "overweight": "Surpoids",
-      "obese": "Obésité"
+      "obese": "Obésité",
+      "athletic": "Athlétique / Musclé"
     },
     "idealWeight": "Fourchette de poids santé",
     "bmrLabel": "Métabolisme de base (BMR)",
@@ -232,7 +235,10 @@
     "bmiSuggestionUnderweight": "Actuellement en insuffisance pondérale. Pensez à un apport nutritif adapté et au renforcement musculaire.",
     "bmiSuggestionNormal": "Votre poids se situe dans la plage normale et saine. Continuez ainsi !",
     "bmiSuggestionOverweight": "Actuellement en surpoids. Un léger déficit calorique et une activité régulière sont recommandés.",
-    "bmiSuggestionObese": "Actuellement en zone d'obésité. Il est conseillé de suivre un plan progressif et durable."
+    "bmiSuggestionObese": "Actuellement en zone d'obésité. Il est conseillé de suivre un plan progressif et durable.",
+    "bmiSuggestionAthletic": "L'IMC est élevé, mais le tour de taille / taux de graisse sain indique une bonne masse musculaire. Inutile de perdre du poids aveuglément !",
+    "waistRiskNote": "Attention : Le tour de taille atteint le seuil d'alerte (≥85cm homme / ≥80cm femme), signalant un risque de graisse viscérale.",
+    "strengthTrainerHint": "Note musculation : Une masse musculaire développée peut classer l'IMC en surpoids. Vérifiez le tour de taille (<85cm H / <80cm F) ou la masse grasse."
   },
   "update": {
     "available": "Nouvelle version disponible",

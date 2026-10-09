@@ -82,6 +82,8 @@ export interface Settings {
   adviceBulkWeightKg: number    // persisted so a page switch doesn't reset them
   heightCm: number | null       // body profile height in cm
   gender: 'male' | 'female' | null // body profile gender
+  waistCm: number | null        // optional waist circumference in cm
+  bodyFatPct: number | null     // optional body fat percentage
 }
 
 export const MEAL_KEYS: MealKey[] = ['breakfast', 'lunch', 'dinner', 'snacks']

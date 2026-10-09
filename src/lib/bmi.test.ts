@@ -5,6 +5,7 @@ import {
   idealWeightRange,
   calculateBmr,
   calculateTdee,
+  evaluateBodyComposition,
 } from './bmi'
 
 describe('bmi library', () => {
@@ -74,4 +75,86 @@ describe('bmi library', () => {
       expect(calculateTdee(null)).toBeNull()
     })
   })
+
+  describe('evaluateBodyComposition', () => {
+    it('returns standard BMI assessment when waist and body fat are omitted', () => {
+      // 175cm, 78kg -> BMI 25.5 (overweight)
+      const res = evaluateBodyComposition({
+        bmi: 25.5,
+        gender: 'male',
+        waistCm: null,
+        bodyFatPct: null,
+      })
+      expect(res.category).toBe('overweight')
+      expect(res.isAthleticHighMuscle).toBe(false)
+      expect(res.hasWaistRisk).toBe(false)
+    })
+
+    it('corrects overweight/obese BMI to athletic/high-muscle when waist is lean', () => {
+      // Male with BMI 26.0 (normally overweight) but waist is 80cm (< 85cm)
+      const resMale = evaluateBodyComposition({
+        bmi: 26.0,
+        gender: 'male',
+        waistCm: 80,
+        bodyFatPct: null,
+      })
+      expect(resMale.category).toBe('athletic')
+      expect(resMale.isAthleticHighMuscle).toBe(true)
+      expect(resMale.hasWaistRisk).toBe(false)
+
+      // Female with BMI 25.0 but waist is 74cm (< 80cm)
+      const resFemale = evaluateBodyComposition({
+        bmi: 25.0,
+        gender: 'female',
+        waistCm: 74,
+        bodyFatPct: null,
+      })
+      expect(resFemale.category).toBe('athletic')
+      expect(resFemale.isAthleticHighMuscle).toBe(true)
+      expect(resFemale.hasWaistRisk).toBe(false)
+    })
+
+    it('corrects overweight/obese BMI to athletic when body fat is low/athletic', () => {
+      // Male with BMI 26.5 and body fat 14% (<= 18%)
+      const resMale = evaluateBodyComposition({
+        bmi: 26.5,
+        gender: 'male',
+        waistCm: null,
+        bodyFatPct: 14,
+      })
+      expect(resMale.category).toBe('athletic')
+      expect(resMale.isAthleticHighMuscle).toBe(true)
+
+      // Female with BMI 25.2 and body fat 21% (<= 24%)
+      const resFemale = evaluateBodyComposition({
+        bmi: 25.2,
+        gender: 'female',
+        waistCm: null,
+        bodyFatPct: 21,
+      })
+      expect(resFemale.category).toBe('athletic')
+      expect(resFemale.isAthleticHighMuscle).toBe(true)
+    })
+
+    it('identifies waistline risk when waist >= 85cm for male or >= 80cm for female', () => {
+      const resMale = evaluateBodyComposition({
+        bmi: 26.0,
+        gender: 'male',
+        waistCm: 88,
+        bodyFatPct: null,
+      })
+      expect(resMale.category).toBe('overweight')
+      expect(resMale.isAthleticHighMuscle).toBe(false)
+      expect(resMale.hasWaistRisk).toBe(true)
+
+      const resFemale = evaluateBodyComposition({
+        bmi: 23.5, // normal BMI but high waist
+        gender: 'female',
+        waistCm: 83,
+        bodyFatPct: null,
+      })
+      expect(resFemale.hasWaistRisk).toBe(true)
+    })
+  })
 })
+
