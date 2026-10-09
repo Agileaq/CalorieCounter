@@ -197,19 +197,22 @@ export default function Goals() {
               style={{ width: 80, textAlign: 'end' }} />
           </label>
           <label className="row spread">
-            <span className="row" style={{ gap: 4 }}>
-              {t('goals.waistLabel')}
-              <span className="info-wrap" ref={waistTipRef}>
-                <button type="button" className="info-tip" data-testid="waist-info-tip" aria-label={t('goals.waistLabel')} title=""
-                  onClick={() => setShowWaistTip(s => !s)}>
-                  {'!'}
-                  {showWaistTip && (
-                    <div className="info-bubble" data-testid="waist-tip-content">
-                      {t('goals.waistTooltip')}
-                    </div>
-                  )}
-                </button>
-              </span>
+            <span className="info-wrap" ref={waistTipRef}>
+              <button
+                type="button"
+                className="dashed-tip-trigger"
+                data-testid="waist-info-tip"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setShowWaistTip(s => !s)
+                }}>
+                {t('goals.waistLabel')}
+                {showWaistTip && (
+                  <div className="info-bubble" data-testid="waist-tip-content">
+                    {t('goals.waistTooltip')}
+                  </div>
+                )}
+              </button>
             </span>
             <NumberInput testId="waist-input" value={settings.waistCm ?? 0} hideZero
               onChange={v => updateSettings({ waistCm: v > 0 ? Math.round(v * 10) / 10 : null })}

@@ -144,6 +144,24 @@ input, select { font: inherit; }
   inset-inline-end: 0;
 }
 .info-wrap { display: inline-flex; align-items: center; }
+.dashed-tip-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-bottom: 1px dashed var(--muted);
+  cursor: pointer;
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  padding: 0 0 1px 0;
+  color: inherit;
+  font: inherit;
+}
+.dashed-tip-trigger:hover {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
 
 /* Body Profile and BMI Card */
 .gender-pill {
