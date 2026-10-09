@@ -64,8 +64,8 @@ describe('Goals', () => {
     enter('cut-weight', '75')
     enter('bulk-weight', '75')
     // ready values render as "<value><unit>"; unset fields stay "—" (no unit)
-    expect(screen.getByText('1740–2040kcal')).toBeInTheDocument()  // cut calories range
-    expect(screen.getByText('188–263g')).toBeInTheDocument()      // cut carbs range
+    expect(screen.getByText('1740~2040kcal')).toBeInTheDocument()  // cut calories range
+    expect(screen.getByText('188~263g')).toBeInTheDocument()      // cut carbs range
     expect(screen.getByText('113g')).toBeInTheDocument()         // cut protein
     expect(screen.getByText('60g')).toBeInTheDocument()          // cut fat
     expect(screen.getByText('2475kcal')).toBeInTheDocument()     // bulk calories

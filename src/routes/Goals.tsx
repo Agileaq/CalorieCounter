@@ -42,10 +42,10 @@ function AdviceCard({ title, tooltip, quota, weightTestId, weight, onWeightChang
     if (quota.carbsMin !== undefined && quota.carbsMax !== undefined) {
       const cMin = Math.round(w * quota.carbsMin)
       const cMax = Math.round(w * quota.carbsMax)
-      carbsStr = `${cMin}–${cMax}g`
+      carbsStr = `${cMin}~${cMax}g`
       const calMin = Math.round(w * (quota.carbsMin * 4 + quota.protein * 4 + quota.fat * 9))
       const calMax = Math.round(w * (quota.carbsMax * 4 + quota.protein * 4 + quota.fat * 9))
-      caloriesStr = `${calMin}–${calMax}kcal`
+      caloriesStr = `${calMin}~${calMax}kcal`
     } else if (quota.carbs !== undefined) {
       const c = Math.round(w * quota.carbs)
       carbsStr = `${c}g`
