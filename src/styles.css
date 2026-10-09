@@ -143,6 +143,13 @@ input, select { font: inherit; }
   inset-inline-start: auto;
   inset-inline-end: 0;
 }
+/* Opens downwards aligned with the trailing edge of the trigger (expanding down-left) */
+.info-bubble.tip-down-end {
+  bottom: auto;
+  top: calc(100% + 6px);
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+}
 .info-wrap {
   position: relative;
   display: inline-flex;
@@ -168,9 +175,9 @@ input, select { font: inherit; }
 
 /* Body Profile and BMI Card */
 .gender-pill {
-  padding: 6px 14px;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   border: 1px solid var(--line);

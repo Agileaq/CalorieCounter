@@ -187,17 +187,29 @@ export default function Goals() {
 
       {/* Body Profile and BMI Card */}
       <div className="card">
-        <div className="row spread" style={{ marginBottom: 12 }}>
+        <div className="row spread" style={{ marginBottom: 12, alignItems: 'center' }}>
           <strong>{t('goals.profileTitle')}</strong>
+          <div className="row" style={{ gap: 6, alignItems: 'center' }}>
+            <button type="button" data-testid="gender-male"
+              className={`gender-pill ${gender === 'male' ? 'active' : ''}`}
+              onClick={() => updateSettings({ gender: 'male' })}>
+              {t('goals.genderMale')}
+            </button>
+            <button type="button" data-testid="gender-female"
+              className={`gender-pill ${gender === 'female' ? 'active' : ''}`}
+              onClick={() => updateSettings({ gender: 'female' })}>
+              {t('goals.genderFemale')}
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
-          <label className="row spread">
-            {t('goals.heightLabel')}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10 }}>
+          <label className="row spread" style={{ gap: 6 }}>
+            <span>{t('goals.heightLabel')}</span>
             <NumberInput testId="height-input" value={settings.heightCm ?? 0} hideZero
               onChange={v => updateSettings({ heightCm: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 64, textAlign: 'end' }} />
+              style={{ width: 56, textAlign: 'end' }} />
           </label>
-          <label className="row spread">
+          <label className="row spread" style={{ gap: 6 }}>
             <span className="info-wrap" ref={weightTipRef}>
               <button
                 type="button"
@@ -210,7 +222,7 @@ export default function Goals() {
                 {t('goals.currentWeightLabel')}
               </button>
               {showWeightTip && (
-                <div className="info-bubble" data-testid="current-weight-tip-content">
+                <div className="info-bubble tip-down-end" data-testid="current-weight-tip-content">
                   {bmi != null ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {displayCat != null && (
@@ -294,9 +306,9 @@ export default function Goals() {
             </span>
             <NumberInput testId="current-weight-input" value={latestWeight} hideZero
               onChange={onCurrentWeightChange}
-              style={{ width: 64, textAlign: 'end' }} />
+              style={{ width: 56, textAlign: 'end' }} />
           </label>
-          <label className="row spread">
+          <label className="row spread" style={{ gap: 6 }}>
             <span className="info-wrap" ref={waistTipRef}>
               <button
                 type="button"
@@ -307,18 +319,18 @@ export default function Goals() {
                   setShowWaistTip(s => !s)
                 }}>
                 {t('goals.waistLabel')}
-                {showWaistTip && (
-                  <div className="info-bubble" data-testid="waist-tip-content">
-                    {t('goals.waistTooltip')}
-                  </div>
-                )}
               </button>
+              {showWaistTip && (
+                <div className="info-bubble" data-testid="waist-tip-content">
+                  {t('goals.waistTooltip')}
+                </div>
+              )}
             </span>
             <NumberInput testId="waist-input" value={settings.waistCm ?? 0} hideZero
               onChange={v => updateSettings({ waistCm: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 64, textAlign: 'end' }} />
+              style={{ width: 56, textAlign: 'end' }} />
           </label>
-          <label className="row spread">
+          <label className="row spread" style={{ gap: 6 }}>
             <span className="info-wrap" ref={bodyFatTipRef}>
               <button
                 type="button"
@@ -329,30 +341,17 @@ export default function Goals() {
                   setShowBodyFatTip(s => !s)
                 }}>
                 {t('goals.bodyFatLabel')}
-                {showBodyFatTip && (
-                  <div className="info-bubble tip-end" data-testid="body-fat-tip-content">
-                    {t('goals.bodyFatTooltip')}
-                  </div>
-                )}
               </button>
+              {showBodyFatTip && (
+                <div className="info-bubble tip-end" data-testid="body-fat-tip-content">
+                  {t('goals.bodyFatTooltip')}
+                </div>
+              )}
             </span>
             <NumberInput testId="body-fat-input" value={settings.bodyFatPct ?? 0} hideZero
               onChange={v => updateSettings({ bodyFatPct: v > 0 ? Math.round(v * 10) / 10 : null })}
-              style={{ width: 64, textAlign: 'end' }} />
+              style={{ width: 56, textAlign: 'end' }} />
           </label>
-        </div>
-        <div className="row" style={{ gap: 8, marginTop: 12, alignItems: 'center' }}>
-          <span className="muted">{t('goals.genderLabel')}:</span>
-          <button type="button" data-testid="gender-male"
-            className={`gender-pill ${gender === 'male' ? 'active' : ''}`}
-            onClick={() => updateSettings({ gender: 'male' })}>
-            {t('goals.genderMale')}
-          </button>
-          <button type="button" data-testid="gender-female"
-            className={`gender-pill ${gender === 'female' ? 'active' : ''}`}
-            onClick={() => updateSettings({ gender: 'female' })}>
-            {t('goals.genderFemale')}
-          </button>
         </div>
       </div>
 
