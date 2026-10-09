@@ -72,10 +72,22 @@ function AdviceCard({ title, tooltip, quota, weightTestId, weight, onWeightChang
         </label>
       </div>
       <div className="advice-readout">
-        <div>{t('goals.adviceCalories')} <span className="advice-val readonly">{caloriesStr}</span></div>
-        <div>{t('goals.adviceCarbs')} <span className="advice-val readonly">{carbsStr}</span></div>
-        <div>{t('goals.adviceProtein')} <span className="advice-val readonly">{ready ? `${protein}g` : '—'}</span></div>
-        <div>{t('goals.adviceFat')} <span className="advice-val readonly">{ready ? `${fat}g` : '—'}</span></div>
+        <div className="advice-item">
+          <span className="advice-label">{t('goals.adviceCalories')}</span>
+          <span className="advice-val readonly">{caloriesStr}</span>
+        </div>
+        <div className="advice-item">
+          <span className="advice-label">{t('goals.adviceCarbs')}</span>
+          <span className="advice-val readonly">{carbsStr}</span>
+        </div>
+        <div className="advice-item">
+          <span className="advice-label">{t('goals.adviceProtein')}</span>
+          <span className="advice-val readonly">{ready ? `${protein}g` : '—'}</span>
+        </div>
+        <div className="advice-item">
+          <span className="advice-label">{t('goals.adviceFat')}</span>
+          <span className="advice-val readonly">{ready ? `${fat}g` : '—'}</span>
+        </div>
       </div>
     </div>
   )

@@ -104,10 +104,25 @@ input, select { font: inherit; }
    (bottom: 100% sits its bottom edge at the top of "!"), left-aligned so its
    bottom-left corner meets the top-left of "!". It grows to cover the upper-
    right area above "!" without overlapping the button itself. */
-.advice-readout { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; }
-.advice-readout > div { display: flex; align-items: baseline; gap: 4px; }
-.advice-readout .advice-val { font-weight: 600; }
-.advice-val.readonly { color: var(--muted); background: var(--bg); padding: 1px 6px; border-radius: 6px; }
+.advice-readout {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 6px 8px; margin-top: 8px; font-size: 12px;
+}
+.advice-item {
+  display: inline-flex; align-items: center;
+  gap: 3px; white-space: nowrap;
+}
+.advice-label {
+  color: var(--muted); font-size: 11px;
+}
+.advice-readout .advice-val {
+  font-weight: 600; white-space: nowrap;
+}
+.advice-val.readonly {
+  color: var(--text); background: var(--bg);
+  padding: 2px 5px; border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
 .info-tip {
   position: relative;
   display: inline-flex; align-items: center; justify-content: center;

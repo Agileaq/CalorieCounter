@@ -72,6 +72,17 @@ describe('Goals', () => {
     expect(screen.getByText('300g')).toBeInTheDocument()         // bulk carbs
     expect(screen.getByText('150g')).toBeInTheDocument()         // bulk protein
   })
+  it('advice readouts render advice-item and advice-label for each metric', () => {
+    const { container } = render(<AppProvider><Goals /></AppProvider>)
+    const readouts = container.querySelectorAll('.advice-readout')
+    expect(readouts).toHaveLength(2)
+    for (const readout of readouts) {
+      const items = readout.querySelectorAll('.advice-item')
+      expect(items).toHaveLength(4)
+      const labels = readout.querySelectorAll('.advice-label')
+      expect(labels).toHaveLength(4)
+    }
+  })
   it('the info-tip toggles open and closes on outside click', () => {
     render(<AppProvider><Goals /></AppProvider>)
     const tip = screen.getAllByRole('button', { name: /Fat-loss Advice|Muscle-gain Advice/ })[0]
