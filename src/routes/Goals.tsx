@@ -253,7 +253,7 @@ export default function Goals() {
                         onClick={() => setShowBmiTip(s => !s)}>
                         {'!'}
                         {showBmiTip && (
-                          <div className="info-bubble" data-testid="bmi-tip-content">
+                          <div className="info-bubble tip-end" data-testid="bmi-tip-content">
                             {t('goals.idealWeightTooltip', { range: `${idealRange.min} – ${idealRange.max}` })}
                           </div>
                         )}

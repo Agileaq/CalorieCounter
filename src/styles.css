@@ -134,8 +134,14 @@ input, select { font: inherit; }
 .info-bubble {
   position: absolute; bottom: calc(100% + 6px); inset-inline-start: 0; z-index: 20;
   background: var(--text); color: #fff; font-size: 12px; line-height: 1.5;
-  border-radius: 10px; padding: 10px 12px; width: max-content; max-width: 240px;
+  border-radius: 10px; padding: 10px 12px; width: max-content; max-width: min(260px, calc(100vw - 32px));
   white-space: pre-line; text-align: start; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  pointer-events: auto;
+}
+/* When anchor is located near the right edge of screen/card, align bubble's right edge with button */
+.info-bubble.tip-end {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
 }
 .info-wrap { display: inline-flex; align-items: center; }
 
